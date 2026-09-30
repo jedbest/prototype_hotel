@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUMINA - Hotels & Resorts</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="logo">LUMINA <span>HOTELS & RESORTS</span></div>
+  <button class="book-btn" onclick="showPage('rooms')">BOOK NOW</button>
+</nav>
+
+<!-- PAGE 1: HOME -->
+<section id="home" class="page">
+  <div class="hero">
+    <h1>Your Luxury Escape Awaits</h1>
+    <p>Discover refined comfort and impeccable service at our 5★ hotel</p>
+    <div class="search-box">
+      <div><label>CHECK-IN</label><input type="date" id="checkin"></div>
+      <div><label>CHECK-OUT</label><input type="date" id="checkout"></div>
+      <div><label>GUESTS</label><select id="guests"><option>1 Guest, 1 Room</option><option>2 Guests, 1 Room</option><option>2 Guests, 2 Rooms</option></select></div>
+      <button onclick="searchRooms()">Search</button>
+    </div>
+  </div>
+  <div class="featured">
+    <h2>Featured Rooms</h2>
+    <div id="featuredGrid" class="room-grid"></div>
+  </div>
+</section>
+
+<!-- PAGE 2: ROOMS -->
+<section id="rooms" class="page" style="display:none">
+  <div class="rooms-layout">
+    <aside class="filters">
+      <h3>Filters <span onclick="resetFilters()">Clear all</span></h3>
+      <label>Price per night</label>
+      <input type="range" id="priceRange" min="100" max="1000" value="500" oninput="filterRooms()">
+      <p>Avg: $<span id="priceVal">500</span></p>
+      <label>Amenities</label>
+      <div><input type="checkbox" class="amen" value="WiFi" checked> Free WiFi</div>
+      <div><input type="checkbox" class="amen" value="Breakfast" checked> Breakfast</div>
+      <div><input type="checkbox" class="amen" value="Pool"> Pool</div>
+      <label>Bed Type</label>
+      <div><input type="checkbox" class="bed" value="King"> King Bed</div>
+      <div><input type="checkbox" class="bed" value="Double"> Two Doubles</div>
+      <button onclick="filterRooms()">Apply Filters</button>
+    </aside>
+    <div class="results">
+      <h2 id="resultsCount">6 luxury rooms found</h2>
+      <div id="roomsGrid" class="room-grid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- PAGE 3: ROOM DETAILS -->
+<section id="roomDetail" class="page" style="display:none">
+  <div class="detail-layout">
+    <div class="gallery">
+      <img id="dMainImg" src="">
+      <div class="thumbs" id="dThumbs"></div>
+      <h3>Amenities</h3><div id="dAmenities" class="amenities"></div>
+      <h3>About this room</h3><p id="dAbout"></p>
+    </div>
+    <div class="booking-box">
+      <h2 id="dPrice">$349 / night</h2>
+      <div class="date-row"><input type="date" id="dCheckin"><input type="date" id="dCheckout"></div>
+      <select id="dGuests"><option>2 guests, 1 room</option></select>
+      <button class="reserve" onclick="goCheckout()">Reserve</button>
+      <p class="note">You won't be charged yet</p>
+      <div id="priceBreakdown"></div>
+    </div>
+  </div>
+</section>
+
+<!-- PAGE 4: CHECKOUT -->
+<section id="checkout" class="page" style="display:none">
+  <div class="checkout-layout">
+    <div>
+      <h2>Confirm and Pay</h2>
+      <input id="fullName" placeholder="Full Name *">
+      <input id="phone" placeholder="Phone *">
+      <input id="email" placeholder="Email *">
+      <select id="payMethod"><option>Pay at Hotel</option><option>Pay Now - Transfer</option><option>Pay Now - Paystack</option></select>
+      <div id="receiptDiv" style="display:none"><input type="file" id="receipt" onchange="filePicked(this)"><span id="fileName"></span></div>
+      <div id="errorMsg" class="error"></div>
+      <button onclick="validateBooking(event)" class="reserve">Confirm Booking</button>
+    </div>
+    <div class="booking-box" id="checkoutSummary"></div>
+  </div>
+</section>
+
+<!-- PAGE 5: CONFIRMATION -->
+<section id="confirmation" class="page" style="display:none">
+  <h1>✅ Booking Confirmed!</h1>
+  <p>Booking Code: <b id="confCode">LMN-12345</b></p>
+  <p id="confDetails"></p>
+  <button onclick="showPage('home')">Back Home</button>
+</section>
+
+<!-- PAGE 6: MY BOOKINGS -->
+<section id="mybookings" class="page" style="display:none">
+  <h2>My Bookings</h2>
+  <div class="search-box small"><input id="myPhone" placeholder="Enter phone to view"><button onclick="loadMyBookings()">View</button></div>
+  <div id="myList"></div>
+</section>
+
+<!-- PAGE 7: ADMIN -->
+<section id="admin" class="page" style="display:none">
+  <h2>Admin Dashboard</h2>
+  <div class="stats"><span id="todayCheckin">0 Check-in Today</span> | <span id="todayCheckout">0 Check-out Today</span></div>
+  <div id="adminList"></div>
+</section>
+
+<!-- PAGE 8: CONTACT -->
+<section id="contact" class="page" style="display:none">
+  <h2>Contact Us</h2><p>Behind Ogige Main Market, Nsukka</p>
+  <a class="map-btn" target="_blank" href="https://maps.google.com">📍 Open Map</a>
+</section>
+
+<div class="bottom-nav">
+  <button onclick="showPage('home',this)" class="active">Home</button>
+  <button onclick="showPage('rooms',this)">Rooms</button>
+  <button onclick="showPage('mybookings',this)">Bookings</button>
+  <button onclick="showPage('contact',this)">Contact</button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

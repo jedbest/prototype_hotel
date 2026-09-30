@@ -1,0 +1,155 @@
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#f9f7f4;color:#111;line-height:1.5;overflow-x:hidden}
+h1,h2,h3{font-family:'Playfair Display',serif;color:#111}
+
+:root{
+  --gold:#9C6B2E;
+  --gold-dark:#7A521F;
+  --black:#111;
+}
+
+/* TOP NAV - LOGO ONLY */
+.topnav{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:#fff;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.08);border-bottom:2px solid #E9DCC3}
+.logo{font-family:'Playfair Display';font-size:20px;font-weight:800;letter-spacing:1.5px;line-height:1;color:#111}
+.logo span{display:block;font-family:'Inter';font-size:9px;font-weight:800;letter-spacing:3px;color:var(--gold);margin-top:2px}
+.book-btn{border:2px solid var(--gold);background:var(--gold);color:#fff;padding:9px 18px;border-radius:25px;font-weight:800;font-size:12px;cursor:pointer;box-shadow:0 3px 10px rgba(156,107,46,.3)}
+
+/* PAGES */
+.page{padding-bottom:100px;min-height:100vh;animation:fade .3s}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* HERO */
+.hero{background:linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.55)),url('https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200');background-size:cover;background-position:center;color:#fff;text-align:center;padding:70px 20px 90px}
+.hero h1{font-size:38px;line-height:1.1;margin-bottom:10px;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.5)}
+.hero p{font-size:14px;opacity:1;margin-bottom:25px;font-weight:500}
+.search-box{background:#fff;color:#111;display:flex;gap:12px;padding:18px;border-radius:18px;max-width:900px;margin:0 auto;align-items:flex-end;box-shadow:0 15px 35px rgba(0,0,0,.25);text-align:left;border:2px solid #E9DCC3}
+.search-box div{flex:1}
+.search-box label{font-size:11px;font-weight:800;color:var(--gold-dark);letter-spacing:1px;display:block;margin-bottom:5px;text-transform:uppercase}
+.search-box input,.search-box select{width:100%;padding:12px 10px;border:2px solid #C8B896;border-radius:10px;font-size:13px;outline:none;font-weight:600;color:#111;background:#FFFEFB}
+.search-box input:focus,.search-box select:focus{border-color:var(--gold);background:#fff}
+.search-box button{background:var(--gold)!important;color:#fff!important;border:2px solid var(--gold)!important;padding:13px 22px;border-radius:12px;font-weight:800;cursor:pointer;white-space:nowrap;font-size:14px}
+
+/* FEATURED */
+.featured{padding:25px 16px}
+.featured h2{font-size:22px;margin-bottom:14px;font-weight:800}
+
+/* ROOM GRID */
+.room-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.room-card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.08);cursor:pointer;transition:.2s;border:1.5px solid #E9DCC3}
+.room-card:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(0,0,0,.12)}
+.room-card img{width:100%;height:190px;object-fit:cover;display:block}
+.room-card .info{padding:14px}
+.room-card .info h3{font-size:16px;margin-bottom:4px;font-weight:800;color:#111}
+.room-card .info p{font-size:13px;color:#444;font-weight:600;margin-bottom:10px}
+.room-card .info button{width:100%;background:#111;color:#fff;border:2px solid #111;padding:10px;border-radius:10px;font-size:13px;font-weight:800}
+
+/* ROOMS LAYOUT */
+.rooms-layout{display:flex;gap:20px;padding:16px;align-items:flex-start}
+.filters{width:260px;background:#fff;padding:18px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.08);position:sticky;top:80px;border:1.5px solid #E9DCC3}
+.filters h3{font-size:14px;display:flex;justify-content:space-between;margin-bottom:14px;font-weight:800;color:#111}
+.filters h3 span{color:var(--gold);cursor:pointer;font-weight:800;font-size:12px}
+.filters label{font-size:11px;font-weight:800;margin:14px 0 6px;display:block;color:var(--gold-dark);text-transform:uppercase;letter-spacing:.5px}
+.filters div{font-size:13px;margin:7px 0;font-weight:600;color:#222}
+.filters button{width:100%;margin-top:14px;background:#111;color:#fff;border:2px solid #111;padding:12px;border-radius:10px;font-weight:800}
+.results{flex:1}
+#resultsCount{font-size:18px;margin:0 0 12px 4px;font-weight:800;color:#111}
+
+/* DETAIL */
+.detail-layout{display:flex;gap:22px;padding:16px;align-items:flex-start}
+.gallery{flex:1.6}
+.gallery img#dMainImg{width:100%;height:360px;object-fit:cover;border-radius:18px;display:block;border:2px solid #E9DCC3}
+.thumbs{display:flex;gap:8px;margin:10px 0;overflow:auto}
+.thumbs img{width:70px;height:60px;object-fit:cover;border-radius:10px;cursor:pointer;opacity:.6;border:2px solid transparent}
+.thumbs img:hover{opacity:1;border-color:var(--gold)}
+.amenities{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 16px}
+.amenities span{background:#111;color:#fff;padding:7px 12px;border-radius:20px;font-size:11px;font-weight:700;border:1px solid var(--gold)}
+.booking-box{flex:.8;background:#fff;padding:22px;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.12);position:sticky;top:80px;border:2px solid #E9DCC3}
+.booking-box h2{font-size:24px;margin-bottom:12px;font-weight:800;color:#111}
+.date-row{display:flex;gap:8px;margin-bottom:12px}
+.date-row input{flex:1;padding:11px;border:2px solid #C8B896;border-radius:10px;font-weight:600}
+.note{font-size:11px;text-align:center;color:#666;font-weight:600;margin:8px 0}
+.reserve{background:var(--gold)!important;color:#fff!important;border:2px solid var(--gold)!important;padding:14px;width:100%;border-radius:12px;font-weight:800;cursor:pointer;font-size:14px;box-shadow:0 4px 15px rgba(156,107,46,.35)}
+.reserve:hover{background:var(--gold-dark)!important;border-color:var(--gold-dark)!important}
+
+/* CHECKOUT */
+.checkout-layout{display:flex;gap:22px;padding:16px;align-items:flex-start}
+.checkout-layout > div{flex:1;background:#fff;padding:22px;border-radius:18px;box-shadow:0 4px 20px rgba(0,0,0,.08);border:1.5px solid #E9DCC3}
+.checkout-layout h2{margin-bottom:14px;font-weight:800}
+.checkout-layout input,.checkout-layout select{width:100%;padding:13px;margin:7px 0;border:2px solid #C8B896;border-radius:12px;font-size:14px;outline:none;font-weight:600;color:#111}
+.checkout-layout input:focus{border-color:var(--gold)}
+.error{font-size:13px;padding:12px;border-radius:10px;display:none;margin:10px 0;font-weight:700;background:#FFE5E5;border:1px solid #FF9999;color:#B00000}
+.map-btn{display:inline-block;margin-top:12px;background:#111;color:#fff;padding:11px 18px;border-radius:10px;text-decoration:none;font-size:13px;font-weight:800}
+
+/* CONFIRMATION */
+#confirmation{text-align:center;padding:60px 20px}
+#confirmation h1{font-size:32px;font-weight:800}
+#confirmation p{margin:10px 0;font-weight:600}
+#confirmation button{margin-top:15px;background:#111;color:#fff;border:none;padding:12px 22px;border-radius:10px;font-weight:800}
+
+/* MY BOOKINGS / ADMIN */
+#mybookings,#admin,#contact{padding:16px}
+#mybookings h2,#admin h2,#contact h2{font-weight:800}
+.small.search-box{padding:10px;max-width:400px;margin:0 0 16px;box-shadow:none;border:2px solid #E9DCC3}
+#myList div,#adminList div{margin-bottom:10px}
+
+/* BOTTOM NAV - SUPER VISIBLE */
+.bottom-nav{
+  position:fixed;
+  bottom:0;left:0;right:0;
+  background:#fff;
+  display:flex;
+  justify-content:space-around;
+  padding:10px 6px 14px;
+  border-top:2.5px solid #111;
+  z-index:200;
+  box-shadow:0 -8px 25px rgba(0,0,0,.12);
+}
+.bottom-nav button{
+  border:none;
+  background:transparent;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  font-size:11px;
+  font-weight:800;
+  color:#222;
+  cursor:pointer;
+  gap:4px;
+  padding:7px 20px;
+  border-radius:14px;
+  transition:.2s;
+  min-width:64px;
+}
+.bottom-nav button::before{
+  content:'';
+  font-size:22px;
+  line-height:1;
+  display:block;
+  font-weight:900;
+}
+.bottom-nav button:nth-child(1)::before{content:'⌂'; font-size:26px;}
+.bottom-nav button:nth-child(2)::before{content:'☰'}
+.bottom-nav button:nth-child(3)::before{content:'◫'}
+.bottom-nav button:nth-child(4)::before{content:'◎'}
+
+.bottom-nav button.active{
+  background:#111;
+  color:#fff;
+  box-shadow:0 4px 12px rgba(0,0,0,.25);
+}
+.bottom-nav button.active::before{
+  color:var(--gold);
+}
+
+/* MOBILE */
+@media(max-width:768px){
+  .rooms-layout,.detail-layout,.checkout-layout{flex-direction:column}
+  .filters{width:100%;position:relative;top:0}
+  .booking-box{position:relative;top:0;width:100%}
+  .search-box{flex-direction:column;align-items:stretch}
+  .hero h1{font-size:28px}
+  .hero{padding:50px 16px 70px}
+  .room-grid{grid-template-columns:1fr}
+  .gallery img#dMainImg{height:240px}
+}

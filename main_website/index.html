@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUMINA - Hotels & Resorts</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://js.paystack.co/v1/inline.js"></script>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="logo">LUMINA <span>HOTELS & RESORTS</span></div>
+</nav>
+
+<!-- PAGE 1: HOME -->
+<section id="home" class="page">
+  <div class="hero">
+    <h1>Your Luxury Escape Awaits</h1>
+    <p>Discover refined comfort and impeccable service at our 5★ hotel</p>
+    <div class="search-box">
+      <div><label>CHECK-IN</label><input type="text" placeholder="DD/MM/YYYY" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'" id="checkinDate"></div>
+      <div><label>CHECK-OUT</label><input type="text" placeholder="DD/MM/YYYY" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'" id="checkoutDate"></div>
+      <div>
+  <label>GUESTS & ROOMS</label>
+  <div class="guest-room-field" id="guestRoomField">
+    <span id="guestRoomDisplay">1 guest · 1 room</span>
+  </div>
+</div>
+      <button onclick="searchRooms()" id="homeBookNowBtn" style="background:#111;color:#D4AF37;font-weight:900;">Book Now</button>
+    </div>
+  </div>
+  <div class="featured">
+    <h2>Featured Rooms</h2>
+    <div id="featuredGrid" class="room-grid"></div>
+  </div>
+</section>
+
+<!-- PAGE 2: ROOMS -->
+<section id="rooms" class="page" style="display:none">
+  <div class="rooms-layout">
+    <aside class="filters">
+      <h3>Filters <span onclick="clearFilters()">Clear all</span></h3>
+      <label>Price per night</label>
+      <input type="range" id="priceRange" min="100" max="1000" value="1000" oninput="filterRooms()">
+      <p>Avg: $<span id="priceVal">1000</span></p>
+      <label style="font-weight:800";>Amenities</label>
+
+      <!-- Amenities Filter - WiFi is mandatory info, not clickable -->
+        <div style="background:#dcfce7;color:#166534;padding:6px 10px;border-radius:20px;display:inline-block;font-size:12px;font-weight:800;margin-bottom:10px;">✓ Free Wi-Fi included in all rooms</div>
+      <div><input type="checkbox" class="amen" value="Breakfast"> Breakfast</div>
+      <div><input type="checkbox" class="amen" value="Pool"> Pool</div>
+      <label style="font-weight:800";>Bed Type</label>
+      <div><input type="checkbox" class="bed" value="King"> King Bed</div>
+      <div><input type="checkbox" class="bed" value="Double"> Two Doubles</div>
+     
+    </aside>
+    <div class="results">
+      <h2 id="resultsCount">6 luxury rooms found</h2>
+      <div id="roomsGrid" class="room-grid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- PAGE 3: ROOM DETAILS -->
+<section id="roomDetail" class="page" style="display:none">
+
+  <div class="detail-layout">
+    <div class="gallery">
+      <button onclick="goBackToRooms()" style="margin:10px;background:#FFF3CD;border:1px solid #C8B896;padding:8px 14px;border-radius:20px;font-weight:800;cursor:pointer;">← Back to Rooms</button>
+      <img id="dMainImg" src="">
+      <div class="thumbs" id="dThumbs"></div>
+      <h3>Amenities</h3><div id="dAmenities" class="amenities"></div>
+      <h3>About this room</h3><p id="dAbout"></p>
+    </div>
+    <div class="booking-box">
+     <h2 id="dPrice">$349 / night</h2>
+<div id="dAvailability" style="font-size:13px;font-weight:800;margin:6px 0 12px 0;padding:6px 10px;border-radius:20px;display:inline-block;background:#f7f3eb;">Checking...</div>
+<div class="guest-room-field" id="dGuestRoomField" onclick="openGuestModal()" style="cursor:pointer; padding:11px;border:2px solid #C8B896;border-radius:10px;background:#FFFEFB;font-weight:600;"><span id="dGuestRoomDisplay">1 guest · 1 room</span></div>
+     
+   <button class="reserve" type="button" onclick="goCheckout()">Reserve</button>
+    <!--  <p class="note">You won't be charged yet</p> -->
+      <div id="priceBreakdown"></div>
+    </div>
+  </div>
+</section>
+
+<!-- PAGE 4: CHECKOUT - FIXED -->
+<div id="checkout" class="page">
+  <div style="max-width:520px; margin:0 auto; background:white; border-radius:16px; padding:20px; margin-top:20px; box-shadow:0 10px 30px rgba(0,0,0,0.08);">
+
+    <h2 style="font-size:24px; font-weight:900;">Reserve - <span id="checkoutRoomName"></span></h2>
+    <p style="color:#666; font-size:14px; margin-bottom:15px;">Confirm your stay details</p>
+
+    <!-- DATES - THIS WILL NOW COPY FROM HOME -->
+    <div style="background:#FFF8E6; border:1px solid #C8B896; border-radius:12px; padding:14px; margin-bottom:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-weight:700;">Check-in</span>
+        <input type="date" id="dCheckin" style="border:1px solid #D4AF37; border-radius:8px; padding:6px 10px; font-weight:700;">
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-weight:700;">Check-out</span>
+        <input type="date" id="dCheckout" style="border:1px solid #D4AF37; border-radius:8px; padding:6px 10px; font-weight:700;">
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #C8B896; padding-top:10px; margin-top:10px;">
+        <span>Guests & Rooms</span>
+        <b id="dGuestRoomDisplay" onclick="openGuestModal()" style="cursor:pointer; background:white; padding:4px 10px; border-radius:20px; border:1px solid #ddd;">1 guest · 1 room</b>
+      </div>
+      <div id="dPrice" style="margin-top:12px; font-weight:800; font-size:18px;"></div>
+      <div id="priceBreakdown"></div>
+    </div>
+
+    <!-- PAYMENT BOXES -->
+    <div id="opayBox" style="display:none; background:#E8F5E9; border:1px solid #4CAF50; border-radius:10px; padding:12px; margin-bottom:12px;">
+      <b>💳 OPay Transfer</b><br>
+      Account: <b>8100000000 - Lumina Hotel</b><br>
+      Amount: <b id="opayAmount">$0</b><br>
+      <small>Transfer then upload receipt below</small>
+    </div>
+
+    <div id="paystackBox" style="display:none; background:#E3F2FD; border:1px solid #2196F3; border-radius:10px; padding:12px; margin-bottom:12px;">
+      <b>💳 Paystack Payment</b><br>
+      Amount: <b id="paystackAmount">$0</b> (in Naira)<br>
+      <small>Click "Pay with Paystack Now" button below</small>
+    </div>
+
+    <!-- FORM -->
+    <label style="font-weight:700; font-size:14px;">Payment Method</label>
+    <select id="payMethod" style="width:100%; padding:12px; border-radius:10px; border:1px solid #ccc; margin:6px 0 14px 0; font-weight:600;">
+      <option value="Pay at Hotel">Pay at Hotel</option>
+      <option value="OPay Transfer">OPay Transfer</option>
+      <option value="Paystack">Paystack</option>
+    </select>
+
+    <input id="fullName" placeholder="Full Name *" style="width:100%; padding:12px; border-radius:10px; border:1px solid #ccc; margin-bottom:10px;">
+    <input id="phone" placeholder="Phone Number *" style="width:100%; padding:12px; border-radius:10px; border:1px solid #ccc; margin-bottom:10px;">
+    <input id="email" placeholder="Email (for receipt)" style="width:100%; padding:12px; border-radius:10px; border:1px solid #ccc; margin-bottom:10px;">
+
+    <div style="margin-bottom:12px;">
+      <label style="font-size:12px; font-weight:700;">Upload OPay Receipt</label>
+      <input type="file" id="receipt" accept="image/*,.pdf" style="width:100%; padding:8px; border:1px dashed #999; border-radius:8px; margin-top:4px;">
+      <span id="fileName" style="font-size:12px; color:green; font-weight:700;"></span>
+    </div>
+
+    <button id="confirmBtn" onclick="validateBooking(event)" style="width:100%; background:#D4AF37; color:#111; padding:14px; border-radius:12px; font-weight:900; font-size:16px; border:none;">Confirm Booking - Pay at Hotel</button>
+
+    <!-- PAYSTACK BUTTON - NOW SHOWS WHEN PAYSTACK SELECTED -->
+    <button id="paystackBtn" onclick="payWithPaystack()" style="width:100%; background:#0A0A0A; color:white; padding:14px; border-radius:12px; font-weight:900; font-size:16px; border:none; margin-top:10px; display:none;">💳 Pay with Paystack Now</button>
+
+    <div id="errorMsg" style="display:none; padding:12px; border-radius:10px; margin-top:12px; text-align:center; font-weight:700;"></div>
+
+    <!-- BOTTOM NAV - SO USER CAN GO BACK HOME FROM CHECKOUT -->
+   
+
+  </div>
+</div>
+
+<!-- PAGE 5: CONFIRMATION -->
+<section id="confirmation" class="page" style="display:none">
+  <h1>✅ Booking Confirmed!</h1>
+  <p>Booking Code: <b id="confCode">LMN-12345</b></p>
+  <p id="confDetails"></p>
+  <button onclick="showPage('home')">Back Home</button>
+</section>
+
+<!-- PAGE 6: MY BOOKINGS -->
+<section id="mybookings" class="page" style="display:none">
+  <h2>My Bookings</h2>
+  <div class="search-box small"><input id="myPhone" placeholder="Enter phone to view"><button onclick="loadMyBookings()">View</button></div>
+  <div id="myList"></div>
+</section>
+
+<!-- PAGE 7: ADMIN -->
+<section id="admin" class="page" style="display:none">
+  <h2>Admin Dashboard</h2>
+  <div class="stats"><span id="todayCheckin">0 Check-in Today</span> | <span id="todayCheckout">0 Check-out Today</span></div>
+  <div id="adminList"></div>
+</section>
+
+<!-- PAGE 8: CONTACT -->
+<section id="contact" class="page" style="display:none">
+  <h2>Contact Us</h2><p>Behind Ogige Main Market, Nsukka</p>
+   <a href="tel:09134435650" class="btn outline">📞 CALL</a>
+  <a href="https://wa.me/2349134435650" class="btn outline">💬 WHATSAPP</a>
+  <a class="map-btn" target="_blank" href="https://maps.google.com">📍 Open Map</a>
+</section>
+
+<div class="bottom-nav">
+  <button onclick="showPage('home',this)" class="active">Home</button>
+  <button onclick="showPage('mybookings',this)">Bookings</button>
+  <button onclick="showPage('contact',this)">Contact</button>
+</div>
+
+<!-- GUEST MODAL -->
+<div class="guest-modal" id="guestModal">
+  <div class="guest-modal-content">
+    <h3>Guests and Rooms</h3>
+    <div class="guest-row">
+      <div><b>Adults</b></div>
+      <div class="counter">
+        <button type="button" onclick="updateCount('adults', -1)">-</button>
+        <span id="adultsCount">1</span>
+        <button type="button" onclick="updateCount('adults', 1)">+</button>
+      </div>
+    </div>
+    <div class="guest-row">
+      <div><b>Children</b><br><small>Ages 0-17</small></div>
+      <div class="counter">
+        <button type="button" onclick="updateCount('children', -1)">-</button>
+        <span id="childrenCount">0</span>
+        <button type="button" onclick="updateCount('children', 1)">+</button>
+      </div>
+    </div>
+    <div class="guest-row">
+      <div><b>Rooms</b></div>
+      <div class="counter">
+        <button type="button" onclick="updateCount('rooms', -1)">-</button>
+        <span id="roomsCount">1</span>
+        <button type="button" onclick="updateCount('rooms', 1)">+</button>
+      </div>
+    </div>
+    <button type="button" class="done-btn" onclick="closeGuestModal()">Done</button>
+  </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>

@@ -153,3 +153,53 @@ h1,h2,h3{font-family:'Playfair Display',serif;color:#111}
   .room-grid{grid-template-columns:1fr}
   .gallery img#dMainImg{height:240px}
 }
+
+
+/* FIX BLANK AMENITIES - OVERRIDE */
+#dAmenities{ display:flex!important; flex-wrap:wrap!important; gap:8px!important; min-height:40px!important; }
+#dAmenities span{ background:#FFF3CD!important; color:#111!important; border:1px solid #C8B896!important; font-weight:800!important; font-size:13px!important; display:inline-block!important; }
+
+/* GUEST ROOM PICKER */
+.guest-room-field{
+  width:100%;padding:12px 10px;border:2px solid #C8B896;border-radius:10px;
+  font-size:13px;font-weight:600;color:#111;background:#FFFEFB;cursor:pointer;
+}
+.guest-modal{
+  display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.5);z-index:9999;justify-content:center;align-items:center;
+}
+.guest-modal.open{display:flex;}
+.guest-modal-content{
+  background:#fff;width:90%;max-width:360px;border-radius:16px;padding:20px;
+  box-shadow:0 15px 35px rgba(0,0,0,.2);border:2px solid #E9DCC3;
+}
+.guest-modal-content h3{margin-bottom:12px;font-weight:800;}
+.guest-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 0;border-bottom:1px solid #eee;
+}
+.counter{display:flex;align-items:center;gap:14px;}
+.counter button{
+  width:34px;height:34px;border:1px solid #9C6B2E;border-radius:50%;
+  background:#fff;color:#9C6B2E;font-size:20px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.counter span{font-weight:800;min-width:20px;text-align:center;}
+.done-btn{
+  width:100%;margin-top:16px;background:#111;color:#fff;
+  border:0;padding:13px;border-radius:10px;font-weight:800;cursor:pointer;
+}
+
+/* FIX CHECKOUT SPACING */
+#checkout {
+  padding-top: 20px!important;
+  margin-top: 0!important;
+}
+#checkout h1, #checkout h2 {
+  margin-bottom: 10px!important;
+}
+
+
+.page { display: none; }
+.page.active { display: block; }
+#home { display: block; }

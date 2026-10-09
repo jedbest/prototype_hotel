@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumina Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',system-ui;}
+body{background:#f7f3eb;min-height:100vh;}
+.header{background:#111;color:#D4AF37;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10;}
+.header h1{font-size:18px;font-weight:900;}
+.tabs{display:flex;gap:6px;padding:12px 12px;overflow-x:auto;}
+.tab{flex:1;padding:10px 6px;border-radius:12px;border:1px solid #d9cdb0;background:white;font-weight:900;font-size:11px;cursor:pointer;white-space:nowrap;min-width:85px;}
+.tab.active{background:#111;color:#D4AF37;}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;padding:0 16px 16px;}
+.stat-card{background:white;border-radius:16px;padding:14px;border:1px solid #e8e0cc;text-align:center;}
+.stat-card b{font-size:20px;display:block;}
+.stat-card p{font-size:10px;color:#888;font-weight:700;margin-top:4px;text-transform:uppercase;}
+.stat-card.gold{background:linear-gradient(135deg,#111,#2a2a2a);border:1px solid #D4AF37;}
+.stat-card.gold b{color:#D4AF37;}
+.controls{padding:0 16px 16px;display:flex;gap:8px;}
+.controls input,.controls select{flex:1;padding:12px;border-radius:12px;border:1px solid #d9cdb0;background:white;font-weight:600;font-size:12px;}
+#list{padding:0 16px 100px;display:grid;gap:12px;}
+.card{background:white;border-radius:20px;padding:16px;border:1px solid #eee;box-shadow:0 2px 12px rgba(0,0,0,0.04);position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:#D4AF37;}
+.code{font-weight:900;background:#111;color:#D4AF37;padding:4px 10px;border-radius:8px;font-size:11px;}
+.status{padding:5px 10px;border-radius:20px;font-size:10px;font-weight:900;text-transform:uppercase;}
+.Paid,.Approved{background:#dcfce7;color:#166534;}.Awaiting{background:#fee2e2;color:#991b1b;}.Unpaid{background:#fef3c7;color:#92400e;}.Cancelled{background:#f3f4f6;color:#666;}.Checked-In{background:#111;color:#D4AF37;}.Disapproved{background:#fee2e2;color:#991b1b;}.Checked-Out{background:#dbeafe;color:#1e40af;}
+.actions{margin-top:12px;display:grid;gap:8px;}
+.actions.two{grid-template-columns:1fr 1fr;}.actions.three{grid-template-columns:1fr 1fr 1fr;}
+.actions button{padding:11px;border-radius:12px;border:none;font-size:11px;font-weight:800;cursor:pointer;}
+.actions button:disabled{opacity:0.35;pointer-events:none;}
+.btn-approve{background:#111;color:#D4AF37;}.btn-disapprove{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5!important;}.btn-check{background:#D4AF37;color:#111;}.btn-cancel{background:#f5f5f5;color:#999;border:1px solid #ddd!important;}.btn-delete{background:#000;color:white;}
+.room-card{background:white;border-radius:20px;padding:16px;border:1px solid #e8e0cc;display:flex;justify-content:space-between;align-items:center;}
+.room-card b{font-size:14px;}.room-card input{width:65px;padding:8px;border-radius:8px;border:1px solid #d9cdb0;text-align:center;font-weight:800;}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+input[type=number]{-moz-appearance:textfield;}
+.room-number-input{appearance:textfield;-moz-appearance:textfield;-webkit-appearance:none;}
+#addModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100;align-items:center;justify-content:center;padding:16px;}
+#addModal.open{display:flex;}
+.modal-box{background:white;border-radius:20px;padding:20px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto;}
+.modal-box h2{font-size:16px;font-weight:900;margin-bottom:12px;}
+.modal-box input,.modal-box select{width:100%;padding:12px;border-radius:10px;border:1px solid #d9cdb0;margin-bottom:10px;font-weight:600;}
+.modal-box .row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+#loginScreen.hidden{display:none!important;}
+</style>
+</head>
+<body>
+<!-- LOGIN SCREEN - ADD AFTER <body> -->
+<div id="loginScreen" style="position:fixed;inset:0;background:#111;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:white;border-radius:20px;padding:28px;width:100%;max-width:340px;text-align:center;">
+    <h2 style="font-weight:900;margin-bottom:6px;">LUMINA ✨ ADMIN</h2>
+    <p style="font-size:12px;color:#888;margin-bottom:18px;">Enter password to continue</p>
+    <input id="adminPassInput" type="password" placeholder="Password" style="width:100%;padding:14px;border-radius:12px;border:1px solid #d9cdb0;font-weight:700;text-align:center;font-size:16px;">
+    <button onclick="loginAdmin()" style="width:100%;margin-top:12px;padding:14px;border-radius:12px;border:none;background:#111;color:#D4AF37;font-weight:900;cursor:pointer;">Login</button>
+    <p id="loginError" style="color:#991b1b;font-size:11px;font-weight:800;margin-top:10px;display:none;">Wrong password</p>
+  </div>
+</div>
+
+<div class="header"><h1>LUMINA ✨ ADMIN</h1><div style="display:flex;gap:8px;align-items:center;"><button onclick="openAddBooking()" style="background:#D4AF37;color:#111;border:none;padding:8px 14px;border-radius:10px;font-weight:900;font-size:12px;cursor:pointer;">➕ Add</button><span id="count">0 bookings</span><button onclick="logoutAdmin()" style="background:#222;color:#D4AF37;border:1px solid #D4AF37;padding:8px 12px;border-radius:10px;font-weight:900;font-size:11px;cursor:pointer;">Logout</button></div></div>
+<div class="tabs">
+  <button class="tab active" id="tabAll" onclick="switchTab('all')">📋 Bookings</button>
+  <button class="tab" id="tabCheck" onclick="switchTab('checked')">🏨 Checked-In</button>
+  <button class="tab" id="tabDis" onclick="switchTab('disapproved')">⛔ Disapproved</button>
+  <button class="tab" id="tabOut" onclick="switchTab('checkout')">✅ Checked-Out</button>
+  <button class="tab" id="tabRooms" onclick="switchTab('rooms')">🛏️ Rooms</button>
+</div>
+<div class="stats" id="stats">
+  <div class="stat-card gold"><b id="totalRev">$0</b><p>Total Revenue</p></div>
+  <div class="stat-card"><b id="totalBook">0</b><p>Bookings</p></div>
+  <div class="stat-card"><b id="pending">0</b><p>Awaiting</p></div>
+</div>
+<div class="controls" id="controls">
+  <input id="search" placeholder="🔍 Search name, phone, code..." oninput="filterCards()">
+  <select id="filterStatus" onchange="filterCards()"><option value="all">All Status</option><option value="Paid">Paid</option><option value="Awaiting">Awaiting</option><option value="Approved">Approved</option><option value="Disapproved">Disapproved</option><option value="Checked-In">Checked-In</option></select>
+</div>
+<div id="list">Loading...</div>
+<div id="addModal" onclick="if(event.target===this) closeAddBooking()">
+  <div class="modal-box">
+    <h2>➕ Add Booking Manually</h2>
+    <input id="abName" placeholder="Guest Name *">
+    <input id="abPhone" placeholder="Phone *">
+    <input id="abEmail" placeholder="Email (optional)">
+    <select id="abRoom"></select>
+    <div class="row"><input id="abCheckin" type="date"><input id="abCheckout" type="date"></div>
+    <div class="row"><input id="abGuests" placeholder="Guests" value="2 guests · 1 room"><input id="abAmount" type="text" inputmode="numeric" placeholder="Amount e.g. 420"></div>
+    <select id="abPay"><option value="Pay at Hotel">Pay at Hotel</option><option value="Cash">Cash</option><option value="OPay Transfer">OPay Transfer</option><option value="Bank Transfer">Bank Transfer</option></select>
+    <select id="abStatus"><option value="Approved">Approved - Paid</option><option value="Checked-In">Checked-In - Now in hotel</option><option value="Unpaid">Unpaid</option><option value="Awaiting Verification">Awaiting Verification</option></select>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;">
+      <button onclick="closeAddBooking()" style="padding:12px;border-radius:10px;border:1px solid #ddd;background:white;font-weight:800;">Cancel</button>
+      <button onclick="submitManualBooking()" id="abBtn" style="padding:12px;border-radius:10px;border:none;background:#111;color:#D4AF37;font-weight:900;">Add Booking</button>
+    </div>
+  </div>
+</div>
+<script>
+// ===== ADMIN LOGIN - CONFIG =====
+const ADMIN_PASSWORD = "Lumina2025"; // CHANGE THIS TO YOUR OWN PASSWORD
+const LOGIN_KEY = "lumina_admin_logged";
+
+function checkLogin(){
+  if(localStorage.getItem(LOGIN_KEY) === "yes"){
+    document.getElementById('loginScreen').classList.add('hidden');
+  }
+}
+function loginAdmin(){
+  const input = document.getElementById('adminPassInput').value;
+  if(input === ADMIN_PASSWORD){
+    localStorage.setItem(LOGIN_KEY, "yes");
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('loginError').style.display = "none";
+  } else {
+    document.getElementById('loginError').style.display = "block";
+  }
+}
+function logoutAdmin(){
+  if(!confirm("Logout?")) return;
+  localStorage.removeItem(LOGIN_KEY);
+  location.reload();
+}
+
+// Allow Enter key to login
+document.addEventListener('DOMContentLoaded', ()=>{
+  checkLogin();
+  const passInput = document.getElementById('adminPassInput');
+  if(passInput){
+    passInput.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter') loginAdmin();
+    });
+  }
+});
+
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwOpjUjfg0j0cO1mYlMNs2lU89gSl2kAfl4_Ujry9rqmxcdcydQLF_mqyKa0_hnSZ1xtQ/exec";
+let allData = [];
+let roomsData = [];
+let currentTab = 'all';
+let isLoading = false;
+
+async function loadAll(){
+  if(isLoading) return;
+  isLoading = true;
+  document.getElementById('list').innerHTML = '<div style="text-align:center;padding:40px;color:#999;">Loading bookings...  Wait 10 sec.</div>';
+  try{
+    // Add random to avoid cache
+    const r1 = await fetch(`${SCRIPT_URL}?rooms=true&t=${Date.now()}`, {cache:"no-store"});
+    if(r1.ok){
+      const txt = await r1.text();
+      try{ roomsData = JSON.parse(txt); }catch(e){ console.log("Rooms parse fail", txt.slice(0,200)); roomsData = []; }
+    }
+  }catch(e){ console.log("Rooms fetch fail", e); }
+
+  try{
+    const r2 = await fetch(`${SCRIPT_URL}?t=${Date.now()}`, {cache:"no-store"});
+    if(r2.ok){
+      const txt = await r2.text();
+      try{ allData = JSON.parse(txt); }catch(e){ console.log("Bookings parse fail", txt.slice(0,200)); }
+    } else {
+      document.getElementById('list').innerHTML = `<div style="background:white;padding:20px;border-radius:16px;border:1px solid #fca5a5;color:#991b1b;">Google returned ${r2.status}. Your Apps Script deployment may have expired.<br><br>Fix: Go to Extensions > Apps Script > Deploy > Manage Deployments > Edit > New Version > Deploy > Copy new /exec link to this file SCRIPT_URL.<br><br><button onclick="loadAll()" style="margin-top:10px;padding:10px 16px;background:#111;color:#D4AF37;border:none;border-radius:10px;font-weight:900;">Retry</button></div>`;
+      isLoading=false; return;
+    }
+  }catch(e){
+    console.log("Bookings fetch fail", e);
+    document.getElementById('list').innerHTML = `<div style="background:white;padding:20px;border-radius:16px;"><b>Network error - Google blocked many refreshes</b><br><span style="font-size:12px;color:#666;">Wait 20 seconds then click Retry. Don't spam refresh.</span><br><br><button onclick="loadAll()" style="padding:10px 16px;background:#111;color:#D4AF37;border:none;border-radius:10px;font-weight:900;">Retry Now</button></div>`;
+    isLoading=false; return;
+  }
+
+  document.getElementById('count').innerText = `${allData.length} bookings`;
+  document.getElementById('totalBook').innerText = allData.length;
+  const rev = allData.filter(b=>{ const s=String(b.status||""); return s.includes("Paid")||s.includes("Approved")||s.includes("Checked-In")||s.includes("Checked-Out"); }).reduce((s,b)=>s+(parseFloat(b.amount)||0),0);
+  document.getElementById('totalRev').innerText = "$"+rev.toLocaleString();
+  document.getElementById('pending').innerText = allData.filter(b=>String(b.status||'').toLowerCase().includes('await')).length;
+  fillRoomSelect();
+  renderTab();
+  isLoading=false;
+}
+
+function switchTab(tab){
+  currentTab = tab;
+  document.getElementById('tabAll').classList.toggle('active',tab==='all');
+  document.getElementById('tabCheck').classList.toggle('active',tab==='checked');
+  document.getElementById('tabDis').classList.toggle('active',tab==='disapproved');
+  document.getElementById('tabOut').classList.toggle('active',tab==='checkout');
+  document.getElementById('tabRooms').classList.toggle('active',tab==='rooms');
+  document.getElementById('stats').style.display = tab==='rooms'?'none':'grid';
+  document.getElementById('controls').style.display = tab==='rooms'?'none':'flex';
+  renderTab();
+}
+
+function renderTab(){
+  if(currentTab==='rooms'){ renderRooms(); return; }
+  let filtered = allData.filter(b=>{
+    const st = String(b.status||"");
+    if(currentTab==='all') return!st.includes('Checked-In') &&!st.includes('Checked-Out') &&!st.includes('Disapproved') &&!st.includes('Cancelled');
+    if(currentTab==='checked') return st.includes('Checked-In');
+    if(currentTab==='disapproved') return st.includes('Disapproved');
+    if(currentTab==='checkout') return st.includes('Checked-Out');
+    return true;
+  });
+  const q = (document.getElementById('search').value||'').toLowerCase();
+  const f = document.getElementById('filterStatus').value;
+  filtered = filtered.filter(b=>{
+    const matchSearch = (b.name+' '+b.phone+' '+b.code+' '+b.room).toLowerCase().includes(q);
+    const matchStatus = f==='all' || String(b.status||'').includes(f);
+    return matchSearch && matchStatus;
+  });
+  render(filtered);
+}
+
+function renderRooms(){
+  if(!roomsData || roomsData.length===0){
+    document.getElementById('list').innerHTML = `<div class="room-card"><b>Room Inventory - Live</b><span style="font-size:10px;">TOTAL | AVAILABLE (Type + Enter)</span></div><div style="text-align:center;padding:40px;background:white;border-radius:16px;">No rooms data - <button onclick="loadAll()" style="padding:8px 12px;background:#111;color:#D4AF37;border:none;border-radius:8px;font-weight:800;">Retry Load</button><br><span style="font-size:11px;color:#999;">If still empty, check your Rooms sheet exists in Google Sheet</span></div>`;
+    return;
+  }
+  let html = `<div class="room-card" style="background:#111;color:#D4AF37;"><b>Room Inventory - Live</b><span style="font-size:10px;">TOTAL | AVAILABLE (Type + Enter)</span></div>`;
+  html += roomsData.map(r=>{
+    const total = r.total||0; const avail = r.available||0; const used = total - avail;
+    const color = avail===0?'#991b1b':avail<=2?'#92400e':'#166534';
+    return `<div class="room-card"><div><b>${r.roomType}</b><div style="font-size:11px;color:${color};font-weight:800;">${avail} avail • ${used} in use / ${total} total ${avail===0?'⛔ FULL':''}</div></div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div style="text-align:center;"><div style="font-size:9px;color:#888;">TOTAL</div><input type="text" inputmode="numeric" class="room-number-input" value="${total}" onkeydown="if(event.key==='Enter'){updateRoomTotal('${String(r.roomType).replace(/'/g, "\\'")}', this.value); this.blur();}" onblur="updateRoomTotal('${String(r.roomType).replace(/'/g, "\\'")}', this.value)" style="width:65px;padding:8px;border-radius:8px;border:1px solid #d9cdb0;text-align:center;font-weight:800;"></div>
+        <div style="text-align:center;"><div style="font-size:9px;color:#888;">AVAIL</div><input type="text" inputmode="numeric" class="room-number-input" value="${avail}" onkeydown="if(event.key==='Enter'){updateRoomAvail('${String(r.roomType).replace(/'/g, "\\'")}', this.value); this.blur();}" onblur="updateRoomAvail('${String(r.roomType).replace(/'/g, "\\'")}', this.value)" style="width:65px;padding:8px;border-radius:8px;border:1px solid #d9cdb0;text-align:center;font-weight:800;background:#f7f3eb;"></div>
+      </div></div>`;
+  }).join('');
+  document.getElementById('list').innerHTML = html;
+}
+
+function render(data){
+  if(!data || data.length===0){ document.getElementById('list').innerHTML = `<div style="text-align:center;padding:40px;color:#999;background:white;border-radius:16px;">No bookings in this tab<br><button onclick="loadAll()" style="margin-top:10px;padding:8px 14px;background:#111;color:#D4AF37;border:none;border-radius:8px;font-weight:800;">Reload</button></div>`; return; }
+  document.getElementById('list').innerHTML = data.slice().reverse().map(b=>{
+    const st = String(b.status||'Unpaid');
+    const pay = String(b.payMethod||'');
+    const isHotel = pay.toLowerCase().includes('hotel');
+    const cardClass = st.includes('Approved')?'Approved':st.includes('Checked-In')?'Checked-In':st.includes('Checked-Out')?'Checked-Out':st.includes('Disapproved')?'Disapproved':st.includes('Cancelled')?'Cancelled':st.includes('Paid')?'Paid':st.includes('Awaiting')?'Awaiting':'Unpaid';
+    const isApproved = st.includes('Approved')||st.includes('Paid');
+    const isDisapproved = st.includes('Disapproved');
+    const isChecked = st.includes('Checked-In');
+    const isOut = st.includes('Checked-Out');
+    let buttonsHtml = '';
+    if(currentTab==='checked'){
+      buttonsHtml = `<div class="actions"><button class="btn-cancel" ${isOut?'disabled':''} onclick="updateStatus('${b.code}','Checked-Out')">✅ Check-Out (+1 room back)</button></div>`;
+    }else if(currentTab==='disapproved'){
+      buttonsHtml = `<div class="actions"><button class="btn-delete" onclick="deleteBooking('${b.code}')">🗑️ Delete Permanently</button></div>`;
+    }else if(currentTab==='checkout'){
+      buttonsHtml = `<div style="font-size:11px;color:#888;padding:8px;">Checked out - History kept</div>`;
+    }else{
+      if(isHotel){
+        buttonsHtml = `<div class="actions two"><button class="btn-check" ${isChecked||isOut?'disabled':''} onclick="updateStatus('${b.code}','Checked-In')">${isChecked?'✅ Checked-In':'🏨 Check-In (-1)'}</button><button class="btn-cancel" onclick="updateStatus('${b.code}','Cancelled')">❌ Cancel</button></div>`;
+      }else{
+        const approveDisabled = isApproved||isDisapproved||isChecked?'disabled':'';
+        const disapproveDisabled = isApproved||isDisapproved||isChecked?'disabled':'';
+        const checkInDisabled = (!isApproved)?'disabled':'';
+        buttonsHtml = `<div class="actions three"><button class="btn-approve" ${approveDisabled} onclick="updateStatus('${b.code}','Approved')">${isApproved?'✅ Approved':'✅ Approve'}</button><button class="btn-disapprove" ${disapproveDisabled} onclick="updateStatus('${b.code}','Disapproved')">${isDisapproved?'❌ Disapproved':'⛔ Disapprove'}</button><button class="btn-check" ${checkInDisabled} ${isChecked?'disabled':''} onclick="updateStatus('${b.code}','Checked-In')">${isChecked?'✅ Checked-In':'🏨 Check-In'}</button></div><div style="font-size:10px;color:#999;margin-top:6px;">${!isApproved?'⚠️ Check-In disabled until you Approve':''}</div>`;
+      }
+    }
+    return `<div class="card ${cardClass}"><div style="display:flex;justify-content:space-between;align-items:center;"><span class="code">${b.code}</span><span class="status ${cardClass}">${st}</span></div><div style="margin-top:8px;font-size:13px;"><b>${b.name}</b> • ${b.phone}<br>🏨 ${b.room} • ${b.checkin} → ${b.checkout}<br>💰 $${b.amount} • ${pay} • ${b.guests} guests</div><div style="margin-top:6px;font-size:11px;">${b.receipt?`<a href="${b.receipt}" target="_blank">📎 View Receipt</a>`:'No receipt'} | ${b.email||''}</div>${buttonsHtml}</div>`;
+  }).join('');
+}
+
+async function updateStatus(code,newStatus){
+  if(!confirm(`Change ${code} to ${newStatus}?`)) return;
+  await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"updateStatus",code,newStatus})});
+  setTimeout(loadAll,1500);
+}
+async function deleteBooking(code){
+  if(!confirm(`DELETE permanently ${code}?`)) return;
+  await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"deleteBooking",code})});
+  setTimeout(loadAll,1500);
+}
+async function updateRoomTotal(roomType,val){ 
+  const n = parseInt(String(val).replace(/[^0-9]/g,''))||0;
+  await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"updateRoom",roomType,total:n})}); 
+  setTimeout(loadAll,1000); 
+}
+async function updateRoomAvail(roomType,val){ 
+  const n = parseInt(String(val).replace(/[^0-9]/g,''))||0;
+  await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"updateRoomAvail",roomType,available:n})}); 
+  setTimeout(loadAll,1000); 
+}
+function filterCards(){ renderTab(); }
+function fillRoomSelect(){
+  const sel = document.getElementById('abRoom');
+  if(!sel) return;
+  if(!roomsData || roomsData.length===0){ sel.innerHTML = '<option>Loading rooms...</option>'; return; }
+  sel.innerHTML = roomsData.map(r=> `<option value="${r.roomType}">${r.roomType} - ${r.available} avail</option>`).join('');
+}
+function openAddBooking(){ fillRoomSelect(); document.getElementById('addModal').classList.add('open'); }
+function closeAddBooking(){ document.getElementById('addModal').classList.remove('open'); }
+async function submitManualBooking(){
+  const name = document.getElementById('abName').value.trim();
+  const phone = document.getElementById('abPhone').value.trim();
+  const email = document.getElementById('abEmail').value.trim();
+  const room = document.getElementById('abRoom').value;
+  const checkin = document.getElementById('abCheckin').value;
+  const checkout = document.getElementById('abCheckout').value;
+  const guests = document.getElementById('abGuests').value;
+  const amount = document.getElementById('abAmount').value;
+  const payMethod = document.getElementById('abPay').value;
+  const status = document.getElementById('abStatus').value;
+  if(!name || !phone || !room || !checkin || !checkout){ alert("Fill Name, Phone, Room, Dates"); return; }
+  const btn = document.getElementById('abBtn');
+  btn.disabled = true; btn.innerText = "Saving...";
+  const code = 'LMN-MANUAL-'+Date.now().toString().slice(-6);
+  const nights = Math.max(1, Math.round((new Date(checkout)-new Date(checkin))/(1000*60*60*24)));
+  const payload = { action:"book", name, phone, email, room, price: parseFloat(amount)||0, checkin, checkout, guests, payMethod, status, nights, amount: parseFloat(amount)||0, receiptBase64:"", receiptName:"", receiptMime:"", paystackRef:"", bookingCode: code };
+  await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify(payload)});
+  alert("Added: "+code+" - "+status);
+  closeAddBooking();
+  document.getElementById('abName').value=""; document.getElementById('abPhone').value=""; document.getElementById('abEmail').value="";
+  btn.disabled=false; btn.innerText="Add Booking";
+  setTimeout(loadAll,1500);
+}
+loadAll();
+// Auto retry every 30 sec if blank
+setInterval(()=>{ if(allData.length===0 && !isLoading) loadAll(); }, 30000);
+</script>
+</body>
+</html>

@@ -167,7 +167,8 @@
 <section id="mybookings" class="page" style="display:none">
   <h2>My Bookings</h2>
   <div class="search-box small"><input id="myPhone" placeholder="Enter phone to view"><button onclick="loadMyBookings()">View</button></div>
-  <div id="myList"></div>
+  <button id="myClearBtn" onclick="clearMyBookings()" style="display:none;margin:10px 0 0 auto;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:8px 14px;border-radius:10px;font-weight:800;font-size:11px;cursor:pointer;">🗑️ Clear All History</button>
+  <div id="myList" style="margin-top:12px;display:grid;gap:12px;"></div>
 </section>
 
 <!-- PAGE 7: ADMIN -->

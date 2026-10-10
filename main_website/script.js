@@ -599,3 +599,61 @@ async function checkAvailabilityForRoom(roomName){
     }
   }catch(e){ return {available:99}; }
 }
+
+
+// === MY BOOKINGS WITH CLEAR HISTORY ===
+let myCache = [];
+let myTarget = "";
+
+function cleanPhone2(p){ return String(p||'').replace(/[^0-9]/g,'').slice(-10); }
+
+async function loadMyBookings(){
+  const phone = document.getElementById('myPhone').value.trim();
+  const list = document.getElementById('myList');
+  const clearBtn = document.getElementById('myClearBtn');
+  if(!phone){ alert("Enter phone"); return; }
+  
+  myTarget = cleanPhone2(phone);
+  list.innerHTML = '<div style="text-align:center;padding:20px;background:white;border-radius:12px;color:#888;">Searching...</div>';
+  if(clearBtn) clearBtn.style.display = 'none';
+
+  try{
+    const res = await fetch(`${SCRIPT_URL}?t=${Date.now()}`, {cache:"no-store"});
+    const all = await res.json();
+    const hidden = JSON.parse(localStorage.getItem('lumina_hidden_'+myTarget) || '[]');
+    
+    myCache = all.filter(b => cleanPhone2(b.phone) === myTarget && !hidden.includes(b.code));
+    
+    if(myCache.length === 0){
+      list.innerHTML = '<div style="text-align:center;padding:30px;background:white;border-radius:12px;color:#999;">No booking history for this user</div>';
+      return;
+    }
+    
+    list.innerHTML = myCache.slice().reverse().map(b=>{
+      const st = String(b.status||'Unpaid');
+      return `<div style="background:white;border-radius:14px;padding:14px;border:1px solid #eee;">
+        <div style="display:flex;justify-content:space-between;"><b style="background:#111;color:#D4AF37;padding:4px 8px;border-radius:6px;font-size:11px;">${b.code}</b><span style="font-size:10px;font-weight:800;">${st}</span></div>
+        <div style="margin-top:6px;font-size:13px;">${b.name} • ${b.room}<br>${b.checkin} → ${b.checkout} • $${b.amount}</div>
+      </div>`;
+    }).join('');
+    
+    if(clearBtn) clearBtn.style.display = 'block';
+    
+  }catch(e){
+    list.innerHTML = '<div style="text-align:center;padding:20px;background:white;border-radius:12px;">Network error</div>';
+  }
+}
+
+function clearMyBookings(){
+  if(myCache.length===0) return;
+  if(!confirm("Clear all history for this number? Searching again will show 'No booking history for this user' until new booking.")) return;
+  
+  const hiddenKey = 'lumina_hidden_' + myTarget;
+  const old = JSON.parse(localStorage.getItem(hiddenKey) || '[]');
+  const newCodes = myCache.map(b=>b.code);
+  localStorage.setItem(hiddenKey, JSON.stringify([...new Set([...old, ...newCodes])]));
+  
+  document.getElementById('myList').innerHTML = '<div style="text-align:center;padding:30px;background:white;border-radius:12px;color:#999;">No booking history for this user</div>';
+  document.getElementById('myClearBtn').style.display = 'none';
+  myCache = [];
+}

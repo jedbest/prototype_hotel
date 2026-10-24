@@ -1,3 +1,5 @@
+/*style.css*/
+
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',sans-serif;background:#f9f7f4;color:#111;line-height:1.5;overflow-x:hidden}
 h1,h2,h3{font-family:'Playfair Display',serif;color:#111}
@@ -13,7 +15,7 @@ h1,h2,h3{font-family:'Playfair Display',serif;color:#111}
 .logo{font-family:'Playfair Display';font-size:20px;font-weight:800;letter-spacing:1.5px;line-height:1;color:#111}
 .logo span{display:block;font-family:'Inter';font-size:9px;font-weight:800;letter-spacing:3px;color:var(--gold);margin-top:2px}
 .book-btn{border:2px solid var(--gold);background:var(--gold);color:#fff;padding:9px 18px;border-radius:25px;font-weight:800;font-size:12px;cursor:pointer;box-shadow:0 3px 10px rgba(156,107,46,.3)}
-
+#topBookNowBtn{border:2px solid var(--gold);background:var(--gold);color:#fff;padding:9px 18px;border-radius:25px;font-weight:800;font-size:12px;cursor:pointer;box-shadow:0 3px 10px rgba(156,107,46,.3)}
 /* PAGES */
 .page{padding-bottom:100px;min-height:100vh;animation:fade .3s}
 @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -22,8 +24,8 @@ h1,h2,h3{font-family:'Playfair Display',serif;color:#111}
 .hero{background:linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.55)),url('https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200');background-size:cover;background-position:center;color:#fff;text-align:center;padding:70px 20px 90px}
 .hero h1{font-size:38px;line-height:1.1;margin-bottom:10px;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.5)}
 .hero p{font-size:14px;opacity:1;margin-bottom:25px;font-weight:500}
-.search-box{background:#fff;color:#111;display:flex;gap:12px;padding:18px;border-radius:18px;max-width:900px;margin:0 auto;align-items:flex-end;box-shadow:0 15px 35px rgba(0,0,0,.25);text-align:left;border:2px solid #E9DCC3}
-.search-box div{flex:1}
+.search-box{background:#fff;color:#111;display:flex; flex-direction: column; gap:4px;padding:10px;border-radius:16px;max-width:900px;top:80px;border:1.5px solid #E9DCC3;
+   justify-content:flex-end;box-shadow:0 15px 35px rgba(0,0,0,.25);text-align:left;border:2px solid #E9DCC3}
 .search-box label{font-size:11px;font-weight:800;color:var(--gold-dark);letter-spacing:1px;display:block;margin-bottom:5px;text-transform:uppercase}
 .search-box input,.search-box select{width:100%;padding:12px 10px;border:2px solid #C8B896;border-radius:10px;font-size:13px;outline:none;font-weight:600;color:#111;background:#FFFEFB}
 .search-box input:focus,.search-box select:focus{border-color:var(--gold);background:#fff}
@@ -44,16 +46,14 @@ h1,h2,h3{font-family:'Playfair Display',serif;color:#111}
 .room-card .info button{width:100%;background:#111;color:#fff;border:2px solid #111;padding:10px;border-radius:10px;font-size:13px;font-weight:800}
 
 /* ROOMS LAYOUT */
-.rooms-layout{display:flex;gap:20px;padding:16px;align-items:flex-start}
-.filters{width:260px;background:#fff;padding:18px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.08);position:sticky;top:80px;border:1.5px solid #E9DCC3}
-.filters h3{font-size:14px;display:flex;justify-content:space-between;margin-bottom:14px;font-weight:800;color:#111}
+
+.filters{width:260px;background:#fff;padding:18px;border-radius:16px;box-shadow:0 9px 10px rgba(0,0,0,.08);position:sticky;top:80px;border:1.5px solid #E9DCC3}
+.filters h3{font-size:18px;display:flex;justify-content:space-between;margin-bottom:14px;font-weight:800;color:#111}
 .filters h3 span{color:var(--gold);cursor:pointer;font-weight:800;font-size:12px}
 .filters label{font-size:11px;font-weight:800;margin:14px 0 6px;display:block;color:var(--gold-dark);text-transform:uppercase;letter-spacing:.5px}
 .filters div{font-size:13px;margin:7px 0;font-weight:600;color:#222}
 .filters button{width:100%;margin-top:14px;background:#111;color:#fff;border:2px solid #111;padding:12px;border-radius:10px;font-weight:800}
-.results{flex:1}
 #resultsCount{font-size:18px;margin:0 0 12px 4px;font-weight:800;color:#111}
-
 /* DETAIL */
 .detail-layout{display:flex;gap:22px;padding:16px;align-items:flex-start}
 .gallery{flex:1.6}
@@ -78,7 +78,7 @@ h1,h2,h3{font-family:'Playfair Display',serif;color:#111}
 .checkout-layout input,.checkout-layout select{width:100%;padding:13px;margin:7px 0;border:2px solid #C8B896;border-radius:12px;font-size:14px;outline:none;font-weight:600;color:#111}
 .checkout-layout input:focus{border-color:var(--gold)}
 .error{font-size:13px;padding:12px;border-radius:10px;display:none;margin:10px 0;font-weight:700;background:#FFE5E5;border:1px solid #FF9999;color:#B00000}
-.map-btn{display:inline-block;margin-top:12px;background:#111;color:#fff;padding:11px 18px;border-radius:10px;text-decoration:none;font-size:13px;font-weight:800}
+.map-btn{background:#9C6B2E;border:1.5px solid var(--gold); padding:12px 22px; color:#fff;padding:10px 18px;border-radius:12px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex; align-items:center; gap:16px}
 
 /* CONFIRMATION */
 #confirmation{text-align:center;padding:60px 20px}
@@ -203,3 +203,10 @@ h1,h2,h3{font-family:'Playfair Display',serif;color:#111}
 .page { display: none; }
 .page.active { display: block; }
 #home { display: block; }
+.btn.outline{background:transparent;border:1.5px solid var(--gold);color:var(--gold);padding:10px 18px;border-radius:12px;font-weight:800;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;margin:6px 0; gap:16px}
+#contact{display:flex;flex-direction:column;gap:20px;max-width:600px;margin:0 auto}
+
+
+
+
+

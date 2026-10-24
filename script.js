@@ -28,24 +28,35 @@ let lastSearchCheckout = "";
 let lastRoomsList = [];
 
 function getAvailabilityBadge(roomName, availableForDates){
-  if(availableForDates === -1){
+    const key = roomName.toLowerCase().trim();
+let realAvailable = availableForDates;
+
+// 1. Try to find live data from sheet if you already fetched it
+if(window.liveRoomsDataFromSheet){
+  const found = window.liveRoomsDataFromSheet.find(r => {
+    const t = (r.roomType || r.name || "").toLowerCase();
+    return key.includes(t) || t.includes(key);
+  });
+  if(found && found.available !== undefined) realAvailable = found.available;
+}
+  if(realAvailable === -1){
     return `<div style="font-size:11px;font-weight:800;margin-bottom:5px;color:#888;">Checking availability...</div>`;
   }
-  if(availableForDates!== undefined){
-    if(availableForDates <= 0){
+  if(realAvailable!== undefined){
+    if(realAvailable <= 0){
       return `<div style="font-size:11px;font-weight:800;margin-bottom:5px;padding:4px 8px;border-radius:20px;display:inline-block;background:#fee2e2;color:#991b1b;">⛔ Fully booked - 0 left</div>`;
-    } else if(availableForDates <= 2){
-      return `<div style="font-size:11px;font-weight:800;margin-bottom:5px;padding:4px 8px;border-radius:20px;display:inline-block;background:#fef3c7;color:#92400e;">⚠️ Only ${availableForDates} left!</div>`;
+    } else if(realAvailable <= 2){
+      return `<div style="font-size:11px;font-weight:800;margin-bottom:5px;padding:4px 8px;border-radius:20px;display:inline-block;background:#fef3c7;color:#92400e;">⚠️ Only ${realAvailable} left!</div>`;
     } else {
-      return `<div style="font-size:11px;font-weight:800;margin-bottom:5px;padding:4px 8px;border-radius:20px;display:inline-block;background:#dcfce7;color:#166534;">✅ ${availableForDates} available</div>`;
+      return `<div style="font-size:11px;font-weight:800;margin-bottom:5px;padding:4px 8px;border-radius:20px;display:inline-block;background:#dcfce7;color:#166534;">✅ ${realAvailable} available</div>`;
     }
   }
   return `<div style="font-size:11px;font-weight:800;margin-bottom:5px;color:#888;">Checking...</div>`;
 }
 
 async function searchRooms(){
-  let checkin = document.getElementById('checkinDate')?.value || document.getElementById('dCheckin')?.value || "";
-  let checkout = document.getElementById('checkoutDate')?.value || document.getElementById('dCheckout')?.value || "";
+  let checkin =  document.getElementById('dCheckin')?.value || "";
+  let checkout = document.getElementById('dCheckout')?.value || "";
 
   if(!checkin){
     const all = [...document.querySelectorAll('input')];
@@ -57,7 +68,7 @@ async function searchRooms(){
   }
 
   if(!checkin ||!checkout){
-    alert("Please pick Check-in and Check-out on Home page first");
+    alert("Please pick Check-in and Check-out first");
     return;
   }
 
@@ -157,10 +168,6 @@ function getGuestsText(){
 function getSelectedGuests(){ return getGuestsText(); }
 
 function showPage(id){
-  if(id==='rooms' &&!lastSearchCheckin){
-    alert("Please select Checkin / Checkout dates on Home page and click Book Now first");
-    id='home';
-  }
   document.querySelectorAll('.page').forEach(p=> p.style.display='none');
   const target = document.getElementById(id);
   if(target) target.style.display='block';
@@ -212,7 +219,7 @@ function calcNights(){
 }
 
 function cardHTML_Home(r){
- return `<div class="room-card" style="cursor:default;"><img src="${r.img}" alt="${r.name}"><div class="info"><h3>${r.name}</h3><p style="color:#9C6B2E;font-weight:800;">$${r.price} / night - ${r.bed}</p><p style="color:#888;font-size:12px;margin-top:4px;">${r.about}</p></div></div>`;
+ return `<div class="room-card" onclick="openRoom('${r.id}')" style="cursor:default;"><img src="${r.img}" alt="${r.name}"><div class="info"><h3>${r.name}</h3><p style="color:#9C6B2E;font-weight:800;">$${r.price} / night - ${r.bed}</p><p style="color:#888;font-size:12px;margin-top:4px;">${r.about}</p></div></div>`;
 }
 
 function cardHTML(r){
@@ -222,26 +229,28 @@ function cardHTML(r){
  } else if(r.availableForSearch!== undefined){
    badge = getAvailabilityBadge(r.name, r.availableForSearch);
  }
- return `<div class="room-card" onclick="openRoom(${r.id})"><img src="${r.img}"><div class="info"><h3>${r.name}</h3>${badge}<p>$${r.price} /night - ${r.bed}</p><button type="button" onclick="event.stopPropagation(); openRoom(${r.id})">View Details</button></div></div>`;
+ return `<div class="room-card" onclick="openRoom('${r.id}')"><img src="${r.img}"><div class="info"><h3>${r.name}</h3>${badge}<p>$${r.price} /night - ${r.bed}</p><button type="button" onclick="event.stopPropagation(); openRoom('${r.id}')">View Details</button></div></div>`;
 }
 
 function renderFeatured(){
   const g = document.getElementById('featuredGrid');
   if(g) g.innerHTML = roomsData.map(r=>cardHTML_Home(r)).join('');
+  
 }
 
 function renderRooms(list){
-  const container = document.getElementById('roomsGrid') || document.getElementById('featured') || document.getElementById('roomsContainer');
-  if(!container) return;
+    const roomsGrid = document.getElementById('roomsGrid');
+    const featuredGrid = document.getElementById('featuredGrid');
+  if(!roomsGrid && !featuredGrid) return;
   const rc = document.getElementById('resultsCount');
 
   if(!list || list.length===0){
-    container.innerHTML = `<div style="padding:40px;text-align:center;">No rooms match. <button onclick="clearFilters()" style="color:#c5a880;background:none;border:1px solid #c5a880;padding:6px 12px;border-radius:8px;">Clear filters</button></div>`;
+    roomsGrid.innerHTML = `<div style="padding:40px;text-align:center;">No rooms match. <button onclick="clearFilters()" style="color:#c5a880;background:none;border:1px solid #c5a880;padding:6px 12px;border-radius:8px;">Clear filters</button></div>`;
     if(rc && lastSearchCheckin) rc.innerText = `0 rooms available for ${lastSearchCheckin} → ${lastSearchCheckout}`;
     return;
   }
 
-  container.innerHTML = list.map(room => {
+  roomsGrid.innerHTML = list.map(room => {
     const key = room.name.toLowerCase().trim();
     let available = room.availableForSearch;
     if(available===undefined && lastSearchAvailMap && lastSearchAvailMap[key]!==undefined){
@@ -253,9 +262,9 @@ function renderRooms(list){
     const badge = getAvailabilityBadge(room.name, available);
 
     return `
-    <div class="room-card" style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.07);margin-bottom:20px;">
+    <div class="room-card" onclick="openRoom('${room.id}')" data-id="${room.id}" style="cursor:pointer;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.07);margin-bottom:20px;">
       <div style="position:relative;">
-        <img src="${room.image || room.img}" style="width:100%;height:220px;object-fit:cover;" />
+        <img src="${room.img}" style="width:100%;height:220px;object-fit:cover;" />
       </div>
       <div style="padding:18px;">
         <h3 style="font-family:'Playfair Display',serif;font-size:20px;color:#0a192f;margin:0;">${room.name}</h3>
@@ -263,7 +272,7 @@ function renderRooms(list){
         <p style="color:#666;margin:6px 0;font-size:13px;">${room.bed} • ${room.about||''}</p>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
           <p style="font-weight:600;color:#0a192f;">$${room.price} <span style="font-weight:400;color:#888;">/ night</span></p>
-          <button onclick="viewDetails('${room.name}')"
+          <button onclick="openRoom('${room.id}')"
                   style="border:1px solid #c5a880;color:#0a192f;padding:8px 16px;border-radius:8px;background:transparent;cursor:pointer;">
             View Details
           </button>
@@ -272,18 +281,22 @@ function renderRooms(list){
     </div>
     `;
   }).join('');
+
+  
+  
 }
 
-// ===== THIS WAS MISSING - NOW ADDED =====
-function viewDetails(roomName){
-  const room = lastRoomsList.find(r=> r.name===roomName) || roomsData.find(r=> r.name===roomName);
-  if(!room){ alert("Room not found: "+roomName); return; }
-  openRoom(room.id);
-}
 
 function openRoom(id){
   selectedRoom = roomsData.find(r=>r.id==id) || roomsData[0];
   window.currentRoom = selectedRoom;
+  document.getElementById('dName').innerText = selectedRoom.name;
+document.getElementById('dSub').innerText = `${selectedRoom.bed} Bed • ${selectedRoom.about.substring(0,60)}`;
+document.getElementById('dImg2').src = selectedRoom.img;
+document.getElementById('dImg3').src = selectedRoom.img;
+// For now using same image, later you can add more per room:
+document.getElementById('dBathImg').src = "https://images.unsplash.com/photo-1620626011761-996317b8d101?w=600";
+document.getElementById('dBedImg').src = selectedRoom.img;
   const imgEl = document.getElementById('dMainImg');
   if(imgEl) imgEl.src = selectedRoom.img;
   const aboutEl = document.getElementById('dAbout');
@@ -317,7 +330,7 @@ function updatePriceDisplay(){
   if(checkoutRoomName) checkoutRoomName.innerText = selectedRoom.name;
 }
 function goCheckout(){
-  const homeDiv = document.getElementById('home');
+  const homeDiv = document.getElementById('roomsDetails');
   let homeIn = "";
   let homeOut = "";
   if(homeDiv){
@@ -325,8 +338,8 @@ function goCheckout(){
     if(homeDates.length >= 1) homeIn = homeDates[0].value;
     if(homeDates.length >= 2) homeOut = homeDates[1].value;
   }
-  if(!homeIn) homeIn = document.getElementById('checkin')?.value || document.getElementById('checkinDate')?.value || "";
-  if(!homeOut) homeOut = document.getElementById('checkoutDate')?.value || document.getElementById('checkout')?.value || "";
+  if(!homeIn) homeIn = document.getElementById('dCheckin')?.value ||  "";
+  if(!homeOut) homeOut = document.getElementById('dCheckout')?.value || "";
   if(homeIn) localStorage.setItem('lumina_checkin', homeIn);
   if(homeOut) localStorage.setItem('lumina_checkout', homeOut);
   document.querySelectorAll('.page').forEach(p=> p.style.display='none');
@@ -385,7 +398,7 @@ function handlePayChange(){
 }
 function payWithPaystack(){
   const email = document.getElementById('email')?.value || document.getElementById('phone')?.value+'@lumina.com';
-  const amount = calcNights() * selectedRoom.price * (guestsData.rooms||1) * 100;
+  const amount = calculateAmount();
   if(typeof PaystackPop==='undefined'){ alert("Add Paystack script: https://js.paystack.co/v1/inline.js"); return; }
   PaystackPop.setup({
     key: 'pk_test_YOUR_PUBLIC_KEY_HERE',
@@ -521,7 +534,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   setupReceiptListener();
   document.addEventListener('change', (e)=>{
     if(e.target.type === 'date'){
-      const homeDiv = document.getElementById('home');
+      const homeDiv = document.getElementById('roomsDetails');
       if(homeDiv && homeDiv.contains(e.target)){
         const all = [...homeDiv.querySelectorAll('input[type="date"]')];
         if(all[0] && all[0].value) localStorage.setItem('lumina_checkin', all[0].value);
@@ -531,7 +544,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
   localStorage.removeItem('lumina_checkin');
   localStorage.removeItem('lumina_checkout');
-  const homeDivMain = document.getElementById('home');
+  const homeDivMain = document.getElementById('roomsDetails');
   if(homeDivMain){
     const homeDates = homeDivMain.querySelectorAll('input[type="date"]');
     homeDates.forEach(inp=> inp.value = "");
@@ -599,3 +612,75 @@ async function checkAvailabilityForRoom(roomName){
     }
   }catch(e){ return {available:99}; }
 }
+
+
+// === MY BOOKINGS WITH CLEAR HISTORY ===
+let myCache = [];
+let myTarget = "";
+
+function cleanPhone2(p){ return String(p||'').replace(/[^0-9]/g,'').slice(-10); }
+
+async function loadMyBookings(){
+  const phone = document.getElementById('myPhone').value.trim();
+  const list = document.getElementById('myList');
+  const clearBtn = document.getElementById('myClearBtn');
+  if(!phone){ alert("Enter phone"); return; }
+  
+  myTarget = cleanPhone2(phone);
+  list.innerHTML = '<div style="text-align:center;padding:20px;background:white;border-radius:12px;color:#888;">Searching...</div>';
+  if(clearBtn) clearBtn.style.display = 'none';
+
+  try{
+    const res = await fetch(`${SCRIPT_URL}?t=${Date.now()}`, {cache:"no-store"});
+    const all = await res.json();
+    const hidden = JSON.parse(localStorage.getItem('lumina_hidden_'+myTarget) || '[]');
+    
+    myCache = all.filter(b => cleanPhone2(b.phone) === myTarget && !hidden.includes(b.code));
+    
+    if(myCache.length === 0){
+      list.innerHTML = '<div style="text-align:center;padding:30px;background:white;border-radius:12px;color:#999;">No booking history for this user</div>';
+      return;
+    }
+    
+    list.innerHTML = myCache.slice().reverse().map(b=>{
+      const st = String(b.status||'Unpaid');
+      return `<div style="background:white;border-radius:14px;padding:14px;border:1px solid #eee;">
+        <div style="display:flex;justify-content:space-between;"><b style="background:#111;color:#D4AF37;padding:4px 8px;border-radius:6px;font-size:11px;">${b.code}</b><span style="font-size:10px;font-weight:800;">${st}</span></div>
+        <div style="margin-top:6px;font-size:13px;">${b.name} • ${b.room}<br>${b.checkin} → ${b.checkout} • $${b.amount}</div>
+      </div>`;
+    }).join('');
+    
+    if(clearBtn) clearBtn.style.display = 'block';
+    
+  }catch(e){
+    list.innerHTML = '<div style="text-align:center;padding:20px;background:white;border-radius:12px;">Network error</div>';
+  }
+}
+
+function clearMyBookings(){
+  if(myCache.length===0) return;
+  if(!confirm("Clear all history for this number? Searching again will show 'No booking history for this user' until new booking.")) return;
+  
+  const hiddenKey = 'lumina_hidden_' + myTarget;
+  const old = JSON.parse(localStorage.getItem(hiddenKey) || '[]');
+  const newCodes = myCache.map(b=>b.code);
+  localStorage.setItem(hiddenKey, JSON.stringify([...new Set([...old, ...newCodes])]));
+  
+  document.getElementById('myList').innerHTML = '<div style="text-align:center;padding:30px;background:white;border-radius:12px;color:#999;">No booking history for this user</div>';
+  document.getElementById('myClearBtn').style.display = 'none';
+  myCache = [];
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{ renderRooms(roomsData); })
+
+
+async function loadLiveAvailability(){
+  try{
+    const res = await fetch(`${ROOMS_URL}?rooms=true&t=${Date.now()}`);
+    const txt = await res.text();
+    window.liveRoomsDataFromSheet = JSON.parse(txt);
+    console.log("Live rooms:", window.liveRoomsDataFromSheet);
+    renderRooms(roomsData); // re-render with real numbers
+  }catch(e){ console.log(e); }
+}
+loadLiveAvailability();

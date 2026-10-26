@@ -264,7 +264,7 @@ function renderRooms(list){
     return `
     <div class="room-card" onclick="openRoom('${room.id}')" data-id="${room.id}" style="cursor:pointer;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.07);margin-bottom:20px;">
       <div style="position:relative;">
-        <img src="${room.img}" style="width:100%;height:220px;object-fit:cover;" />
+        <img src="${room.img}" style="width:100%;height:220px;object-fit:cover;">
       </div>
       <div style="padding:18px;">
         <h3 style="font-family:'Playfair Display',serif;font-size:20px;color:#0a192f;margin:0;">${room.name}</h3>

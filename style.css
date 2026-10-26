@@ -47,7 +47,7 @@ h1,h2,h3{font-family:'Playfair Display',serif;color:#111}
 
 /* ROOMS LAYOUT */
 
-.filters{width:260px;background:#fff;padding:18px;border-radius:16px;box-shadow:0 9px 10px rgba(0,0,0,.08);top:80px;border:1.5px solid #E9DCC3}
+.filters{width:260px;background:#fff;padding:18px;border-radius:16px;box-shadow:0 9px 10px rgba(0,0,0,.08); top:80px;border:1.5px solid #E9DCC3}
 .filters h3{font-size:18px;display:flex;justify-content:space-between;margin-bottom:14px;font-weight:800;color:#111}
 .filters h3 span{color:var(--gold);cursor:pointer;font-weight:800;font-size:12px}
 .filters label{font-size:11px;font-weight:800;margin:14px 0 6px;display:block;color:var(--gold-dark);text-transform:uppercase;letter-spacing:.5px}

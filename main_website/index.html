@@ -11,77 +11,196 @@
 
 <nav class="topnav">
   <div class="logo">LUMINA <span>HOTELS & RESORTS</span></div>
+  <button id="topBookNowBtn" style="background:#0F0F0F; color:#D4AF37; border:1px solid #D4AF37; padding:14px 30px; border-radius:30px; font-weight:800;" onclick="showPage('rooms')">Book Now</button>
 </nav>
 
 <!-- PAGE 1: HOME -->
 <section id="home" class="page">
-  <div class="hero">
+<div class="hero" >
+  <video autoplay muted loop playsinline class="hero-video" >
+    <source src="hero_video.mp4" type="video/mp4">
+  </video>
+  <div class="hero-overlay" ></div>
+  <div class="hero-content" >
     <h1>Your Luxury Escape Awaits</h1>
-    <p>Discover refined comfort and impeccable service at our 5★ hotel</p>
-    <div class="search-box">
-      <div><label>CHECK-IN</label><input type="text" placeholder="DD/MM/YYYY" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'" id="checkinDate"></div>
-      <div><label>CHECK-OUT</label><input type="text" placeholder="DD/MM/YYYY" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'" id="checkoutDate"></div>
-      <div>
-  <label>GUESTS & ROOMS</label>
-  <div class="guest-room-field" id="guestRoomField">
-    <span id="guestRoomDisplay">1 guest · 1 room</span>
+    <p>5★ comfort in Nsukka</p>
   </div>
 </div>
-      <button onclick="searchRooms()" id="homeBookNowBtn" style="background:#111;color:#D4AF37;font-weight:900;">Book Now</button>
     </div>
   </div>
   <div class="featured">
-    <h2>Featured Rooms</h2>
+     <div class="section-head black-title" style="background:#dfdada; padding:20px; border-radius:16px; text-align:center; max-width:1100px; margin:40px auto 20px auto;box-shadow:0 4px 20px rgba(0,0,0,0.07);">
+    <h2 style="color:#000; margin-bottom: 4px;">Featured Rooms</h2>
+    <p style="color:#D4AF37;">click on the rooms to see more details</p>
+  </div>
     <div id="featuredGrid" class="room-grid"></div>
   </div>
+
+  <div class="luminar-experience" style="background:#fff; padding:30px 20px; margin-top:10px; margin-bottom: 0;">
+  <div class="section-head black-title" style="background:#0F0F0F; padding:20px; border-radius:16px; text-align:center; max-width:1100px; margin:0 auto 20px auto;">
+    <h2 style="color:#fff;">The Lumina Experience</h2>
+    <p style="color:#D4AF37;">More than just a stay</p>
+  </div>
+
+  <div class="exp-grid" style="display:flex;gap:20px; flex-wrap:wrap; max-width:1100px; padding-left: 30px; margin:0 auto; margin-bottom: 0;">
+    <div class="exp-card" style="background:#0F0F0F; border-radius:16px;  overflow:hidden; color:#fff; min-width: 325px; min-height: 100px;">
+      <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600" style="width:100%; height:200px; object-fit:cover;">
+      <div style="padding:16px;"><h4>Spa & Wellness</h4><p style="color:#aaa;">Massage, sauna, steam</p></div>
+    </div>
+    <div class="exp-card" style="background:#0F0F0F; border-radius:16px; overflow:hidden; color:#fff; min-width: 325px; min-height: 100px;">
+      <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600" style="width:100%; height:200px; object-fit:cover;">
+      <div style="padding:16px;"><h4>Infinity Pool</h4><p style="color:#aaa;">Open 24hrs + Sky Bar</p></div>
+    </div>
+    <div class="exp-card" style="background:#0F0F0F; border-radius:16px; overflow:hidden; color:#fff; min-width: 325px; min-height: 100px;">
+      <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600" style="width:100%; height:200px; object-fit:cover;">
+      <div style="padding:16px;"><h4>Fine Dining</h4><p style="color:#aaa;">Nigerian flavors elevated</p></div>
+    </div>
+    <div class="exp-card" style="background:#0F0F0F; border-radius:16px; overflow:hidden; color:#fff; min-width: 325px; min-height: 100px;">
+      <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600" style="width:100%; height:200px; object-fit:cover;">
+      <div style="padding:16px;"><h4>City View Balcony</h4><p style="color:#aaa;">Sunset over Nsukka hills</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- Last Book Now at bottom -->
+<div style="text-align:center; padding:40 20px; margin-top: 0;">
+  <button onclick="showPage('rooms')" style="background:var(--gold); color:#111; border:none; padding:16px 40px; border-radius:30px; font-weight:900; font-size:16px;">Book Now — Reserve Your Stay</button>
+</div>
 </section>
 
 <!-- PAGE 2: ROOMS -->
+<!-- PAGE 2: ROOMS - FIXED LAYOUT -->
 <section id="rooms" class="page" style="display:none">
-  <div class="rooms-layout">
-    <aside class="filters">
-      <h3>Filters <span onclick="clearFilters()">Clear all</span></h3>
-      <label>Price per night</label>
-      <input type="range" id="priceRange" min="100" max="1000" value="1000" oninput="filterRooms()">
-      <p>Avg: $<span id="priceVal">1000</span></p>
-      <label style="font-weight:800";>Amenities</label>
+  <div class="rooms-layout" style="display:flex; gap:24px; max-width:1300px; margin:0 auto; padding:20px; align-items:flex-start;">
+    
+    <!-- LEFT COLUMN - 300px FIXED -->
+    <div class="search-filters" style="width:300px; min-width:280px; top:20px; display:flex; flex-direction:column; gap:20px;">
+      
 
-      <!-- Amenities Filter - WiFi is mandatory info, not clickable -->
-        <div style="background:#dcfce7;color:#166534;padding:6px 10px;border-radius:20px;display:inline-block;font-size:12px;font-weight:800;margin-bottom:10px;">✓ Free Wi-Fi included in all rooms</div>
-      <div><input type="checkbox" class="amen" value="Breakfast"> Breakfast</div>
-      <div><input type="checkbox" class="amen" value="Pool"> Pool</div>
-      <label style="font-weight:800";>Bed Type</label>
-      <div><input type="checkbox" class="bed" value="King"> King Bed</div>
-      <div><input type="checkbox" class="bed" value="Double"> Two Doubles</div>
-     
-    </aside>
-    <div class="results">
-      <h2 id="resultsCount">6 luxury rooms found</h2>
-      <div id="roomsGrid" class="room-grid"></div>
+
+      <!-- Box 2: Filters -->
+      <div class="filters" style="background:white; border:1px solid #eee; border-radius:16px; padding:16px; box-shadow:0 4px 15px rgba(0,0,0,0.05);">
+        <h3>Filters</h3>
+        <label>Price per night</label>
+        <input type="range" id="priceRange" min="100" max="1000" value="1000" oninput="filterRooms()">
+        <p>Avg: $<span id="priceVal">1000</span></p>
+        
+        <label style="font-weight:800; display:block; margin-top:12px;">Amenities</label>
+        <div style="background:#dcfce7;color:#166534;padding:6px 10px;border-radius:20px;display:inline-block;font-size:12px;font-weight:800;margin:8px 0 10px 0;">✓ Free Wi-Fi included</div>
+        <div><input type="checkbox" class="amen" value="Breakfast"> Breakfast</div>
+        <div><input type="checkbox" class="amen" value="Pool"> Pool</div>
+        
+        <label style="font-weight:800; display:block; margin-top:12px;">Bed Type</label>
+        <div><input type="checkbox" class="bed" value="King"> King Bed</div>
+        <div><input type="checkbox" class="bed" value="Double"> Two Doubles</div>
+      </div>
+
     </div>
+    
+    <!-- RIGHT COLUMN - TAKES ALL REMAINING SPACE -->
+    <div style="flex:1; min-width:0;">
+      <h2 id="resultsCount" style="margin-bottom:16px;">Rooms found</h2>
+      <div id="roomsGrid" class="room-grid" style="display:grid; grid-template-columns:1 1fr; gap:20px;"></div>
+    </div>
+
   </div>
 </section>
 
-<!-- PAGE 3: ROOM DETAILS -->
-<section id="roomDetail" class="page" style="display:none">
 
-  <div class="detail-layout">
-    <div class="gallery">
-      <button onclick="goBackToRooms()" style="margin:10px;background:#FFF3CD;border:1px solid #C8B896;padding:8px 14px;border-radius:20px;font-weight:800;cursor:pointer;">← Back to Rooms</button>
-      <img id="dMainImg" src="">
-      <div class="thumbs" id="dThumbs"></div>
-      <h3>Amenities</h3><div id="dAmenities" class="amenities"></div>
-      <h3>About this room</h3><p id="dAbout"></p>
+
+<!-- PAGE 3: ROOM DETAILS - LUXURY REDESIGN -->
+<section id="roomDetail" class="page" style="display:none; background:#fafafa;">
+  <div style="max-width:1100px; margin:0 auto; padding:20px;">
+    
+    <button onclick="goBackToRooms()" style="margin-bottom:16px; background:#FFF3CD; border:1px solid #C8B896; padding:8px 14px; border-radius:20px; font-weight:800; cursor:pointer;">← Back to Rooms</button>
+
+    <!-- TOP GALLERY -->
+    <div style="display:grid; grid-template-columns:2fr 1fr; gap:12px; height:420px;">
+      <img id="dMainImg" src="" style="width:100%; height:100%; object-fit:cover; border-radius:16px 0 0 16px;">
+      <div style="display:grid; grid-template-rows:1fr 1fr; gap:12px;">
+        <img id="dImg2" src="" style="width:100%; height:100%; object-fit:cover; border-radius:0 16px 0 0;">
+        <img id="dImg3" src="" style="width:100%; height:100%; object-fit:cover; border-radius:0 0 16px 0;">
+      </div>
     </div>
-    <div class="booking-box">
-     <h2 id="dPrice">$349 / night</h2>
-<div id="dAvailability" style="font-size:13px;font-weight:800;margin:6px 0 12px 0;padding:6px 10px;border-radius:20px;display:inline-block;background:#f7f3eb;">Checking...</div>
-<div class="guest-room-field" id="dGuestRoomField" onclick="openGuestModal()" style="cursor:pointer; padding:11px;border:2px solid #C8B896;border-radius:10px;background:#FFFEFB;font-weight:600;"><span id="dGuestRoomDisplay">1 guest · 1 room</span></div>
-     
-   <button class="reserve" type="button" onclick="goCheckout()">Reserve</button>
-    <!--  <p class="note">You won't be charged yet</p> -->
-      <div id="priceBreakdown"></div>
+    <div id="dThumbs" style="display:flex; gap:10px; margin-top:12px; overflow-x:auto;"></div>
+
+    <!-- MIDDLE: DESCRIPTION -->
+    <div style="display:flex; gap:24px; margin-top:30px; align-items:flex-start;">
+      
+      <!-- LEFT: Room Info -->
+      <div style="flex:1.2; background:white; border-radius:16px; padding:24px; border:1px solid #eee;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h1 id="dName" style="font-family:'Playfair Display',serif; font-size:32px; margin:0;">Grand Opera Suite</h1>
+          <div id="dAvailability" style="font-size:12px; font-weight:800; padding:6px 12px; border-radius:20px; background:#dcfce7; color:#166534;">Checking...</div>
+        </div>
+        <p id="dSub" style="color:#666; margin-top:6px;">600 sqft • King Bed • City View • 2 Guests Max</p>
+
+        <h3 style="margin-top:28px; font-size:18px; font-weight:900;">About this room</h3>
+        <p id="dAbout" style="line-height:1.7; color:#444; margin-top:8px;"></p>
+
+        <h3 style="margin-top:28px;">Amenities</h3>
+        <div id="dAmenities" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
+
+        <!-- INTERIOR HIGHLIGHTS - WHAT YOU ASKED FOR -->
+        <h3 style="margin-top:32px; font-size:18px; font-weight:900;">Inside the Room</h3>
+        <div style="display:flex;  flex-wrap: wrap; gap:16px; padding: 0; margin-top:16px; max-width: 900px; ">
+
+          <div style="background:#fafafa; border-radius:12px; overflow:hidden; border:1px solid #eee; ">
+            <img id="dBathImg" src="https://images.unsplash.com/photo-1620626011761-996317b8d101?w=600" style="width:100%; height:160px; object-fit:cover;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.07);margin-bottom:20px;">
+            <div style="padding:12px;"><b>🚿 Luxury Bathroom</b><br><small style="color:#666;">Rain shower, freestanding tub, premium toiletries, heated floor</small></div>
+          </div>
+
+          <div style="background:#fafafa; border-radius:12px; overflow:hidden; border:1px solid #eee;">
+            <img id="dWardrobeImg" src="https://images.unsplash.com/photo-1558997519-83ea9252edf8?w=600" style="width:100%; height:160px; object-fit:cover;">
+            <div style="padding:12px;"><b>👔 Wardrobe & Dressing</b><br><small style="color:#666;">Walk-in wardrobe, safe box, iron, full-length mirror</small></div>
+          </div>
+
+          <div style="background:#fafafa; border-radius:12px; overflow:hidden; border:1px solid #eee;">
+            <img id="dBedImg" src="https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=600" style="width:100%; height:160px; object-fit:cover;">
+            <div style="padding:12px;"><b>🛏️ Bedroom Area</b><br><small style="color:#666;">King-size bed, 42" Smart TV, blackout curtains, work desk</small></div>
+          </div>
+
+          <div style="background:#fafafa; border-radius:12px; overflow:hidden; border:1px solid #eee;">
+            <img id="dBalconyImg" src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600" style="width:100%; height:160px; object-fit:cover;">
+            <div style="padding:12px;"><b>🌇 Balcony / View</b><br><small style="color:#666;">Private balcony, city view, seating area, sunset view</small></div>
+          </div>
+
+        </div>
+      
+
+        <div style="margin-top:24px; background:#FFF8E6; border:1px dashed #C8B896; border-radius:12px; padding:16px; font-size:13px;">
+          <b>House Rules:</b> Check-in 2PM • Check-out 12PM • No smoking • No pets • Free cancellation 24hrs before
+        </div>
+      </div>
+
     </div>
+
+
+
+    
+    <!-- BOTTOM: BOOKING BOX - NOW COMES DOWN AS YOU WANTED -->
+   
+
+    <div style="margin-top:30px; background:white; border-radius:16px; padding:20px; border:1px solid #eee; box-shadow:0 10px 30px rgba(0,0,0,0.06); max-width:500px;">
+      <div class="search-box" style="background:white; border:1px solid #eee; border-radius:16px; padding:16px; box-shadow:0 4px 15px rgba(0,0,0,0.05);">
+        <h3 style="margin-bottom:12px;">Booking Details</h3>
+        <div style="margin-bottom:10px;"><label>CHECK-IN</label><input type="date" placeholder="DD/MM/YYYY" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'" id="dCheckin" style="width:100%;"></div>
+        <div style="margin-bottom:10px;"><label>CHECK-OUT</label><input type="date" placeholder="DD/MM/YYYY" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'" id="dCheckout" style="width:100%;"></div>
+        <div>
+          <label>GUESTS & ROOMS</label>
+          <div class="guest-room-field" id="guestRoomField" style="border:2px solid #C8B896; padding:10px; border-radius:10px; background:#FFFEFB;">
+            <span id="guestRoomDisplay">1 guest · 1 room</span>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="dPrice" style="margin:0;">$349 / night</h2>
+      <div id="priceBreakdown" style="margin-top:12px;"></div>
+
+      <button class="reserve" onclick="goCheckout()" style="width:100%; margin-top:16px; background:#111; color:#D4AF37; padding:16px; border-radius:12px; font-weight:900; font-size:16px; border:none;">Reserve →</button>
+      <p style="text-align:center; color:#888; font-size:12px; margin-top:8px;">You can choose to pay at the hotel</p>
+    </div>
+
   </div>
 </section>
 
@@ -160,6 +279,8 @@
   <h1>✅ Booking Confirmed!</h1>
   <p>Booking Code: <b id="confCode">LMN-12345</b></p>
   <p id="confDetails"></p>
+  <p>Go to <button onclick="showPage('mybookings')">Bookings</button>   to see your bookings details</p>
+  <p>You will also receive an email from us shortly about Payment approval if you paid via OPay or Paystack.</p>
   <button onclick="showPage('home')">Back Home</button>
 </section>
 
@@ -178,17 +299,163 @@
   <div id="adminList"></div>
 </section>
 
-<!-- PAGE 8: CONTACT -->
-<section id="contact" class="page" style="display:none">
-  <h2>Contact Us</h2><p>Behind Ogige Main Market, Nsukka</p>
-   <a href="tel:09134435650" class="btn outline">📞 CALL</a>
-  <a href="https://wa.me/2349134435650" class="btn outline">💬 WHATSAPP</a>
-  <a class="map-btn" target="_blank" href="https://maps.google.com">📍 Open Map</a>
+<section id="about" class="page" style="display:none">
+  <!-- SMALL HERO LIKE YOU WANTED -->
+  <div class="about-hero">
+    <div class="about-hero-text">
+      <span>ABOUT LUMINA</span>
+      <h1>More Than A Stay,<br>It's An Experience.</h1>
+      <p>Located in the heart of Nsukka, Lumina Hotel redefines 5-star comfort with modern luxury, warm hospitality, and unforgettable memories.</p>
+    </div>
+    <div class="about-hero-img">
+      <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=800" alt="Lumina Hotel">
+    </div>
+  </div>
+
+  <!-- STATS - LIKE ROOM CARDS -->
+  <div class="about-stats">
+    <div class="stat-card"><h2>2018</h2><p>Year Founded</p></div>
+    <div class="stat-card"><h2>120+</h2><p>Luxury Rooms</p></div>
+    <div class="stat-card"><h2>15k+</h2><p>Happy Guests</p></div>
+    <div class="stat-card"><h2>4.9★</h2><p>Guest Rating</p></div>
+  </div>
+
+  <!-- OUR STORY -->
+  <div class="about-section">
+    <div class="about-text">
+      <span class="section-label">OUR STORY</span>
+      <h2>From a Dream to Nsukka's Most Loved Hotel.</h2>
+      <p>Lumina started with a simple idea: Nsukka deserved a hotel that matches international standards without losing our Igbo warmth.</p>
+      <p>What began as a 20-room boutique lodge in 2018 has grown into a 5-star destination for business travelers, couples, and families. Every corner, from our scent to our bedsheets, was chosen to make you feel at home, but better.</p>
+      <div class="about-quote">
+        "We don't just give you a key, we give you peace of mind."
+        <small>— Founder, Lumina Hotel & Suites</small>
+      </div>
+    </div>
+    <div class="about-grid-images">
+      <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600" alt="lobby">
+      <img src="https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=600" alt="room">
+    </div>
+  </div>
+
+  <!-- WHY CHOOSE US - CARD STYLE LIKE YOUR ROOMS -->
+  <div class="about-choose">
+    <span class="section-label" style="text-align:center;display:block;">WHY GUESTS CHOOSE US</span>
+    <h2 style="text-align:center;">Comfort You Can Feel</h2>
+    <div class="choose-grid">
+      <div class="choose-card">
+        <div class="choose-icon">🛏️</div>
+        <h3>Luxury Rooms</h3>
+        <p>King beds, blackout curtains, Smart TVs and rain showers. Designed for deep sleep.</p>
+      </div>
+      <div class="choose-card">
+        <div class="choose-icon">🍽️</div>
+        <h3>Signature Restaurant</h3>
+        <p>Local and continental dishes from our award-winning chef, open 24/7.</p>
+      </div>
+      <div class="choose-card">
+        <div class="choose-icon">🔒</div>
+        <h3>Safe & Secure</h3>
+        <p>24/7 power, CCTV, keycard access, and trained security. Your safety first.</p>
+      </div>
+      <div class="choose-card">
+        <div class="choose-icon">⚡</div>
+        <h3>Fast Service</h3>
+        <p>Room service in under 15 minutes. Because luxury should not wait.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="about-cta">
+    <h2>Ready to Experience Lumina?</h2>
+    <p>Your luxury escape is one click away. Best price guaranteed when you book direct.</p>
+    <div style="display:flex; gap:10px; justify-content:center; margin-top:18px; flex-wrap:wrap;">
+      <button class="reserve" style="width:auto; padding:13px 28px;" onclick="showPage('rooms')">View Rooms</button>
+      <a class="btn outline" style="padding:13px 28px; background:#fff;" onclick="showPage('contact')">Contact Us</a>
+    </div>
+  </div>
+
 </section>
 
-<div class="bottom-nav">
+<!-- PAGE 8: CONTACT -->
+<section id="contact" class="page" style="display:none;" >
+  
+  <div class="contact-header">
+    <span>GET IN TOUCH</span>
+    <h2>We’re Here For You, 24/7</h2>
+    <p>Have a question about your stay? Want to book directly and get best price? Reach us anyway you like — we reply in under 5 minutes.</p>
+  </div>
+
+  <div class="contact-cards">
+    <a href="tel:09134435650" class="c-card">
+      <div class="c-icon">📞</div>
+      <div><b>Call Direct</b><small>09134435650 — Instant Response</small></div>
+    </a>
+    <a href="https://wa.me/2349134435650" target="_blank" class="c-card c-gold">
+      <div class="c-icon" style="background:#111; color:#fff;">💬</div>
+      <div><b>WhatsApp Us</b><small>Chat with reservation team</small></div>
+    </a>
+    <a href="mailto:hello@luminahotel.com" class="c-card">
+      <div class="c-icon">✉️</div>
+      <div><b>Email</b><small>hello@luminahotel.com</small></div>
+    </a>
+  </div>
+
+  <div class="contact-grid">
+    <!-- LEFT: FORM -->
+    <div class="contact-form-box">
+      <h3>Send a Message</h3>
+      <p>Fill this and we’ll call you back.</p>
+      <input type="text" placeholder="Your Name" id="cName">
+      <input type="tel" placeholder="Phone Number" id="cPhone">
+      <textarea placeholder="How can we help? e.g I want to book Deluxe room for 2 nights..." id="cMsg" rows="4"></textarea>
+      <button class="reserve" onclick="sendWhatsAppMsg()">Send on WhatsApp</button>
+      <small class="note">This will open WhatsApp with your message ready.</small>
+    </div>
+
+    <!-- RIGHT: INFO -->
+    <div class="contact-info-box">
+      <h3>Visit Us</h3>
+      
+      <div class="info-row">
+        <span>📍</span>
+        <div><b>Address</b><br>Behind Ogige Main Market, Nsukka, Enugu State, Nigeria</div>
+      </div>
+      <div class="info-row">
+        <span>🕐</span>
+        <div><b>Open Hours</b><br>Check-in: 24hrs / Restaurant: 6am - 11pm</div>
+      </div>
+
+      <div class="socials">
+        <h4>Follow Lumina</h4>
+        <div class="social-grid">
+          <a href="https://instagram.com/luminahotel" target="_blank" class="social-btn ig">📸 <b>Instagram</b><small>@luminahotel</small></a>
+          <a href="https://facebook.com/luminahotel" target="_blank" class="social-btn fb">📘 <b>Facebook</b><small>Lumina Hotel</small></a>
+          <a href="https://wa.me/2349134435650" target="_blank" class="social-btn wa">💬 <b>WhatsApp</b><small>Chat Now</small></a>
+          <a href="https://tiktok.com/@luminahotel" target="_blank" class="social-btn tk">🎵 <b>TikTok</b><small>Tour Rooms</small></a>
+        </div>
+      </div>
+
+      <a class="map-btn" target="_blank" href="https://maps.google.com/?q=Ogige+Main+Market+Nsukka" style="width:100%; justify-content:center; margin-top:16px;">
+        📍 Open in Google Maps
+      </a>
+    </div>
+  </div>
+
+  <!-- MAP -->
+  <div class="map-embed">
+    <iframe src="https://maps.google.com/maps?q=Ogige%20Main%20Market%20Nsukka&t=&z=15&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
+  </div>
+
+</section>
+
+
+<div class="bottom-nav" id="bottomNav">
   <button onclick="showPage('home',this)" class="active">Home</button>
+  <button onclick="showPage('rooms',this)">Rooms</button>
   <button onclick="showPage('mybookings',this)">Bookings</button>
+  <button onclick="showPage('about',this)">About</button>
   <button onclick="showPage('contact',this)">Contact</button>
 </div>
 
@@ -225,4 +492,6 @@
 </div>
 <script src="script.js"></script>
 </body>
+
+
 </html>

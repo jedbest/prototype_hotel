@@ -219,7 +219,7 @@ function calcNights(){
 }
 
 function cardHTML_Home(r){
- return `<div class="room-card" onclick="openRoom('${r.id}')" style="cursor:default;"><img src="${r.img}" alt="${r.name}"><div class="info"><h3>${r.name}</h3><p style="color:#9C6B2E;font-weight:800;">$${r.price} / night - ${r.bed}</p><p style="color:#888;font-size:12px;margin-top:4px;">${r.about}</p></div></div>`;
+ return `<div class="room-card" onclick="openRoom('${r.id}')" style="cursor:default;"><img src="${r.img}" alt="${r.name}"><div class="info"><h3>${r.name}</h3><p style="color:#9C6B2E;font-weight:800;">$${r.price} / night - ${r.bed}</p><p style="color:#888;font-size:12px;margin-top:4px;">${r.about}</p> <p> Click to see Rooms details and Availability </p></div></div>`;
 }
 
 function cardHTML(r){

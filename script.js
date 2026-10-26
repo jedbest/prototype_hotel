@@ -684,3 +684,12 @@ async function loadLiveAvailability(){
   }catch(e){ console.log(e); }
 }
 loadLiveAvailability();
+
+
+function sendWhatsAppMsg(){
+  const name = document.getElementById('cName').value || 'Guest';
+  const phone = document.getElementById('cPhone').value || '';
+  const msg = document.getElementById('cMsg').value || 'Hello, I want to make enquiry';
+  const text = `Hello Lumina Hotel, I am ${name}. Phone: ${phone}. Message: ${msg}`;
+  window.open(`https://wa.me/2349134435650?text=${encodeURIComponent(text)}`, '_blank');
+}

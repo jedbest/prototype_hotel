@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumina Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',system-ui;}
+body{background:#f7f3eb;min-height:100vh;overflow-x:hidden;}
+.header{background:#111;color:#D4AF37;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10;flex-wrap:wrap;gap:10px;}
+.header h1{font-size:18px;font-weight:900;flex:1;min-width:120px;}
+/* === TABS - Scrollable, no scatter, no cut === */
+.tabs{
+  display:flex;
+  flex-wrap:nowrap; /* NEVER wrap — keep for one line */
+  gap:6px;
+  padding:12px 12px;
+  overflow-x:auto; /* scroll left-right */
+  overflow-y:hidden;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+  scroll-snap-type:x proximity;
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{
+  flex:0 0 auto; /* NEVER shrink, NEVER grow — keep size */
+  padding:10px 14px;
+  border-radius:12px;
+  border:1px solid #d9cdb0;
+  background:white;
+  font-weight:900;
+  font-size:11px;
+  cursor:pointer;
+  white-space:nowrap; /* NEVER break text to 2 lines */
+  scroll-snap-align:start;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.tab.active{background:#111;color:#D4AF37;border-color:#111;}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;padding:0 16px 16px;}
+.stat-card{background:white;border-radius:16px;padding:14px;border:1px solid #e8e0cc;text-align:center;}
+.stat-card b{font-size:20px;display:block;}
+.stat-card p{font-size:10px;color:#888;font-weight:700;margin-top:4px;text-transform:uppercase;}
+.stat-card.gold{background:linear-gradient(135deg,#111,#2a2a2a);border:1px solid #D4AF37;}
+.stat-card.gold b{color:#D4AF37;}
+.controls{padding:0 16px 16px;display:flex;gap:8px;}
+.controls input,.controls select{flex:1;padding:12px;border-radius:12px;border:1px solid #d9cdb0;background:white;font-weight:600;font-size:12px;min-width:0;}
+#list{padding:0 16px 100px;display:grid;gap:12px;}
+.card{background:white;border-radius:20px;padding:16px;border:1px solid #eee;box-shadow:0 2px 12px rgba(0,0,0,0.04);position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:#D4AF37;}
+.code{font-weight:900;background:#111;color:#D4AF37;padding:4px 10px;border-radius:8px;font-size:11px;}
+.status{padding:5px 10px;border-radius:20px;font-size:10px;font-weight:900;text-transform:uppercase;}
+.Paid,.Approved{background:#dcfce7;color:#166534;}.Awaiting{background:#fee2e2;color:#991b1b;}.Unpaid{background:#fef3c7;color:#92400e;}.Cancelled{background:#f3f4f6;color:#666;}.Checked-In{background:#111;color:#D4AF37;}.Disapproved{background:#fee2e2;color:#991b1b;}.Checked-Out{background:#dbeafe;color:#1e40af;}
+.actions{margin-top:12px;display:grid;gap:8px;}
+.actions.two{grid-template-columns:1fr 1fr;}.actions.three{grid-template-columns:1fr 1fr 1fr;}
+.actions button{padding:11px;border-radius:12px;border:none;font-size:11px;font-weight:800;cursor:pointer;}
+.actions button:disabled{opacity:0.35;pointer-events:none;}
+.btn-approve{background:#111;color:#D4AF37;}.btn-disapprove{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5!important;}.btn-check{background:#D4AF37;color:#111;}.btn-cancel{background:#f5f5f5;color:#999;border:1px solid #ddd!important;}.btn-delete{background:#000;color:white;}
+.room-card{background:white;border-radius:20px;padding:16px;border:1px solid #e8e0cc;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.room-card b{font-size:14px;}
+.room-card input{width:65px;padding:8px;border-radius:8px;border:1px solid #d9cdb0;text-align:center;font-weight:800;}
+.room-number-input{appearance:textfield;-moz-appearance:textfield;-webkit-appearance:none;}
+#addModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100;align-items:center;justify-content:center;padding:16px;}
+#addModal.open{display:flex;}
+.modal-box{background:white;border-radius:20px;padding:20px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto;}
+.modal-box h2{font-size:16px;font-weight:900;margin-bottom:12px;}
+.modal-box input,.modal-box select{width:100%;padding:12px;border-radius:10px;border:1px solid #d9cdb0;margin-bottom:10px;font-weight:600;}
+#loginScreen.hidden{display:none!important;}
+/* === MOBILE TABS - Tight, scrollable, no scatter === */
+@media(max-width:600px){
+  .header{padding:12px 12px;gap:8px;}
+  .header h1{font-size:14px;min-width:100px;}
+  .tabs{
+    padding:8px 10px;
+    gap:6px;
+    flex-wrap:nowrap; /* Force one line even for mobile */
+    overflow-x:auto;
+    overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    /* Hide scrollbar but still scrollable */
+    -ms-overflow-style:none;
+  }
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab{
+    flex:0 0 auto; /* Don't shrink */
+    padding:9px 12px;
+    font-size:10px;
+    border-radius:11px;
+    white-space:nowrap;
+    min-width:max-content; /* Make tab as wide as its text, no squeeze */
+  }
+  .stats{gap:8px;padding:0 10px 12px;}
+  #list{padding:0 10px 100px;}
+  .room-card{flex-direction:column;align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+<div id="loginScreen" style="position:fixed;inset:0;background:#111;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:white;border-radius:20px;padding:28px;width:100%;max-width:340px;text-align:center;">
+    <h2 style="font-weight:900;margin-bottom:6px;">LUMINA ✨ ADMIN</h2>
+    <p style="font-size:12px;color:#888;margin-bottom:18px;">Enter password to continue</p>
+    <input id="adminPassInput" type="password" placeholder="Password" style="width:100%;padding:14px;border-radius:12px;border:1px solid #d9cdb0;font-weight:700;text-align:center;font-size:16px;">
+    <button onclick="loginAdmin()" style="width:100%;margin-top:12px;padding:14px;border-radius:12px;border:none;background:#111;color:#D4AF37;font-weight:900;cursor:pointer;">Login</button>
+    <p id="loginError" style="color:#991b1b;font-size:11px;font-weight:800;margin-top:10px;display:none;">Wrong password</p>
+  </div>
+</div>
+<div class="header"><h1>LUMINA ✨ ADMIN</h1><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><button onclick="openAddBooking()" style="background:#D4AF37;color:#111;border:none;padding:8px 14px;border-radius:10px;font-weight:900;font-size:12px;cursor:pointer;">➕ Add</button><span id="count">0 bookings</span><button onclick="logoutAdmin()" style="background:#222;color:#D4AF37;border:1px solid #D4AF37;padding:8px 12px;border-radius:10px;font-weight:900;font-size:11px;cursor:pointer;">Logout</button></div></div>
+<div class="tabs">
+  <button class="tab active" id="tabAll" onclick="switchTab('all')">📋 Bookings</button>
+  <button class="tab" id="tabToday" onclick="switchTab('today')">🗓️ TODAY</button>
+  <button class="tab" id="tabBoard" onclick="switchTab('board')">🛏️ Room Board</button>
+  <button class="tab" id="tabCheck" onclick="switchTab('checked')">🏨 Checked-In</button>
+  <button class="tab" id="tabDis" onclick="switchTab('disapproved')">⛔ Disapproved</button>
+  <button class="tab" id="tabOut" onclick="switchTab('checkout')">✅ Checked-Out</button>
+  <button class="tab" id="tabMoney" onclick="switchTab('money')">💰 Money</button>
+  <button class="tab" id="tabPos" onclick="switchTab('pos')">🍽️ POS / Pool</button>
+  <button class="tab" id="tabRooms" onclick="switchTab('rooms')">🛏️ Rooms</button>
+</div>
+<div class="stats" id="stats">
+  <div class="stat-card gold"><b id="totalRev">$0</b><p>Total Revenue</p></div>
+  <div class="stat-card"><b id="totalBook">0</b><p>Bookings</p></div>
+  <div class="stat-card"><b id="pending">0</b><p>Awaiting</p></div>
+</div>
+<div class="controls" id="controls">
+  <input id="search" placeholder="🔍 Search name, phone, code..." oninput="filterCards()">
+  <select id="filterStatus" onchange="filterCards()"><option value="all">All Status</option><option value="Paid">Paid</option><option value="Awaiting">Awaiting</option><option value="Approved">Approved</option><option value="Disapproved">Disapproved</option><option value="Checked-In">Checked-In</option></select>
+</div>
+<div id="list">Loading...</div>
+<div id="addModal" onclick="if(event.target===this) closeAddBooking()">
+  <div class="modal-box">
+    <h2>➕ Add Booking Manually</h2>
+    <input id="abName" placeholder="Guest Name *">
+    <input id="abPhone" placeholder="Phone *">
+    <input id="abEmail" placeholder="Email (optional)">
+    <select id="abRoom"></select>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><input id="abCheckin" type="date"><input id="abCheckout" type="date"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><input id="abGuests" placeholder="Guests" value="2 guests · 1 room"><input id="abAmount" type="text" inputmode="numeric" placeholder="Amount e.g. 420"></div>
+    <select id="abPay"><option value="Pay at Hotel">Pay at Hotel</option><option value="Cash">Cash</option><option value="OPay Transfer">OPay Transfer</option><option value="Bank Transfer">Bank Transfer</option></select>
+    <select id="abStatus"><option value="Approved">Approved - Paid</option><option value="Checked-In">Checked-In - Now in hotel</option><option value="Unpaid">Unpaid</option><option value="Awaiting Verification">Awaiting Verification</option></select>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;">
+      <button onclick="closeAddBooking()" style="padding:12px;border-radius:10px;border:1px solid #ddd;background:white;font-weight:800;">Cancel</button>
+      <button onclick="submitManualBooking()" id="abBtn" style="padding:12px;border-radius:10px;border:none;background:#111;color:#D4AF37;font-weight:900;">Add Booking</button>
+    </div>
+  </div>
+</div>
+<script>
+const ADMIN_PASSWORD = "Lumina2025";
+const LOGIN_KEY = "lumina_admin_logged";
+function checkLogin(){ if(localStorage.getItem(LOGIN_KEY) === "yes"){ document.getElementById('loginScreen').classList.add('hidden'); } }
+function loginAdmin(){
+  const input = document.getElementById('adminPassInput').value;
+  if(input === ADMIN_PASSWORD){ localStorage.setItem(LOGIN_KEY, "yes"); document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('loginError').style.display = "none"; } else { document.getElementById('loginError').style.display = "block"; }
+}
+function logoutAdmin(){ if(!confirm("Logout?")) return; localStorage.removeItem(LOGIN_KEY); location.reload(); }
+document.addEventListener('DOMContentLoaded', ()=>{
+  checkLogin();
+  const passInput = document.getElementById('adminPassInput');
+  if(passInput){ passInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') loginAdmin(); }); }
+});
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwR1T2dlroFlXNZq20is5C1hc2xrHY2jRTKtAUhUKSBgDxmXdmN28oz0tAL9clv2TteSQ/exec";
+let allData = [];
+let roomsData = [];
+let currentTab = 'all';
+let isLoading = false;
+let isSaving = false;
+
+async function loadAll(){
+  if(isLoading || isSaving) return;
+  isLoading = true;
+  if(currentTab!=='rooms'){
+    document.getElementById('list').innerHTML = '<div style="text-align:center;padding:40px;color:#999;">Loading bookings... Wait 10 sec.</div>';
+  }
+  try{
+    const r1 = await fetch(`${SCRIPT_URL}?rooms=true&t=${Date.now()}`, {cache:"no-store"});
+    if(r1.ok){ const txt = await r1.text(); try{ roomsData = JSON.parse(txt); }catch(e){ roomsData = []; } }
+  }catch(e){}
+  try{
+    const r2 = await fetch(`${SCRIPT_URL}?t=${Date.now()}`, {cache:"no-store"});
+    if(r2.ok){
+      const txt = await r2.text();
+      try{ allData = JSON.parse(txt); }catch(e){}
+    }
+  }catch(e){}
+  document.getElementById('count').innerText = `${allData.length} bookings`;
+  document.getElementById('totalBook').innerText = allData.length;
+  const rev = allData.filter(b=>{ const s=String(b.status||""); return s.includes("Paid")||s.includes("Approved")||s.includes("Checked-In")||s.includes("Checked-Out"); }).reduce((s,b)=>s+(parseFloat(b.amount)||0),0);
+  document.getElementById('totalRev').innerText = "$"+rev.toLocaleString();
+  document.getElementById('pending').innerText = allData.filter(b=>String(b.status||'').toLowerCase().includes('await')).length;
+  fillRoomSelect();
+  renderTab();
+  isLoading=false;
+}
+function switchTab(tab){
+  currentTab = tab;
+
+  // Map tab name -> real button ID for your HTML — MUST match exactly
+  const idMap = {
+    'all': 'tabAll',
+    'today': 'tabToday',
+    'board': 'tabBoard',
+    'checked': 'tabCheck',
+    'disapproved': 'tabDis',
+    'checkout': 'tabOut',
+    'money': 'tabMoney',
+    'pos': 'tabPos',   // <-- THIS WAS MISSING, na why POS no turn black
+    'rooms': 'tabRooms'
+  };
+
+  // 1. Remove active from ALL tabs
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+
+  // 2. Add active to clicked one
+  const activeBtn = document.getElementById(idMap[tab]);
+  if(activeBtn){
+    activeBtn.classList.add('active');
+    // Scroll am into view so e no hide for right
+    activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  } else {
+    console.log('TAB ID NOT FOUND for', tab, '— check your HTML id="tabPos"');
+  }
+
+  document.getElementById('stats').style.display = (tab==='rooms'||tab==='board'||tab==='money'||tab==='pos')?'none':'grid';
+  document.getElementById('controls').style.display = (tab==='rooms'||tab==='board'||tab==='money'||tab==='pos')?'none':'flex';
+  renderTab();
+}
+function renderTab(){
+  if(currentTab==='pos'){ renderPOS(); return; }
+  if(currentTab==='rooms'){ renderRooms(); return; }
+  if(currentTab==='board'){ renderBoard(); return; }
+  if(currentTab==='money'){ renderMoney(); return; }
+  if(currentTab==='today'){ renderToday(); return; }
+  let filtered = allData.filter(b=>{
+    const st = String(b.status||"");
+    if(currentTab==='all') return !st.includes('Checked-In') && !st.includes('Checked-Out') && !st.includes('Disapproved') && !st.includes('Cancelled');
+    if(currentTab==='checked') return st.includes('Checked-In');
+    if(currentTab==='disapproved') return st.includes('Disapproved');
+    if(currentTab==='checkout') return st.includes('Checked-Out');
+    return true;
+  });
+  const q = (document.getElementById('search').value||'').toLowerCase();
+  const f = document.getElementById('filterStatus').value;
+  filtered = filtered.filter(b=>{
+    const matchSearch = (b.name+' '+b.phone+' '+b.code+' '+b.room).toLowerCase().includes(q);
+    const matchStatus = f==='all' || String(b.status||'').includes(f);
+    return matchSearch && matchStatus;
+  });
+  render(filtered);
+}
+function renderRooms(){
+  if(!roomsData || roomsData.length===0){
+    document.getElementById('list').innerHTML = `<div class="room-card"><b>Room Inventory</b></div><div style="text-align:center;padding:30px;background:white;border-radius:16px;">No rooms data</div>`;
+    return;
+  }
+  let html = `<div class="room-card" style="background:#111;color:#D4AF37;"><b>Room Inventory</b><span style="font-size:10px;">Edit then save at bottom</span></div>`;
+  roomsData.forEach((r, idx)=>{
+    html += `<div class="room-card"><div><b>${r.roomType}</b><div style="font-size:11px;color:#666;" id="label-${idx}">${r.available} avail / ${r.total} total</div></div>
+      <div style="display:flex;gap:8px;">
+        <div style="text-align:center;"><div style="font-size:9px;color:#888;">TOTAL</div><input id="total-${idx}" type="number" inputmode="numeric" value="${r.total}" style="width:60px;padding:8px;border-radius:8px;border:1px solid #d9cdb0;text-align:center;font-weight:800;"></div>
+        <div style="text-align:center;"><div style="font-size:9px;color:#888;">AVAIL</div><input id="avail-${idx}" type="number" inputmode="numeric" value="${r.available}" style="width:60px;padding:8px;border-radius:8px;border:1px solid #d9cdb0;text-align:center;font-weight:800;background:#f7f3eb;"></div>
+      </div></div>`;
+  });
+  html += `<div style="background:white;border-radius:16px;padding:14px;border:1px solid #D4AF37;margin-top:12px;text-align:center;">
+    <div id="saveRoomsMsg" style="font-size:11px;font-weight:800;margin-bottom:10px;color:#666;">After editing all rooms, click SAVE below</div>
+    <button id="saveRoomsBtn" onclick="saveAllRooms()" style="width:100%;padding:14px;border-radius:12px;border:none;background:#111;color:#D4AF37;font-weight:900;font-size:13px;">💾 SAVE ALL ROOMS TO WEBSITE</button>
+  </div>`;
+  document.getElementById('list').innerHTML = html;
+}
+
+
+async function saveAllRooms(){
+  if(isSaving) return;
+  const btn = document.getElementById('saveRoomsBtn');
+  const msg = document.getElementById('saveRoomsMsg');
+  isSaving = true;
+  btn.disabled = true;
+  try{
+    for(let idx=0; idx<roomsData.length; idx++){
+      const r = roomsData[idx];
+      const roomType = r.roomType;
+      const totalInput = document.getElementById(`total-${idx}`);
+      const availInput = document.getElementById(`avail-${idx}`);
+      const total = parseInt(totalInput.value) || 0;
+      const available = parseInt(availInput.value) || 0;
+      msg.innerText = `Saving ${idx+1}/${roomsData.length}: ${roomType} - Total ${total}, Avail ${available}`;
+      btn.innerText = `Saving ${idx+1}/${roomsData.length}...`;
+      msg.style.color = "#888";
+      await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"updateRoom",roomType,total})});
+      await new Promise(r=>setTimeout(r,1500));
+      await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"updateRoomAvail",roomType,available})});
+      await new Promise(r=>setTimeout(r,1500));
+    }
+    msg.style.color="#166534";
+    msg.innerText = `✅ Saved ${roomsData.length} rooms! Reloading...`;
+    btn.innerText = "✅ Saved! Reloading...";
+    setTimeout(()=>{ isSaving=false; loadAll(); },3000);
+  }catch(e){
+    msg.style.color="#991b1b";
+    msg.innerText = "❌ Failed: "+e.message;
+    btn.disabled=false;
+    btn.innerText="💾 SAVE ALL ROOMS TO WEBSITE";
+    isSaving=false;
+  }
+}
+
+// ===== CLEAN DATE — No time, no GMT, no West Africa =====
+function fmtDate(d){
+  if(!d) return '';
+  // If e be like "2026-11-21T00:00:00.000Z" or "2026-11-21", take only first part
+  const onlyDate = String(d).slice(0,10); // "2026-11-21"
+  const parts = onlyDate.split('-');
+  if(parts.length !== 3) return onlyDate;
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const y = parts[0], m = Number(parts[1]), day = Number(parts[2]);
+  return `${day} ${months[m-1]} ${y}`; // "21 Nov 2026"
+}
+function getGuestsRooms(b){
+  // Your Sheets get guests as "2 guests · 1 room" or separate fields
+  // We try all possibilities, so e go show even if one miss
+  const g = b.guests || b.guestCount || b.numGuests || '';
+  const r = b.rooms || b.numRooms || b.roomCount || '';
+  // If guests field already contains "2 guests · 1 room", use am directly
+  if(String(g).includes('guest') || String(g).includes('room')) return String(g);
+  let out = '';
+  if(g) out += `${g} guest${Number(g)>1?'s':''}`;
+  if(r) out += (out ? ' · ' : '') + `${r} room${Number(r)>1?'s':''}`;
+  if(!out && b.guests) out = String(b.guests);
+  if(!out) out = '2 guests · 1 room'; // fallback if Sheets no get am
+  return out;
+}
+
+function render(data){
+  if(!data||data.length===0){
+    document.getElementById('list').innerHTML=`<div style="text-align:center;padding:40px;color:#999;background:white;border-radius:16px;">No bookings in this tab<br><br><button onclick="loadAll()" style="padding:10px 16px;background:#111;color:#D4AF37;border:none;border-radius:10px;font-weight:900;">🔄 Reload</button></div>`;
+    return;
+  }
+  document.getElementById('list').innerHTML=data.slice().reverse().map(b=>{
+    const st=String(b.status||'Unpaid'); const pay=String(b.payMethod||'');
+    const cardClass=st.includes('Approved')?'Approved':st.includes('Checked-In')?'Checked-In':st.includes('Checked-Out')?'Checked-Out':st.includes('Disapproved')?'Disapproved':st.includes('Cancelled')?'Cancelled':st.includes('Paid')?'Paid':st.includes('Awaiting')?'Awaiting':'Unpaid';
+    const isApproved = st.includes('Approved') || st.includes('Paid');
+    let buttonsHtml='';
+    if(currentTab==='checked'){ buttonsHtml=`<div style="background:#FFF8E6;padding:10px;border-radius:10px;font-size:12px;margin-bottom:8px;">📅 ${fmtDate(b.checkin)} → ${fmtDate(b.checkout)} • 👥 ${getGuestsRooms(b)}<br>Room: $${b.amount} • Food/Pool: $${getFoodBill(b.code)} • <b>Total Bill: $${getTotalBill(b)}</b> • Balance: $${getBalance(b)}</div>
+<div class="actions"><button class="btn-cancel" onclick="checkoutWithBill('${b.code}')">✅ Check-Out — Collect $${getTotalBill(b)} (+1 room back)</button></div>`; }
+    else if(currentTab==='disapproved'){ buttonsHtml=`<div class="actions"><button class="btn-delete" onclick="deleteBooking('${b.code}')">🗑️ Delete Permanently</button></div>`; }
+    else if(currentTab==='checkout'){ buttonsHtml=`<div style="font-size:11px;color:#888;padding:8px;">Checked out - History kept</div>`; }
+    else{
+      const isHotel=pay.toLowerCase().includes('hotel');
+      if(isHotel){ buttonsHtml=`<div class="actions two"><button id="checkin-${b.code}" class="btn-check" onclick="openCheckinWithPayment('${b.code}')">🏨 Check-In</button><button class="btn-cancel" onclick="updateStatus('${b.code}','Cancelled')">❌ Cancel</button></div>`; }
+      else{ 
+        const approveDisabled = isApproved ? 'disabled' : '';
+        const checkinDisabled = isApproved ? '' : 'disabled';
+        const approveText = isApproved ? '✅ Approved' : '✅ Approve';
+        buttonsHtml=`<div class="actions three">
+          <button id="approve-${b.code}" class="btn-approve" ${approveDisabled} onclick="updateStatus('${b.code}','Approved')">${approveText}</button>
+          <button class="btn-disapprove" onclick="updateStatus('${b.code}','Disapproved')">⛔ Disapprove</button>
+  <button id="checkin-${b.code}" class="btn-check" ${checkinDisabled} onclick="openCheckinWithPayment('${b.code}')">🏨 Check-In</button>
+  <button style="background:#111;color:#D4AF37;" onclick="adminExtend('${b.code}')">➕ Extend</button>
+</div><div class="actions two" style="margin-top:8px;">
+  <button onclick="adminUpgrade('${b.code}')">⬆️ Upgrade</button>
+  <button onclick="adminReschedule('${b.code}')">📅 Reschedule</button>
+          </div>`; 
+`
+// Add after your existing <div style="margin-top:8px..."> line:
+<div style="margin-top:8px;font-size:13px;"><b>${b.name}</b> • ${b.phone}<br>🏨 ${b.room} • ${b.checkin} → ${b.checkout}<br>💰 $${b.amount} • ${pay} • <b style="color:${getBalance(b)>0?'#991b1b':'#166534'};">Bal: $${getBalance(b)}</b> • Paid: $${getPaidAmount(b)}${String(b.lastAction||'').includes('PENDING_EXTEND') ? `<br><span style="background:#fef3c7;padding:4px 8px;border-radius:8px;font-size:11px;">⏳ PENDING EXTENSION: ${String(b.lastAction).split('|')[1]} • Extra $${String(b.lastAction).split('|')[4]||''} — Approve to apply</span>` : ''}</div>`
+      }
+    }
+return `<div class="card ${cardClass}"><div style="display:flex;justify-content:space-between;"><span class="code">${b.code}</span><span class="status ${cardClass}">${st}</span></div>
+<div style="margin-top:8px;font-size:13px;">
+  <b>${b.name}</b> • ${b.phone}<br>
+  🏨 ${b.room}<br>
+  📅 ${fmtDate(b.checkin)} → ${fmtDate(b.checkout)}<br>
+  👥 ${getGuestsRooms(b)}<br>
+  💰 $${b.amount} • ${pay} • <b style="color:${getBalance(b)>0?'#991b1b':'#166534'};">Bal: $${getBalance(b)}</b> • Paid: $${getPaidAmount(b)}
+</div>${buttonsHtml}</div>`;
+  }).join('');
+}
+
+async function checkoutWithBill(code){
+  const b = allData.find(x=>x.code===code);
+  const totalBill = getTotalBill(b);
+  const bal = getBalance(b);
+  if(!confirm(`Check-Out ${b.name}?\nTotal Bill: $${totalBill} (Room $${b.amount} + Food $${getFoodBill(code)})\nBalance remaining: $${bal}\n\nIf guest never pay balance, collect am now. Click OK to mark as FULLY PAID and Check-Out.`)) return;
+  if(bal > 0){
+    await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"recordCash", code, cashAmount: bal, payMethod: "Cash at Reception - Check-Out"})});
+    await new Promise(r=>setTimeout(r,800));
+  }
+  await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"updateStatus", code, newStatus:"Checked-Out"})});
+  alert(`Checked-Out ${b.name}. Total collected: $${totalBill}. Balance cleared ✅`);
+  setTimeout(loadAll,1500);
+}
+// ===== PHASE 1 + 2 =====
+function openAdminAction(title, html){
+  document.getElementById('adminActionTitle').innerText = title;
+  document.getElementById('adminActionBody').innerHTML = html;
+  document.getElementById('adminActionModal').style.display = 'flex';
+}
+function closeAdminAction(){ document.getElementById('adminActionModal').style.display='none'; }
+
+// --- TODAY ---
+function renderToday(){
+  const today = new Date().toISOString().slice(0,10);
+  const inToday = allData.filter(b=> String(b.checkin||'').slice(0,10)===today && !String(b.status).includes('Cancelled'));
+  const outToday = allData.filter(b=> String(b.checkout||'').slice(0,10)===today && !String(b.status).includes('Cancelled'));
+  const awaiting = allData.filter(b=> String(b.status||'').includes('Awaiting'));
+  const unpaid = allData.filter(b=> String(b.status||'')==='Unpaid');
+  let html = `
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+    <div style="background:#dcfce7;padding:14px;border-radius:16px;"><b>✅ ${inToday.length} Check-In Today</b><p style="font-size:11px;margin-top:6px;">${inToday.map(b=>`${b.name} • ${b.room} • ${fmtDate(b.checkin)} • ${getGuestsRooms(b)}`).join('<br>')||'None'}</p></div>
+    <div style="background:#dbeafe;padding:14px;border-radius:16px;"><b>🚪 ${outToday.length} Check-Out Today</b><p style="font-size:11px;margin-top:6px;">${outToday.map(b=>`${b.name} • ${b.room} • ${b.code}`).join('<br>')||'None'}</p></div>
+  </div>
+  <div style="background:#fef3c7;padding:14px;border-radius:16px;margin-top:10px;"><b>⏳ ${awaiting.length} Awaiting Verification</b><p style="font-size:11px;margin-top:6px;">${awaiting.map(b=>`${b.code} • ${b.name} • $${b.amount} • ${b.payMethod}`).join('<br>')||'None - All clear ✅'}</p></div>
+  <div style="background:#fee2e2;padding:14px;border-radius:16px;margin-top:10px;"><b>💰 ${unpaid.length} Unpaid</b><p style="font-size:11px;margin-top:6px;">${unpaid.map(b=>`${b.code} • ${b.name} • $${b.amount} • Bal $${getBalance(b)}`).join('<br>')||'None'}</p></div>
+  <div style="background:#111;color:#D4AF37;padding:14px;border-radius:16px;margin-top:10px;"><b>📋 All Bookings Below — Use buttons to Approve / Record Cash / Extend</b></div>`;
+  document.getElementById('list').innerHTML = html;
+  // Then render all bookings under it
+  render(allData.filter(b=>!String(b.status).includes('Cancelled') && !String(b.status).includes('Checked-Out') && !String(b.status).includes('Disapproved')), true);
+}
+
+// --- ROOM BOARD ---
+let roomStatus = JSON.parse(localStorage.getItem('lumina_room_status')||'{}');
+function renderBoard(){
+  let html = `<div style="background:#111;color:#D4AF37;padding:14px;border-radius:16px;margin-bottom:12px;"><b>🛏️ Room Status Board</b><p style="font-size:11px;margin-top:4px;">🟢 Free/Clean • 🟡 Occupied • 🔴 Dirty • 🔵 Reserved Today<br>Tap a room to change status. Cleaner go see Dirty rooms.</p></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">`;
+  roomsData.forEach(r=>{
+    const occupied = allData.some(b=> b.room===r.roomType && String(b.status).includes('Checked-In'));
+    const reserved = allData.some(b=> b.room===r.roomType && String(b.checkin||'').slice(0,10)===new Date().toISOString().slice(0,10));
+    const saved = roomStatus[r.roomType] || (occupied ? 'Occupied' : reserved ? 'Reserved' : 'Free');
+    const color = saved==='Free' ? '#dcfce7' : saved==='Occupied' ? '#fef3c7' : saved==='Dirty' ? '#fee2e2' : '#dbeafe';
+    const label = saved==='Free' ? '🟢 Free / Clean' : saved==='Occupied' ? '🟡 Occupied' : saved==='Dirty' ? '🔴 Dirty — Go Clean' : '🔵 Reserved Today';
+    html += `<div onclick="cycleRoomStatus('${r.roomType}')" style="background:${color};padding:14px;border-radius:16px;cursor:pointer;"><b>${r.roomType}</b><p style="font-size:11px;margin-top:6px;">${label}</p><p style="font-size:10px;color:#666;margin-top:4px;">${r.available} avail / ${r.total} total<br>Tap to change →</p></div>`;
+  });
+  html += `</div>`;
+  if(Object.values(roomStatus).includes('Dirty')){
+    const dirty = Object.keys(roomStatus).filter(k=>roomStatus[k]==='Dirty');
+    html += `<div style="background:#fee2e2;padding:14px;border-radius:16px;margin-top:12px;"><b>🧹 Cleaner Task:</b> ${dirty.join(', ')} need cleaning!</div>`;
+  }
+  document.getElementById('list').innerHTML = html;
+}
+function cycleRoomStatus(roomType){
+  const order = ['Free','Occupied','Dirty','Reserved'];
+  const cur = roomStatus[roomType] || 'Free';
+  roomStatus[roomType] = order[(order.indexOf(cur)+1)%order.length];
+  localStorage.setItem('lumina_room_status', JSON.stringify(roomStatus));
+  renderBoard();
+}
+
+function renderMoney(){
+  const today = new Date().toISOString().slice(0,10);
+  const todayPaid = allData.filter(b=> String(b.checkin||'').slice(0,10)===today || String(b.status||'').includes('Checked-Out')).reduce((s,b)=>s+getPaidAmount(b),0);
+  const totalPaid = allData.reduce((s,b)=>s+getPaidAmount(b),0);
+  const totalBalance = allData.filter(b=> getBalance(b)>0).reduce((s,b)=>s+getBalance(b),0);
+  const totalRev = allData.filter(b=> String(b.status||'').match(/Paid|Approved|Checked-In|Checked-Out/)).reduce((s,b)=>s+getTotalBill(b),0);
+  const totalExpenses = expensesList.reduce((s,e)=>s+Number(e.amount||0),0);
+  const totalFoodRev = posOrders.reduce((s,o)=>s+Number(o.price)*Number(o.qty||1),0);
+  const profit = (totalPaid) - totalExpenses;
+
+  document.getElementById('list').innerHTML = `
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+    <div style="background:#111;padding:14px;border-radius:16px;"><b style="color:#D4AF37;">$${totalRev.toLocaleString()}</b><p style="font-size:10px;color:#fff;">TOTAL REVENUE (Room + Food)</p></div>
+    <div style="background:white;padding:14px;border-radius:16px;"><b>$${totalPaid.toLocaleString()}</b><p style="font-size:10px;color:#888;">PAID SO FAR</p></div>
+    <div style="background:#fee2e2;padding:14px;border-radius:16px;"><b style="color:#991b1b;">$${totalBalance.toLocaleString()}</b><p style="font-size:10px;color:#991b1b;">BALANCE REMAINING</p></div>
+  </div>
+  <div style="background:white;padding:14px;border-radius:16px;margin-top:12px;"><b>📊 Daily Report — Today</b>
+    <p style="font-size:12px;margin-top:6px;">Today Paid: <b>$${todayPaid.toLocaleString()}</b> • Today Bookings: ${allData.filter(b=>String(b.checkin||'').slice(0,10)===today).length}<br>
+    Rooms Paid: $${totalPaid.toLocaleString()} • Food + Pool: $${totalFoodRev.toLocaleString()} • Expenses: -$${totalExpenses.toLocaleString()}<br><b>Profit: $${profit.toLocaleString()}</b></p>
+  </div>
+  <div style="background:white;padding:14px;border-radius:16px;margin-top:12px;"><b>⚠️ Balances Still Owed (Room + Food - Paid, Checked-Out excluded)</b>
+    <div style="margin-top:8px;">${allData.filter(b=>getBalance(b)>0).map(b=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #eee;font-size:12px;"><span>${b.code} • ${b.name} • ${b.room}<br><span style="color:#666;">Room $${b.amount} + Food $${getFoodBill(b.code)} = Total $${getTotalBill(b)} • Paid $${getPaidAmount(b)}</span></span><b style="color:#991b1b;">Bal $${getBalance(b)}</b></div>`).join('')||'All paid ✅ — No balance owed'}</div></div>
+  <div style="background:white;padding:14px;border-radius:16px;margin-top:12px;"><b>🧾 Expenses</b> <button onclick="openExpenseModal()" style="float:right;background:#111;color:#D4AF37;border:none;padding:6px 10px;border-radius:8px;font-weight:800;">+ Add</button>
+    ${expensesList.slice().reverse().map(e=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-size:12px;"><span>${e.title} • ${e.category} • ${e.date}</span><b style="color:#991b1b;">-$${Number(e.amount).toLocaleString()}</b></div>`).join('')||'<p style="font-size:12px;color:#888;">No expenses yet</p>'}
+  </div>`;
+}
+
+// ===== PHASE 3: POS + POOL + EXPENSES =====
+let posOrders = JSON.parse(localStorage.getItem('lumina_pos_orders')||'[]'); // [{code, room, item, price, qty, time}]
+let expensesList = JSON.parse(localStorage.getItem('lumina_expenses')||'[]'); // [{title, amount, category, date}]
+
+// ===== FIXED MONEY LOGIC =====
+function getFoodBill(code){
+  return posOrders.filter(o=>o.code===code).reduce((s,o)=>s+(Number(o.price)*Number(o.qty||1)),0);
+}
+function getTotalBill(b){
+  return Number(b.amount||0) + getFoodBill(b.code);
+}
+function getPaidAmount(b){
+  const st = String(b.status||'');
+  const totalBill = getTotalBill(b);
+
+  // RULE 1: Checked-Out = assume don pay all — ONLY here we clear balance
+  if(st.includes('Checked-Out')) return totalBill;
+
+  // RULE 2: FIRST check PAID:xxx — this na the real money guest pay
+  // E.g. PAID:500 for $1260 booking → return 500, no be 1260
+  const la = String(b.lastAction||'');
+  if(la.indexOf('PAID:')===0) return Number(la.replace('PAID:',''))||0;
+
+  // RULE 3: If no PAID: record, and status na Paid (old bookings wey don pay before we start tracking), then assume full room amount
+  // But if status na Approved, e NO mean Paid — Approved = 0 paid
+  if(st === 'Paid') return Number(b.amount||0);
+
+  // Approved / Unpaid / Awaiting / Checked-In with no PAID: = 0 paid
+  return 0;
+}
+
+function getBalance(b){
+  const st = String(b.status||'');
+  if(st.includes('Checked-Out') || st.includes('Cancelled')) return 0;
+  // Balance = (Room + Food) - Paid
+  // Example: Room $1260 + Food $20 = $1280 - Paid $500 = Balance $780
+  // When guest order food for POS, getFoodBill go increase, Balance go increase automatically
+  return Math.max(0, getTotalBill(b) - getPaidAmount(b));
+}
+function getBalance(b){
+  const st = String(b.status||'');
+  // Checked-Out + Cancelled = no balance, no show for Balances Owed
+  if(st.includes('Checked-Out') || st.includes('Cancelled')) return 0;
+  return Math.max(0, getTotalBill(b) - getPaidAmount(b));
+}
+// --- POS TAB ---
+function renderPOS(){
+  const checkedIn = allData.filter(b=> String(b.status||'').includes('Checked-In'));
+  let html = `
+  <div style="background:#111;color:#D4AF37;padding:14px;border-radius:16px;margin-bottom:12px;"><b>🍽️ Restaurant / Bar / Pool POS</b><p style="font-size:11px;margin-top:4px;">Add food to Checked-In guest bill • Sell Pool Pass to walk-in</p></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+    <button onclick="openPoolPass()" style="background:#111;color:#D4AF37;border:none;padding:14px;border-radius:14px;font-weight:900;cursor:pointer;">🏊 Sell Pool Day Pass</button>
+    <button onclick="openExpenseModal()" style="background:#fee2e2;border:1px solid #fca5a5;padding:14px;border-radius:14px;font-weight:900;cursor:pointer;">🧾 Add Expense</button>
+  </div>
+  <div style="background:white;padding:14px;border-radius:16px;margin-bottom:12px;"><b>🏨 Checked-In Guests — Tap to Add Food</b>
+    ${checkedIn.length ? checkedIn.map(b=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #eee;font-size:12px;"><span><b>${b.room}</b> • ${b.name} • ${b.code}<br>Room: $${b.amount} • Food: $${getFoodBill(b.code)} • <b>Total Bill: $${getTotalBill(b)}</b></span><button onclick="openAddFood('${b.code}')" style="background:#D4AF37;border:none;padding:8px 12px;border-radius:10px;font-weight:900;">+ Add Food</button></div>`).join('') : '<p style="font-size:12px;color:#888;margin-top:8px;">No guest don Check-In yet. Check-In a guest first to add food to their bill.</p>'}
+  </div>
+  <div style="background:white;padding:14px;border-radius:16px;margin-bottom:12px;"><b>🧾 Recent Food Orders</b>
+    ${posOrders.slice().reverse().slice(0,20).map(o=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f3f3f3;font-size:12px;"><span>${o.item} x${o.qty} • ${o.room} • ${o.code}</span><b>$${Number(o.price)*Number(o.qty)}</b></div>`).join('')||'<p style="font-size:12px;color:#888;">No orders yet</p>'}
+  </div>
+  <div style="background:white;padding:14px;border-radius:16px;"><b>🏊 Pool Passes Sold</b>
+    ${posOrders.filter(o=>o.type==='pool').map(o=>`<div style="padding:8px 0;border-bottom:1px solid #f3f3f3;font-size:12px;"><b>${o.code}</b> • ${o.item} • $${o.price} • ${o.time}</div>`).join('')||'<p style="font-size:12px;color:#888;">No pool pass yet</p>'}
+  </div>`;
+  document.getElementById('list').innerHTML = html;
+}
+
+function openAddFood(code){
+  const b = allData.find(x=>x.code===code); if(!b) return;
+  const menu = [
+    {name:'Fried Rice + Chicken', price: 8000},
+    {name:'Jollof Rice + Chicken', price: 7500},
+    {name:'Pepper Soup', price: 6000},
+    {name:'Grilled Fish', price: 12000},
+    {name:'Club Sandwich', price: 5000},
+    {name:'Soft Drink', price: 2000},
+    {name:'Beer', price: 3500},
+    {name:'Bottled Water', price: 1000},
+    {name:'Tea / Coffee', price: 2500},
+    {name:'Breakfast (Full)', price: 10000},
+  ];
+  openAdminAction('🍽️ Add Food — ' + b.room, `
+    <p style="font-size:13px;">${b.name} • ${b.code}<br>Current Food Bill: <b>$${getFoodBill(code)}</b> • Total Bill: <b>$${getTotalBill(b)}</b></p>
+    <label style="font-size:12px;font-weight:800;">Pick Item</label>
+    <select id="foodItem" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">${menu.map(m=>`<option value="${m.name}|${m.price}">${m.name} — $${m.price}</option>`).join('')}</select>
+    <label style="font-size:12px;font-weight:800;">Quantity</label>
+    <input id="foodQty" type="number" value="1" min="1" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label style="font-size:12px;font-weight:800;">Note (optional)</label>
+    <input id="foodNote" placeholder="e.g. No pepper, extra chicken" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;">
+    <button onclick="confirmAddFood('${code}')" style="width:100%;background:#111;color:#D4AF37;border:none;padding:13px;border-radius:10px;font-weight:900;margin-top:12px;">Add to Guest Bill →</button>
+  `);
+}
+async function confirmAddFood(code){
+  const b = allData.find(x=>x.code===code);
+  const [item, price] = document.getElementById('foodItem').value.split('|');
+  const qty = Number(document.getElementById('foodQty').value||1);
+  const note = document.getElementById('foodNote').value||'';
+  const order = { code, room: b.room, item: item + (note ? ' ('+note+')' : ''), price: Number(price), qty, time: new Date().toLocaleString(), type: 'food' };
+  posOrders.push(order);
+  localStorage.setItem('lumina_pos_orders', JSON.stringify(posOrders));
+  // Also send to Sheets so e no lose if you clear browser — saved in Orders sheet
+  fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"addOrder", code, room: b.room, item: order.item, price: Number(price), qty, guestName: b.name})});
+  closeAdminAction();
+  alert(`Added ${item} x${qty} = $${Number(price)*qty} to ${b.room} bill. New Total Bill: $${getTotalBill(b) + Number(price)*qty}`);
+  renderPOS();
+}
+
+function openPoolPass(){
+  openAdminAction('🏊 Sell Pool Day Pass', `
+    <label style="font-size:12px;font-weight:800;">Buyer Name</label>
+    <input id="poolName" placeholder="Full name" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label style="font-size:12px;font-weight:800;">Phone</label>
+    <input id="poolPhone" placeholder="Phone" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label style="font-size:12px;font-weight:800;">Pass Type</label>
+    <select id="poolType" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+      <option value="Adult Day Pass|5000">Adult Day Pass — $5000</option>
+      <option value="Child Day Pass|3000">Child Day Pass — $3000</option>
+      <option value="Family Pass (4 ppl)|15000">Family Pass (4 ppl) — $15000</option>
+      <option value="Guest of Room Guest|0">Guest of Room Guest — Free</option>
+    </select>
+    <label style="font-size:12px;font-weight:800;">Payment</label>
+    <select id="poolPay" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;"><option>Cash at Reception</option><option>OPay Transfer</option><option>Paystack</option></select>
+    <button onclick="confirmPoolPass()" style="width:100%;background:#111;color:#D4AF37;border:none;padding:13px;border-radius:10px;font-weight:900;margin-top:12px;">Generate Pool Ticket →</button>
+  `);
+}
+async function confirmPoolPass(){
+  const name = document.getElementById('poolName').value.trim();
+  const phone = document.getElementById('poolPhone').value.trim();
+  const [type, price] = document.getElementById('poolType').value.split('|');
+  const pay = document.getElementById('poolPay').value;
+  if(!name||!phone) return alert('Enter name + phone');
+  const code = 'POOL-' + Date.now().toString().slice(-6);
+  const order = { code, room: 'Pool', item: type + ' — ' + name + ' ('+phone+')', price: Number(price), qty: 1, time: new Date().toLocaleString(), type: 'pool' };
+  posOrders.push(order);
+  localStorage.setItem('lumina_pos_orders', JSON.stringify(posOrders));
+  fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"addPoolPass", code, guestName: name, phone, passType: type, price: Number(price), payMethod: pay})});
+  closeAdminAction();
+  alert(`Pool Pass Generated! 🎟️\nCode: ${code}\n${type} for ${name}\nPrice: $${price} • Paid via ${pay}\nShow this code at pool gate.`);
+  renderPOS();
+}
+
+// --- EXPENSES ---
+function openExpenseModal(){
+  openAdminAction('🧾 Add Expense', `
+    <label style="font-size:12px;font-weight:800;">What did hotel spend on?</label>
+    <input id="expTitle" placeholder="e.g. Diesel, Cleaning, Plumber" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label style="font-size:12px;font-weight:800;">Amount</label>
+    <input id="expAmt" type="number" placeholder="e.g. 50000" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label style="font-size:12px;font-weight:800;">Category</label>
+    <select id="expCat" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;"><option>Diesel / Fuel</option><option>Cleaning</option><option>Maintenance</option><option>Food / Restaurant</option><option>Staff / Salary</option><option>Other</option></select>
+    <button onclick="confirmExpense()" style="width:100%;background:#111;color:#D4AF37;border:none;padding:13px;border-radius:10px;font-weight:900;margin-top:12px;">Save Expense</button>
+  `);
+}
+function confirmExpense(){
+  const title = document.getElementById('expTitle').value.trim();
+  const amt = Number(document.getElementById('expAmt').value||0);
+  const cat = document.getElementById('expCat').value;
+  if(!title||!amt) return alert('Enter title + amount');
+  expensesList.push({title, amount: amt, category: cat, date: new Date().toISOString().slice(0,10)});
+  localStorage.setItem('lumina_expenses', JSON.stringify(expensesList));
+  fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"addExpense", title, amount: amt, category: cat})});
+  closeAdminAction();
+  alert(`Expense saved: ${title} — $${amt}`);
+  renderMoney();
+}
+
+// --- ACTIONS ---
+// Call this instead of updateStatus(code,'Checked-In') directly
+function openCheckinWithPayment(code){
+  const b = allData.find(x=>x.code===code); if(!b) return;
+  const totalBill = getTotalBill(b);
+  const alreadyPaid = getPaidAmount(b);
+  const bal = Math.max(0, totalBill - alreadyPaid);
+  openAdminAction('🏨 Check-In — Collect Payment', `
+    <p style="font-size:13px;">${b.name} • ${b.room}<br>Total Bill: <b>$${totalBill}</b> (Room $${b.amount} + Food $${getFoodBill(code)})<br>Already Paid: $${alreadyPaid} • <b style="color:#991b1b;">Balance: $${bal}</b></p>
+    <label style="font-size:12px;font-weight:800;">How much guest dey pay now at Check-In?</label>
+    <input id="checkinPayAmt" type="number" value="${bal}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label style="font-size:12px;font-weight:800;">Payment Method</label>
+    <select id="checkinPayMethod" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;"><option>Cash at Reception</option><option>OPay Transfer</option><option>Bank Transfer</option><option>Paystack</option><option>Pay Later — Still Owing</option></select>
+    <div style="background:#f8f5ef;padding:10px;border-radius:10px;font-size:12px;margin-top:8px;">If guest pay full $${bal} now, balance go become $0. If e pay part (e.g. $500), balance go show for Checked-In card as <b>Bal $${bal - 500}</b>.</div>
+    <button onclick="confirmCheckinWithPayment('${code}')" style="width:100%;background:#111;color:#D4AF37;border:none;padding:13px;border-radius:10px;font-weight:900;margin-top:12px;">✅ Check-In Guest</button>
+  `);
+}
+async function confirmCheckinWithPayment(code){
+  const amt = Number(document.getElementById('checkinPayAmt').value||0);
+  const method = document.getElementById('checkinPayMethod').value;
+  closeAdminAction();
+  // 1. Record payment if any
+  if(amt > 0 && !method.includes('Pay Later')){
+    await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"recordCash", code, cashAmount: amt, payMethod: method})});
+    await new Promise(r=>setTimeout(r,800));
+  }
+  // 2. Check-In
+  await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"updateStatus", code, newStatus:"Checked-In"})});
+  alert(`Checked-In! Collected $${amt} via ${method}`);
+  setTimeout(loadAll,1500);
+}
+
+// Check-Out: Assume don pay all — auto-clear balance
+async function checkoutWithBill(code){
+  const b = allData.find(x=>x.code===code);
+  const totalBill = getTotalBill(b);
+  const bal = getBalance(b);
+  if(!confirm(`Check-Out ${b.name}?\nTotal Bill: $${totalBill} (Room $${b.amount} + Food $${getFoodBill(code)})\nBalance remaining: $${bal}\n\nIf guest never pay balance, collect am now. Click OK to mark as FULLY PAID and Check-Out.`)) return;
+  // Mark as fully paid before check-out
+  if(bal > 0){
+    await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"recordCash", code, cashAmount: bal, payMethod: "Cash at Reception - Check-Out"})});
+    await new Promise(r=>setTimeout(r,800));
+  }
+  await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"updateStatus", code, newStatus:"Checked-Out"})});
+  alert(`Checked-Out ${b.name}. Total collected: $${totalBill}. Balance cleared ✅`);
+  setTimeout(loadAll,1500);
+}
+function adminExtend(code){
+  const b = allData.find(x=>x.code===code); if(!b) return;
+  const oldN = Math.max(1, Math.round((new Date(b.checkout)-new Date(b.checkin))/86400000));
+  const perNight = Math.round((Number(b.amount)||0)/oldN);
+  openAdminAction('➕ Extend Stay', `
+    <p style="font-size:13px;">${b.room} • ${b.checkin} → ${b.checkout} • $${b.amount} • Per night: $${perNight}</p>
+    <label style="font-size:12px;font-weight:800;">Extra Nights</label>
+    <input id="extNights" type="number" value="1" min="1" max="30" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;" oninput="document.getElementById('extPreview').innerText='Extra: $'+(${perNight}*Number(this.value||1))+' • New total: $'+(${Number(b.amount)||0}+${perNight}*Number(this.value||1)))">
+    <div id="extPreview" style="background:#f8f5ef;padding:10px;border-radius:10px;font-size:12px;">Extra: $${perNight} • New total: $${Number(b.amount)+perNight}</div>
+    <label style="font-size:12px;font-weight:800;display:block;margin-top:10px;">Guest don pay for extension?</label>
+    <select id="extPay" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin-top:6px;"><option value="Cash at Reception">Cash at Reception — Paid Now</option><option value="OPay Transfer">OPay Transfer — Receipt don come</option><option value="Paystack">Paystack — Paid</option><option value="Pending">Pending — Guest go pay later (Awaiting)</option></select>
+    <button onclick="confirmAdminExtend('${code}', ${perNight})" style="width:100%;background:#111;color:#D4AF37;border:none;padding:13px;border-radius:10px;font-weight:900;margin-top:12px;">Confirm Extend</button>
+  `);
+}
+async function confirmAdminExtend(code, perNight){
+  const extra = Number(document.getElementById('extNights').value||1);
+  const pay = document.getElementById('extPay').value;
+  const b = allData.find(x=>x.code===code);
+  const newCheckout = new Date(b.checkout); newCheckout.setDate(newCheckout.getDate()+extra);
+  const iso = newCheckout.toISOString().slice(0,10);
+  const newTotal = Number(b.amount)+perNight*extra;
+  closeAdminAction();
+  if(pay==='Pending'){
+    await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"extend_cash", code, newCheckout: iso, newAmount: newTotal, extraNights: extra, extraAmount: perNight*extra})});
+    alert(`Extension requested — Pending. Checkout go change to ${iso} once you approve payment.`);
+  } else {
+    await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"extend_paystack", code, newCheckout: iso, newAmount: newTotal, extraNights: extra, extraAmount: perNight*extra, paystackRef: pay})});
+    alert(`Extended +${extra} night(s)! New checkout ${iso} • New total $${newTotal}`);
+  }
+  setTimeout(loadAll,1500);
+}
+function adminUpgrade(code){
+  const b = allData.find(x=>x.code===code); if(!b) return;
+  openAdminAction('⬆️ Upgrade Room', `
+    <p style="font-size:13px;">Current: <b>${b.room}</b> • $${b.amount}</p>
+    <label style="font-size:12px;font-weight:800;">New Room Type</label>
+    <select id="upRoom" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">${roomsData.map(r=>`<option value="${r.roomType}">${r.roomType}</option>`).join('')}</select>
+    <label style="font-size:12px;font-weight:800;">New Total Amount (Enter difference total)</label>
+    <input id="upAmount" type="number" value="${b.amount}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;">
+    <label style="font-size:12px;font-weight:800;display:block;margin-top:8px;">Guest don pay difference?</label>
+    <select id="upPay" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin-top:6px;"><option>Cash at Reception — Paid</option><option>Pending — Awaiting Verification</option></select>
+    <button onclick="confirmAdminUpgrade('${code}')" style="width:100%;background:#111;color:#D4AF37;border:none;padding:13px;border-radius:10px;font-weight:900;margin-top:12px;">Confirm Upgrade</button>
+  `);
+}
+async function confirmAdminUpgrade(code){
+  const newRoom = document.getElementById('upRoom').value;
+  const newAmount = Number(document.getElementById('upAmount').value||0);
+  const pay = document.getElementById('upPay').value;
+  closeAdminAction();
+  await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"upgradeRoom", code, newRoom, newAmount, payStatus: pay})});
+  alert(`Upgraded to ${newRoom} • New total $${newAmount} • ${pay}`);
+  setTimeout(loadAll,1500);
+}
+function adminReschedule(code){
+  const b = allData.find(x=>x.code===code); if(!b) return;
+  openAdminAction('📅 Reschedule', `
+    <p style="font-size:13px;">${b.room} • Now: ${b.checkin} → ${b.checkout}</p>
+    <label style="font-size:12px;font-weight:800;">New Check-In</label><input id="rsIn" type="date" value="${String(b.checkin).slice(0,10)}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label style="font-size:12px;font-weight:800;">New Check-Out</label><input id="rsOut" type="date" value="${String(b.checkout).slice(0,10)}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label style="font-size:12px;font-weight:800;">New Total (if price change)</label><input id="rsAmt" type="number" value="${b.amount}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;">
+    <button onclick="confirmAdminReschedule('${code}')" style="width:100%;background:#111;color:#D4AF37;border:none;padding:13px;border-radius:10px;font-weight:900;margin-top:12px;">Move Booking</button>
+  `);
+}
+async function confirmAdminReschedule(code){
+  const ni = document.getElementById('rsIn').value; const no = document.getElementById('rsOut').value; const amt = Number(document.getElementById('rsAmt').value||0);
+  if(!ni||!no||new Date(no)<=new Date(ni)) return alert('Pick valid dates');
+  closeAdminAction();
+  await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"reschedule", code, newCheckin: ni, newCheckout: no, newAmount: amt})});
+  alert(`Rescheduled to ${ni} → ${no}`);
+  setTimeout(loadAll,1500);
+}
+
+async function updateStatus(code,newStatus){
+  const approveBtn = document.getElementById(`approve-${code}`);
+  const checkinBtn = document.getElementById(`checkin-${code}`);
+  if(!confirm(`Change ${code} to ${newStatus}?`)) return;
+  
+  if(newStatus === 'Approved'){
+    if(approveBtn){
+      approveBtn.disabled = true;
+      approveBtn.innerText = "✅ Approved";
+      approveBtn.style.opacity = "0.5";
+    }
+    if(checkinBtn){
+      checkinBtn.disabled = false;
+      checkinBtn.style.opacity = "1";
+    }
+  }
+  if(newStatus === 'Checked-In' && checkinBtn){
+    checkinBtn.disabled = true;
+    checkinBtn.innerText = "🏨 Checking-In...";
+  }
+
+  await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"updateStatus",code,newStatus})}); 
+  setTimeout(loadAll,1500); 
+}
+async function deleteBooking(code){ if(!confirm(`DELETE ${code}?`)) return; await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"deleteBooking",code})}); setTimeout(loadAll,1500); }
+function filterCards(){ renderTab(); }
+function fillRoomSelect(){ const sel=document.getElementById('abRoom'); if(!sel) return; if(!roomsData||roomsData.length===0){ sel.innerHTML='<option>Loading...</option>'; return; } sel.innerHTML=roomsData.map(r=>`<option value="${r.roomType}">${r.roomType} - ${r.available} avail</option>`).join(''); }
+function openAddBooking(){ fillRoomSelect(); document.getElementById('addModal').classList.add('open'); }
+function closeAddBooking(){ document.getElementById('addModal').classList.remove('open'); }
+async function submitManualBooking(){
+  const name=document.getElementById('abName').value.trim(); const phone=document.getElementById('abPhone').value.trim(); const email=document.getElementById('abEmail').value.trim(); const room=document.getElementById('abRoom').value; const checkin=document.getElementById('abCheckin').value; const checkout=document.getElementById('abCheckout').value; const guests=document.getElementById('abGuests').value; const amount=document.getElementById('abAmount').value; const payMethod=document.getElementById('abPay').value; const status=document.getElementById('abStatus').value;
+  if(!name||!phone||!room||!checkin||!checkout){ alert("Fill Name, Phone, Room, Dates"); return; }
+  const btn=document.getElementById('abBtn'); btn.disabled=true; btn.innerText="Saving..."; const code='LMN-MANUAL-'+Date.now().toString().slice(-6); const nights=Math.max(1,Math.round((new Date(checkout)-new Date(checkin))/(1000*60*60*24))); const payload={action:"book",name,phone,email,room,price:parseFloat(amount)||0,checkin,checkout,guests,payMethod,status,nights,amount:parseFloat(amount)||0,receiptBase64:"",receiptName:"",receiptMime:"",paystackRef:"",bookingCode:code};
+  await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify(payload)}); alert("Added: "+code); closeAddBooking(); btn.disabled=false; btn.innerText="Add Booking"; setTimeout(loadAll,1500);
+}
+loadAll();
+</script>
+
+
+
+
+<div id="adminActionModal" onclick="if(event.target===this) closeAdminAction()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:white;border-radius:20px;padding:20px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto;">
+    <h2 id="adminActionTitle" style="font-size:16px;font-weight:900;margin-bottom:12px;">Action</h2>
+    <div id="adminActionBody"></div>
+  </div>
+</div>
+</body>
+</html>

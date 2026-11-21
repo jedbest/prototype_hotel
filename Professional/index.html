@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUMINA - Hotels & Resorts</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://js.paystack.co/v1/inline.js"></script>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="logo">LUMINA <span>HOTELS & RESORTS</span></div>
+  <div style="display:flex; gap:8px; align-items:center;">
+  <button onclick="showPage('checkAvailability')" style="background:transparent; color:#D4AF37; border:1px solid #D4AF37; padding:14px 22px; border-radius:30px; font-weight:800; cursor:pointer;">Check Availability</button>
+  <button id="topBookNowBtn" style="background:#0F0F0F; color:#D4AF37; border:1px solid #D4AF37; padding:14px 30px; border-radius:30px; font-weight:800;" onclick="showPage('rooms')">Book Now</button>
+</div>
+</nav>
+
+<!-- PAGE 1: HOME - PREMIUM REDESIGN -->
+<section id="home" class="page">
+  <!-- HERO -->
+  <div class="hero">
+    <video autoplay muted loop playsinline class="hero-video">
+      <source src="hero_video.mp4" type="video/mp4">
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-badge">✦ NSUKKA'S ONLY 5-STAR • EST. 2018</div>
+      <div class="hero-rating">★★★★★ <span>4.9</span> <i>• 2,300+ happy guests</i></div>
+      <h1>Your Luxury Escape<br><em>Awaits in Nsukka</em></h1>
+      <p class="hero-sub">Sleep like royalty, pay like home.</p>
+    
+    </div>
+
+  
+  </div>
+
+  <!-- STATS -->
+  <div class="home-stats">
+    <div><b>120+</b><span>Luxury Rooms</span></div>
+    <div><b>15k+</b><span>Happy Guests</span></div>
+    <div><b>4.9★</b><span>Guest Rating</span></div>
+    <div><b>24/7</b><span>Power & Service</span></div>
+  </div>
+
+  <!-- FEATURED ROOMS -->
+  <div class="featured">
+    <div class="section-head-new">
+      <div>
+        <span class="eyebrow">HANDPICKED FOR YOU</span>
+        <h2>Featured Rooms</h2>
+        <p>Our most loved rooms this week. Tap to see details & live availability.</p>
+      </div>
+      <button onclick="showPage('rooms')" class="link-btn">View All Rooms →</button>
+    </div>
+    <div id="featuredGrid" class="room-grid-new"></div>
+  </div>
+
+<!-- WHY LUMINA - WITH PICTURES -->
+<div class="why-lumina">
+  <span class="eyebrow" style="text-align:center;display:block;">WHY GUESTS CHOOSE LUMINA</span>
+  <h2 style="text-align:center;">More Than Just A Stay</h2>
+  <p style="text-align:center;color:#777;font-size:14px;margin:-8px 0 18px 0;">No be just room. Na experience.</p>
+
+  <div class="why-grid-img">
+    <!-- 1. POOL -->
+    <div class="why-img-card" onclick="showPage('rooms')">
+      <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80" alt="Infinity Pool">
+      <div class="why-img-overlay"></div>
+      <div class="why-img-text">
+        <span class="why-img-tag">24HRS OPEN</span>
+        <h3>Infinity Pool + Sky Bar</h3>
+        <p>Swim under the stars. Sunset view over Nsukka hills.</p>
+        <span class="why-img-link">Explore Rooms →</span>
+      </div>
+    </div>
+
+    <!-- 2. FOOD -->
+    <div class="why-img-card" onclick="showPage('rooms')">
+      <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80" alt="Fine Dining">
+      <div class="why-img-overlay"></div>
+      <div class="why-img-text">
+        <span class="why-img-tag">CHEF'S TABLE</span>
+        <h3>Nigerian Flavours, Elevated</h3>
+        <p>From ofe nsala to continental — served in-room in 15 mins.</p>
+        <span class="why-img-link">Explore Rooms →</span>
+      </div>
+    </div>
+
+    <!-- 3. BEDROOM -->
+    <div class="why-img-card" onclick="showPage('rooms')">
+      <img src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800&q=80" alt="Luxury Bedroom">
+      <div class="why-img-overlay"></div>
+      <div class="why-img-text">
+        <span class="why-img-tag">KING BEDS</span>
+        <h3>Sleep Like Royalty</h3>
+        <p>Blackout curtains, rain shower & premium toiletries.</p>
+        <span class="why-img-link">Explore Rooms →</span>
+      </div>
+    </div>
+
+    <!-- 4. POWER / SECURITY -->
+    <div class="why-img-card" onclick="showPage('rooms')">
+      <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80" alt="Hotel Building">
+      <div class="why-img-overlay"></div>
+      <div class="why-img-text">
+        <span class="why-img-tag">NEVER A BLACKOUT</span>
+        <h3>24/7 Power & Security</h3>
+        <p>CCTV, keycard & trained security, day and night.</p>
+        <span class="why-img-link">Explore Rooms →</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- REVIEWS -->
+  <div class="reviews">
+    <span class="eyebrow">GUEST LOVE</span>
+    <h2>What Guests Say</h2>
+    <div class="review-scroll">
+      <div class="review-card"><div>★★★★★</div><p>"Best sleep I don get for Enugu State. Room clean, AC cold, power no blink once."</p><b>— Chiamaka O., Lagos</b><small>Grand Opera Suite • 2 nights</small></div>
+      <div class="review-card"><div>★★★★★</div><p>"I booked for my wedding night. Staff decorated the room, pool was magic."</p><b>— Mr & Mrs Eze, Enugu</b><small>Penthouse Loft • 1 night</small></div>
+      <div class="review-card"><div>★★★★★</div><p>"Booked on WhatsApp in 5 mins. Paid at hotel. No wahala at all."</p><b>— Ifeanyi K., Abuja</b><small>Deluxe Room • 3 nights</small></div>
+    </div>
+  </div>
+
+  <!-- LOCATION CTA -->
+  <div class="home-cta">
+    <div>
+      <span class="eyebrow" style="color:#D4AF37;">FIND US EASILY</span>
+      <h2 style="color:#D4AF37;">2 Mins From Ogige<br>Main Market, Nsukka</h2>
+      <p>Behind Ogige Main Market, Nsukka, Enugu State. Safe, central, quiet.</p>
+    </div>
+    <div class="home-cta-btns">
+      <button onclick="showPage('rooms')" class="btn-gold">Book Now — Reserve Your Stay</button>
+      <a href="https://wa.me/2349134435650" target="_blank" class="btn-ghost" style="text-align:center;text-decoration:none;">💬 WhatsApp Us</a>
+    </div>
+  </div>
+</section>
+
+<!-- HIDDEN PAGE: CHECK AVAILABILITY -->
+<section id="checkAvailability" class="page" style="display:none; background:#fafafa; min-height:80vh;">
+  <div style="max-width:520px; margin:0 auto; padding:20px;">
+    
+    <button onclick="showPage('home')" style="background:#FFF3CD; border:1px solid #C8B896; padding:8px 14px; border-radius:20px; font-weight:800; cursor:pointer; margin-bottom:16px;">← Back to Home</button>
+
+    <div style="background:white; border-radius:20px; padding:24px; box-shadow:0 10px 30px rgba(0,0,0,0.06); border:1px solid #eee;">
+      <h2 style="font-family:'Playfair Display',serif; font-size:28px; margin:0;">Check Availability</h2>
+      <p style="color:#666; font-size:14px; margin:8px 0 20px 0;">Tell us when you want to come, we go show you only rooms wey dey free.</p>
+
+      <label style="font-weight:800; font-size:13px;">CHECK-IN</label>
+      <input type="date" id="caCheckin" style="width:100%; padding:14px; border-radius:12px; border:1px solid #ddd; margin:6px 0 14px 0; font-size:15px;">
+
+      <label style="font-weight:800; font-size:13px;">CHECK-OUT</label>
+      <input type="date" id="caCheckout" style="width:100%; padding:14px; border-radius:12px; border:1px solid #ddd; margin:6px 0 14px 0; font-size:15px;">
+
+      <label style="font-weight:800; font-size:13px;">GUESTS & ROOMS</label>
+      <div id="caGuestRoomDisplay" onclick="openGuestModal()" style="border:2px solid #C8B896; padding:14px; border-radius:12px; background:#FFFEFB; cursor:pointer; font-weight:700; margin:6px 0 20px 0;">
+        1 guest · 1 room
+      </div>
+      <p style="font-size:12px; color:#888; margin:-14px 0 20px 0;">Tap to change adults, children, rooms</p>
+
+      <button onclick="doCheckAvailability()" style="width:100%; background:#111; color:#D4AF37; padding:16px; border-radius:12px; font-weight:900; font-size:16px; border:none; cursor:pointer;">Check Availability →</button>
+      
+      <button onclick="showPage('rooms')" style="width:100%; background:transparent; color:#666; padding:12px; border:none; font-weight:700; font-size:13px; cursor:pointer; margin-top:8px;">Skip — View all rooms</button>
+    </div>
+
+    <div style="text-align:center; margin-top:16px; font-size:12px; color:#999;">
+      Free cancellation 24hrs before • Pay at hotel available
+    </div>
+  </div>
+</section>
+
+
+<!-- PAGE 2: ROOMS -->
+<!-- PAGE 2: ROOMS - FIXED LAYOUT -->
+<section id="rooms" class="page" style="display:none">
+  <div class="rooms-layout" style="display:flex; gap:24px; max-width:1300px; margin:0 auto; padding:20px; align-items:flex-start;">
+    
+    <!-- LEFT COLUMN - 300px FIXED -->
+    <div class="search-filters" style="width:300px; min-width:280px; top:20px; display:flex; flex-direction:column; gap:20px;">
+      
+
+
+      <!-- Box 2: Filters -->
+      <div class="filters" style="background:white; border:1px solid #eee; border-radius:16px; padding:16px; box-shadow:0 4px 15px rgba(0,0,0,0.05);">
+        <h3>Filters</h3>
+        <label>Price per night</label>
+        <input type="range" id="priceRange" min="100" max="1000" value="1000" oninput="filterRooms()">
+        <p>Avg: $<span id="priceVal">1000</span></p>
+        
+        <label style="font-weight:800; display:block; margin-top:12px;">Amenities</label>
+        <div style="background:#dcfce7;color:#166534;padding:6px 10px;border-radius:20px;display:inline-block;font-size:12px;font-weight:800;margin:8px 0 10px 0;">✓ Free Wi-Fi included</div>
+        <div><input type="checkbox" class="amen" value="Breakfast"> Breakfast</div>
+        <div><input type="checkbox" class="amen" value="Pool"> Pool</div>
+        
+        <label style="font-weight:800; display:block; margin-top:12px;">Bed Type</label>
+        <div><input type="checkbox" class="bed" value="King"> King Bed</div>
+        <div><input type="checkbox" class="bed" value="Double"> Two Doubles</div>
+      </div>
+
+    </div>
+    
+    <!-- RIGHT COLUMN - TAKES ALL REMAINING SPACE -->
+    <div style="flex:1; min-width:0;">
+      <h2 id="resultsCount" style="margin-bottom:16px;">Rooms found</h2>
+      <div id="roomsGrid" class="room-grid" style="display:grid; grid-template-columns:1 1fr; gap:20px;"></div>
+    </div>
+
+  </div>
+</section>
+
+
+
+<!-- PAGE 3: ROOM DETAILS - LUXURY REDESIGN -->
+<section id="roomDetail" class="page" style="display:none; background:#fafafa;">
+  <div style="max-width:1100px; margin:0 auto; padding:20px;">
+    
+    <button onclick="goBackToRooms()" style="margin-bottom:16px; background:#FFF3CD; border:1px solid #C8B896; padding:8px 14px; border-radius:20px; font-weight:800; cursor:pointer;">← Back to Rooms</button>
+
+    <!-- TOP GALLERY -->
+    <div style="display:grid; grid-template-columns:2fr 1fr; gap:12px; height:420px;">
+      <img id="dMainImg" src="" style="width:100%; height:100%; object-fit:cover; border-radius:16px 0 0 16px;">
+      <div style="display:grid; grid-template-rows:1fr 1fr; gap:12px;">
+        <img id="dImg2" src="" style="width:100%; height:100%; object-fit:cover; border-radius:0 16px 0 0;">
+        <img id="dImg3" src="" style="width:100%; height:100%; object-fit:cover; border-radius:0 0 16px 0;">
+      </div>
+    </div>
+    <div id="dThumbs" style="display:flex; gap:10px; margin-top:12px; overflow-x:auto;"></div>
+
+    <!-- MIDDLE: DESCRIPTION -->
+    <div style="display:flex; gap:24px; margin-top:30px; align-items:flex-start;">
+      
+      <!-- LEFT: Room Info -->
+      <div style="flex:1.2; background:white; border-radius:16px; padding:24px; border:1px solid #eee;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h1 id="dName" style="font-family:'Playfair Display',serif; font-size:32px; margin:0;">Grand Opera Suite</h1>
+
+        </div>
+        <p id="dSub" style="color:#666; margin-top:6px;">600 sqft • King Bed • City View • 2 Guests Max</p>
+
+        <h3 style="margin-top:28px; font-size:18px; font-weight:900;">About this room</h3>
+        <p id="dAbout" style="line-height:1.7; color:#444; margin-top:8px;"></p>
+
+        <h3 style="margin-top:28px;">Amenities</h3>
+        <div id="dAmenities" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
+
+        <!-- INTERIOR HIGHLIGHTS - WHAT YOU ASKED FOR -->
+        <h3 style="margin-top:32px; font-size:18px; font-weight:900;">Inside the Room</h3>
+        <div style="display:flex;  flex-wrap: wrap; gap:16px; padding: 0; margin-top:16px; max-width: 900px; ">
+
+          <div style="background:#fafafa; border-radius:12px; overflow:hidden; border:1px solid #eee; ">
+            <img id="dBathImg" src="https://images.unsplash.com/photo-1620626011761-996317b8d101?w=600" style="width:100%; height:160px; object-fit:cover;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.07);margin-bottom:20px;">
+            <div style="padding:12px;"><b>🚿 Luxury Bathroom</b><br><small style="color:#666;">Rain shower, freestanding tub, premium toiletries, heated floor</small></div>
+          </div>
+
+          <div style="background:#fafafa; border-radius:12px; overflow:hidden; border:1px solid #eee;">
+            <img id="dWardrobeImg" src="https://images.unsplash.com/photo-1558997519-83ea9252edf8?w=600" style="width:100%; height:160px; object-fit:cover;">
+            <div style="padding:12px;"><b>👔 Wardrobe & Dressing</b><br><small style="color:#666;">Walk-in wardrobe, safe box, iron, full-length mirror</small></div>
+          </div>
+
+          <div style="background:#fafafa; border-radius:12px; overflow:hidden; border:1px solid #eee;">
+            <img id="dBedImg" src="https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=600" style="width:100%; height:160px; object-fit:cover;">
+            <div style="padding:12px;"><b>🛏️ Bedroom Area</b><br><small style="color:#666;">King-size bed, 42" Smart TV, blackout curtains, work desk</small></div>
+          </div>
+
+          <div style="background:#fafafa; border-radius:12px; overflow:hidden; border:1px solid #eee;">
+            <img id="dBalconyImg" src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600" style="width:100%; height:160px; object-fit:cover;">
+            <div style="padding:12px;"><b>🌇 Balcony / View</b><br><small style="color:#666;">Private balcony, city view, seating area, sunset view</small></div>
+          </div>
+
+        </div>
+      
+
+        <div style="margin-top:24px; background:#FFF8E6; border:1px dashed #C8B896; border-radius:12px; padding:16px; font-size:13px;">
+          <b>House Rules:</b> Check-in 2PM • Check-out 12PM • No smoking • No pets • Free cancellation 24hrs before
+        </div>
+      </div>
+
+    </div>
+
+<!-- LUXURY COMPACT CALENDAR -->
+<div style="background:#fff; border:1px solid #eee; border-radius:16px; padding:18px; margin-top:20px;">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+    <div>
+      <h3 style="margin:0; font-size:17px; font-weight:900;">Availability</h3>
+      <p id="calSelectedLabel" style="margin:4px 0 0 0; font-size:13px; color:#666;">Tap a date to see rooms left</p>
+    </div>
+    <div style="display:flex; gap:6px; align-items:center;">
+      <button onclick="changeCalMonth(-1)" style="width:32px;height:32px;border-radius:50%;border:1px solid #ddd;background:#fff;cursor:pointer;">‹</button>
+      <b id="calMonthLabel" style="font-size:14px; min-width:110px; text-align:center;">Nov 2026</b>
+      <button onclick="changeCalMonth(1)" style="width:32px;height:32px;border-radius:50%;border:1px solid #ddd;background:#fff;cursor:pointer;">›</button>
+    </div>
+  </div>
+
+  <div id="availabilityCalendar" style="margin-top:14px;"></div>
+
+  <div style="display:flex; gap:14px; margin-top:12px; flex-wrap:wrap; font-size:11px; color:#666;">
+    <span>🟢 <b style="color:#111;">Available</b></span>
+    <span>🟡 <b style="color:#111;">Only 2 left</b></span>
+    <span>🔴 <b style="color:#111;">Fully booked</b></span>
+    <span>⚫ <b style="color:#111;">Selected</b></span>
+  </div>
+</div>
+
+    
+    <!-- BOTTOM: BOOKING BOX - NOW COMES DOWN AS YOU WANTED -->
+   
+
+    <div style="margin-top:30px; background:white; border-radius:16px; padding:20px; border:1px solid #eee; box-shadow:0 10px 30px rgba(0,0,0,0.06); max-width:500px;">
+      <div class="search-box" style="background:white; border:1px solid #eee; border-radius:16px; padding:16px; box-shadow:0 4px 15px rgba(0,0,0,0.05);">
+        <h3 style="margin-bottom:12px;">Booking Details</h3>
+        <div style="margin-bottom:10px;"><label>CHECK-IN</label><input type="date" placeholder="DD/MM/YYYY" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'" id="dCheckin" style="width:100%;"></div>
+        <div style="margin-bottom:10px;"><label>CHECK-OUT</label><input type="date" placeholder="DD/MM/YYYY" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'" id="dCheckout" style="width:100%;"></div>
+        <div>
+          <label>GUESTS & ROOMS</label>
+          <div class="guest-room-field" id="guestRoomField" style="border:2px solid #C8B896; padding:10px; border-radius:10px; background:#FFFEFB;">
+            <span id="guestRoomDisplay">1 guest · 1 room</span>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="dPrice" style="margin:0;">$349 / night</h2>
+      <div id="priceBreakdown" style="margin-top:12px;"></div>
+
+      <button class="reserve" onclick="goCheckout()" style="width:100%; margin-top:16px; background:#111; color:#D4AF37; padding:16px; border-radius:12px; font-weight:900; font-size:16px; border:none;">Reserve →</button>
+      <p style="text-align:center; color:#888; font-size:12px; margin-top:8px;">You can choose to pay at the hotel</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- PAGE 4: CHECKOUT - FIXED -->
+<div id="checkout" class="page">
+  <div style="max-width:520px; margin:0 auto; background:white; border-radius:16px; padding:20px; margin-top:20px; box-shadow:0 10px 30px rgba(0,0,0,0.08);">
+
+    <h2 style="font-size:24px; font-weight:900;">Reserve - <span id="checkoutRoomName"></span></h2>
+    <p style="color:#666; font-size:14px; margin-bottom:15px;">Confirm your stay details</p>
+
+    <!-- DATES - THIS WILL NOW COPY FROM HOME -->
+    <div style="background:#FFF8E6; border:1px solid #C8B896; border-radius:12px; padding:14px; margin-bottom:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-weight:700;">Check-in</span>
+        <input type="date" id="coCheckin" style="border:1px solid #D4AF37; border-radius:8px; padding:6px 10px; font-weight:700;">
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-weight:700;">Check-out</span>
+        <input type="date" id="coCheckout" style="border:1px solid #D4AF37; border-radius:8px; padding:6px 10px; font-weight:700;">
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #C8B896; padding-top:10px; margin-top:10px;">
+        <span>Guests & Rooms</span>
+        <b id="checkoutGuestRoomDisplay" onclick="openGuestModal()" style="cursor:pointer; background:white; padding:4px 10px; border-radius:20px; border:1px solid #ddd;">1 guest · 1 room</b>
+      </div>
+      <div id="coPrice" style="margin-top:12px; font-weight:800; font-size:18px;"></div>
+      <div id="priceBreakdown"></div>
+    </div>
+
+    <!-- PAYMENT BOXES -->
+    <div id="opayBox" style="display:none; background:#E8F5E9; border:1px solid #4CAF50; border-radius:10px; padding:12px; margin-bottom:12px;">
+      <b>💳 OPay Transfer</b><br>
+      Account: <b>8100000000 - Lumina Hotel</b><br>
+      Amount: <b id="opayAmount">$0</b><br>
+      <small>Transfer then upload receipt below</small>
+    </div>
+
+    <div id="paystackBox" style="display:none; background:#E3F2FD; border:1px solid #2196F3; border-radius:10px; padding:12px; margin-bottom:12px;">
+      <b>💳 Paystack Payment</b><br>
+      Amount: <b id="paystackAmount">$0</b> (in Naira)<br>
+      <small>Click "Pay with Paystack Now" button below</small>
+    </div>
+
+    <!-- FORM -->
+    <label style="font-weight:700; font-size:14px;">Payment Method</label>
+    <select id="payMethod" style="width:100%; padding:12px; border-radius:10px; border:1px solid #ccc; margin:6px 0 14px 0; font-weight:600;">
+      <option value="Pay at Hotel">Pay at Hotel</option>
+      <option value="OPay Transfer">OPay Transfer</option>
+      <option value="Paystack">Paystack</option>
+    </select>
+
+    <input id="fullName" placeholder="Full Name *" style="width:100%; padding:12px; border-radius:10px; border:1px solid #ccc; margin-bottom:10px;">
+    <input id="phone" placeholder="Phone Number *" style="width:100%; padding:12px; border-radius:10px; border:1px solid #ccc; margin-bottom:10px;">
+    <input id="email" placeholder="Email (for receipt)" style="width:100%; padding:12px; border-radius:10px; border:1px solid #ccc; margin-bottom:10px;">
+
+    <div style="margin-bottom:12px;">
+      <label style="font-size:12px; font-weight:700;">Upload OPay Receipt</label>
+      <input type="file" id="receipt" accept="image/*,.pdf" style="width:100%; padding:8px; border:1px dashed #999; border-radius:8px; margin-top:4px;">
+      <span id="fileName" style="font-size:12px; color:green; font-weight:700;"></span>
+    </div>
+
+    <button id="confirmBtn" onclick="validateBooking(event)" style="width:100%; background:#D4AF37; color:#111; padding:14px; border-radius:12px; font-weight:900; font-size:16px; border:none;">Confirm Booking - Pay at Hotel</button>
+
+    <!-- PAYSTACK BUTTON - NOW SHOWS WHEN PAYSTACK SELECTED -->
+    <button id="paystackBtn" onclick="payWithPaystack()" style="width:100%; background:#0A0A0A; color:white; padding:14px; border-radius:12px; font-weight:900; font-size:16px; border:none; margin-top:10px; display:none;">💳 Pay with Paystack Now</button>
+
+    <div id="errorMsg" style="display:none; padding:12px; border-radius:10px; margin-top:12px; text-align:center; font-weight:700;"></div>
+
+    <!-- BOTTOM NAV - SO USER CAN GO BACK HOME FROM CHECKOUT -->
+   
+
+  </div>
+</div>
+
+<!-- PAGE 5: CONFIRMATION -->
+<section id="confirmation" class="page" style="display:none">
+  <h1>✅ Booking Confirmed!</h1>
+  <p>Booking Code: <b id="confCode">LMN-12345</b></p>
+  <p id="confDetails"></p>
+  <p>Go to <button onclick="showPage('mybookings')">Bookings</button>   to see your bookings details</p>
+  <p>You will also receive an email from us shortly about Payment approval if you paid via OPay or Paystack.</p>
+  <button onclick="showPage('home')">Back Home</button>
+</section>
+
+<!-- PAGE 6: MY BOOKINGS - MANAGE BOOKINGS -->
+<section id="mybookings" class="page" style="display:none">
+  <div style="max-width:600px;margin:0 auto;padding:16px;">
+    <h2 style="font-family:'Playfair Display',serif;font-size:26px;margin:0;">My Bookings</h2>
+    <p style="color:#666;font-size:13px;">Manage, reschedule, pause or cancel — no need to call us.</p>
+    <div class="search-box small" style="display:flex;gap:8px;margin-top:12px;">
+      <input id="myPhone" placeholder="Enter phone to view" style="flex:1;padding:12px;border-radius:10px;border:1px solid #ccc;">
+      <button onclick="loadMyBookings()" style="background:#111;color:#D4AF37;padding:12px 18px;border-radius:10px;font-weight:900;border:none;cursor:pointer;">View</button>
+    </div>
+    <button id="myClearBtn" onclick="clearMyBookings()" style="display:none;margin:10px 0 0 auto;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:8px 14px;border-radius:10px;font-weight:800;font-size:11px;cursor:pointer;">🗑️ Clear All History</button>
+    <div style="display:flex;gap:8px;margin-top:14px;overflow-x:auto;">
+      <button onclick="filterMyBookings('all',this)" class="my-tab" style="padding:8px 14px;border-radius:20px;border:1px solid #ddd;background:#111;color:#D4AF37;font-weight:800;font-size:12px;white-space:nowrap;">All</button>
+      <button onclick="filterMyBookings('upcoming',this)" class="my-tab" style="padding:8px 14px;border-radius:20px;border:1px solid #ddd;background:#fff;font-weight:800;font-size:12px;white-space:nowrap;">Upcoming</button>
+      <button onclick="filterMyBookings('paused',this)" class="my-tab" style="padding:8px 14px;border-radius:20px;border:1px solid #ddd;background:#fff;font-weight:800;font-size:12px;white-space:nowrap;">Paused</button>
+      <button onclick="filterMyBookings('cancelled',this)" class="my-tab" style="padding:8px 14px;border-radius:20px;border:1px solid #ddd;background:#fff;font-weight:800;font-size:12px;white-space:nowrap;">Cancelled</button>
+    </div>
+    <div id="myList" style="margin-top:14px;display:grid;gap:14px;"></div>
+    <div style="background:#FFFEFB;border:1px solid #E8DCC0;border-radius:12px;padding:14px;margin-top:16px;font-size:12px;line-height:1.6;color:#666;">
+      <b style="color:#111;">Refund Policy:</b> Cancel 24hrs+ before check-in = 100% refund • Less than 24hrs = 50% refund • After check-in = No refund<br>
+      <b style="color:#111;">Need help?</b> <a href="https://wa.me/2349134435650" target="_blank" style="color:#B9975B;font-weight:800;">WhatsApp us</a> with your booking code.
+    </div>
+  </div>
+</section>
+
+<div id="manageModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:#fff;border-radius:18px;padding:20px;width:100%;max-width:420px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;"><h3 id="manageTitle" style="margin:0;">Manage Booking</h3><button onclick="closeManageModal()" style="border:none;background:#f3f3f3;width:32px;height:32px;border-radius:50%;cursor:pointer;">✕</button></div>
+    <div id="manageBody" style="margin-top:14px;"></div>
+  </div>
+</div>
+
+
+<section id="about" class="page" style="display:none">
+  <!-- SMALL HERO LIKE YOU WANTED -->
+  <div class="about-hero">
+    <div class="about-hero-text">
+      <span>ABOUT LUMINA</span>
+      <h1>More Than A Stay,<br>It's An Experience.</h1>
+      <p>Located in the heart of Nsukka, Lumina Hotel redefines 5-star comfort with modern luxury, warm hospitality, and unforgettable memories.</p>
+    </div>
+    <div class="about-hero-img">
+      <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=800" alt="Lumina Hotel">
+    </div>
+  </div>
+
+  <!-- STATS - LIKE ROOM CARDS -->
+  <div class="about-stats">
+    <div class="stat-card"><h2>2018</h2><p>Year Founded</p></div>
+    <div class="stat-card"><h2>120+</h2><p>Luxury Rooms</p></div>
+    <div class="stat-card"><h2>15k+</h2><p>Happy Guests</p></div>
+    <div class="stat-card"><h2>4.9★</h2><p>Guest Rating</p></div>
+  </div>
+
+  <!-- OUR STORY -->
+  <div class="about-section">
+    <div class="about-text">
+      <span class="section-label">OUR STORY</span>
+      <h2>From a Dream to Nsukka's Most Loved Hotel.</h2>
+      <p>Lumina started with a simple idea: Nsukka deserved a hotel that matches international standards without losing our Igbo warmth.</p>
+      <p>What began as a 20-room boutique lodge in 2018 has grown into a 5-star destination for business travelers, couples, and families. Every corner, from our scent to our bedsheets, was chosen to make you feel at home, but better.</p>
+      <div class="about-quote">
+        "We don't just give you a key, we give you peace of mind."
+        <small>— Founder, Lumina Hotel & Suites</small>
+      </div>
+    </div>
+    <div class="about-grid-images">
+      <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600" alt="lobby">
+      <img src="https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=600" alt="room">
+    </div>
+  </div>
+
+  <!-- WHY CHOOSE US - CARD STYLE LIKE YOUR ROOMS -->
+  <div class="about-choose">
+    <span class="section-label" style="text-align:center;display:block;">WHY GUESTS CHOOSE US</span>
+    <h2 style="text-align:center;">Comfort You Can Feel</h2>
+    <div class="choose-grid">
+      <div class="choose-card">
+        <div class="choose-icon">🛏️</div>
+        <h3>Luxury Rooms</h3>
+        <p>King beds, blackout curtains, Smart TVs and rain showers. Designed for deep sleep.</p>
+      </div>
+      <div class="choose-card">
+        <div class="choose-icon">🍽️</div>
+        <h3>Signature Restaurant</h3>
+        <p>Local and continental dishes from our award-winning chef, open 24/7.</p>
+      </div>
+      <div class="choose-card">
+        <div class="choose-icon">🔒</div>
+        <h3>Safe & Secure</h3>
+        <p>24/7 power, CCTV, keycard access, and trained security. Your safety first.</p>
+      </div>
+      <div class="choose-card">
+        <div class="choose-icon">⚡</div>
+        <h3>Fast Service</h3>
+        <p>Room service in under 15 minutes. Because luxury should not wait.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="about-cta">
+    <h2>Ready to Experience Lumina?</h2>
+    <p>Your luxury escape is one click away. Best price guaranteed when you book direct.</p>
+    <div style="display:flex; gap:10px; justify-content:center; margin-top:18px; flex-wrap:wrap;">
+      <button class="reserve" style="width:auto; padding:13px 28px;" onclick="showPage('rooms')">View Rooms</button>
+      <a class="btn outline" style="padding:13px 28px; background:#fff;" onclick="showPage('contact')">Contact Us</a>
+    </div>
+  </div>
+
+</section>
+
+<!-- PAGE 8: CONTACT -->
+<section id="contact" class="page" style="display:none;" >
+  
+  <div class="contact-header">
+    <span>GET IN TOUCH</span>
+    <h2>We’re Here For You, 24/7</h2>
+    <p>Have a question about your stay? Want to book directly and get best price? Reach us anyway you like — we reply in under 5 minutes.</p>
+  </div>
+
+  <div class="contact-cards">
+    <a href="tel:09134435650" class="c-card">
+      <div class="c-icon">📞</div>
+      <div><b>Call Direct</b><small>09134435650 — Instant Response</small></div>
+    </a>
+    <a href="https://wa.me/2349134435650" target="_blank" class="c-card c-gold">
+      <div class="c-icon" style="background:#111; color:#fff;">💬</div>
+      <div><b>WhatsApp Us</b><small>Chat with reservation team</small></div>
+    </a>
+    <a href="mailto:hello@luminahotel.com" class="c-card">
+      <div class="c-icon">✉️</div>
+      <div><b>Email</b><small>hello@luminahotel.com</small></div>
+    </a>
+  </div>
+
+  <div class="contact-grid">
+    <!-- LEFT: FORM -->
+    <div class="contact-form-box">
+      <h3>Send a Message</h3>
+      <p>Fill this and we’ll call you back.</p>
+      <input type="text" placeholder="Your Name" id="cName">
+      <input type="tel" placeholder="Phone Number" id="cPhone">
+      <textarea placeholder="How can we help? e.g I want to book Deluxe room for 2 nights..." id="cMsg" rows="4"></textarea>
+      <button class="reserve" onclick="sendWhatsAppMsg()">Send on WhatsApp</button>
+      <small class="note">This will open WhatsApp with your message ready.</small>
+    </div>
+
+    <!-- RIGHT: INFO -->
+    <div class="contact-info-box">
+      <h3>Visit Us</h3>
+      
+      <div class="info-row">
+        <span>📍</span>
+        <div><b>Address</b><br>Behind Ogige Main Market, Nsukka, Enugu State, Nigeria</div>
+      </div>
+      <div class="info-row">
+        <span>🕐</span>
+        <div><b>Open Hours</b><br>Check-in: 24hrs / Restaurant: 6am - 11pm</div>
+      </div>
+
+      <div class="socials">
+        <h4>Follow Lumina</h4>
+        <div class="social-grid">
+          <a href="https://instagram.com/luminahotel" target="_blank" class="social-btn ig">📸 <b>Instagram</b><small>@luminahotel</small></a>
+          <a href="https://facebook.com/luminahotel" target="_blank" class="social-btn fb">📘 <b>Facebook</b><small>Lumina Hotel</small></a>
+          <a href="https://wa.me/2349134435650" target="_blank" class="social-btn wa">💬 <b>WhatsApp</b><small>Chat Now</small></a>
+          <a href="https://tiktok.com/@luminahotel" target="_blank" class="social-btn tk">🎵 <b>TikTok</b><small>Tour Rooms</small></a>
+        </div>
+      </div>
+
+      <a class="map-btn" target="_blank" href="https://maps.google.com/?q=Ogige+Main+Market+Nsukka" style="width:100%; justify-content:center; margin-top:16px;">
+        📍 Open in Google Maps
+      </a>
+    </div>
+  </div>
+
+  <!-- MAP -->
+  <div class="map-embed">
+    <iframe src="https://maps.google.com/maps?q=Ogige%20Main%20Market%20Nsukka&t=&z=15&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
+  </div>
+
+</section>
+
+
+<div class="bottom-nav" id="bottomNav">
+  <button onclick="showPage('home',this)" class="active">Home</button>
+  <button onclick="showPage('rooms',this)">Rooms</button>
+  <button onclick="showPage('mybookings',this)">Bookings</button>
+  <button onclick="showPage('about',this)">About</button>
+  <button onclick="showPage('contact',this)">Contact</button>
+</div>
+
+<!-- GUEST MODAL -->
+<div class="guest-modal" id="guestModal">
+  <div class="guest-modal-content">
+    <h3>Guests and Rooms</h3>
+    <div class="guest-row">
+      <div><b>Adults</b></div>
+      <div class="counter">
+        <button type="button" onclick="updateCount('adults', -1)">-</button>
+        <span id="adultsCount">1</span>
+        <button type="button" onclick="updateCount('adults', 1)">+</button>
+      </div>
+    </div>
+    <div class="guest-row">
+      <div><b>Children</b><br><small>Ages 0-17</small></div>
+      <div class="counter">
+        <button type="button" onclick="updateCount('children', -1)">-</button>
+        <span id="childrenCount">0</span>
+        <button type="button" onclick="updateCount('children', 1)">+</button>
+      </div>
+    </div>
+    <div class="guest-row">
+      <div><b>Rooms</b></div>
+      <div class="counter">
+        <button type="button" onclick="updateCount('rooms', -1)">-</button>
+        <span id="roomsCount">1</span>
+        <button type="button" onclick="updateCount('rooms', 1)">+</button>
+      </div>
+    </div>
+    <button type="button" class="done-btn" onclick="closeGuestModal()">Done</button>
+  </div>
+</div>
+<script src="script.js"></script>
+</body>
+
+
+</html>

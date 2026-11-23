@@ -584,7 +584,6 @@ function handlePayChange(){
 }
 function payWithPaystack(){
   const email = document.getElementById('email')?.value || document.getElementById('phone')?.value+'@lumina.com';
-  const amount = calculateAmount();
   if(typeof PaystackPop==='undefined'){ alert("Add Paystack script: https://js.paystack.co/v1/inline.js"); return; }
   PaystackPop.setup({
     key: 'pk_test_YOUR_PUBLIC_KEY_HERE',
@@ -761,8 +760,20 @@ function clearMyBookings(){
 function renderMyBookings(){
   const el = document.getElementById('myList');
   if(!el) return;
-  let list = [...myBookingsCache];
-  if(myBookingsFilter === 'upcoming') list = list.filter(b => b.status !== 'Cancelled' && b.status !== 'Paused');
+
+  let list = [...myBookingsCache].reverse();
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const getCi = (b)=>{ const d = new Date(b.checkin); d.setHours(0,0,0,0); return d; };
+
+  if(myBookingsFilter === 'upcoming'){
+    list = list.filter(b => {
+      const st = (b.status || '');
+      if(st === 'Cancelled' || st === 'Paused' || st === 'Checked-Out' || st === 'Checked-In') return false;
+      if(getCi(b) < today) return false;
+      return true;
+    });
+  }
   if(myBookingsFilter === 'paused') list = list.filter(b => b.status === 'Paused');
   if(myBookingsFilter === 'cancelled') list = list.filter(b => b.status === 'Cancelled');
 
@@ -778,7 +789,31 @@ function renderMyBookings(){
     const nights = nightsBetween(b.checkin, b.checkout);
     const statusColor = status === 'Paid' || status === 'Confirmed' ? '#166534' : status === 'Cancelled' ? '#991b1b' : status === 'Paused' ? '#92400e' : status === 'Awaiting Verification' ? '#92400e' : '#666';
     const statusBg = status === 'Paid' || status === 'Confirmed' ? '#dcfce7' : status === 'Cancelled' ? '#fee2e2' : status === 'Paused' ? '#fef3c7' : '#f3f3f3';
-    const isActive = status !== 'Cancelled';
+
+    const normStatus = String(status || '').trim().toLowerCase().replace(/[\s_]+/g, '-');
+    const isCheckedOut = normStatus === 'checked-out' || normStatus === 'checkedout';
+    const isCheckedIn = normStatus === 'checked-in' || normStatus === 'checkedin';
+    const isActive = status !== 'Cancelled' && !isCheckedOut;
+    const canModify = isActive && !isCheckedIn;
+
+    // SINGLE BUTTONS BLOCK - If Checked-Out, this whole thing na empty string
+    const buttonsHtml = isCheckedOut ? `<p style="background:#f3f3f3;padding:10px;border-radius:10px;font-size:12px;color:#666;margin-top:12px;">✅ Stay completed — Thank you for staying with us! No further actions needed.</p>` : `
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+        ${canModify && (status === 'Unpaid' || status === 'Awaiting Verification') ? `<button onclick="payForBooking('${code}')" style="flex:1;background:#111;color:#D4AF37;border:none;padding:11px;border-radius:10px;font-weight:900;cursor:pointer;">💳 Pay Now</button>` : ''}
+        ${canModify ? `<button onclick="openReschedule('${code}')" style="flex:1;background:#FFFEFB;border:1px solid #C8B896;padding:11px;border-radius:10px;font-weight:800;cursor:pointer;">📅 Change Dates</button>` : ''}
+        ${isActive && status !== 'Paused' ? `<button onclick="orderFoodForBooking('${code}')" style="flex:1;background:#f8f5ef;border:1px solid #eee;padding:10px;border-radius:10px;font-weight:700;font-size:12px;">🍽️ Order Food</button>` : ''}
+        ${isActive && status !== 'Paused' ? `<button onclick="bookPoolPass()" style="flex:1;background:#f8f5ef;border:1px solid #eee;padding:10px;border-radius:10px;font-weight:700;font-size:12px;">🏊 Pool Pass</button>` : ''}
+        ${canModify && status !== 'Paused' ? `<button onclick="openPauseBooking('${code}')" style="flex:1;background:#fff;border:1px solid #ddd;padding:11px;border-radius:10px;font-weight:800;cursor:pointer;">⏸️ Pause</button>` : ''}
+        ${status === 'Paused' ? `<button onclick="updateBookingStatus('${code}','Unpaid')" style="flex:1;background:#16a34a;color:#fff;border:none;padding:11px;border-radius:10px;font-weight:900;cursor:pointer;">▶ Resume</button>` : ''}
+        ${canModify ? `<button onclick="openCancelBooking('${code}')" style="flex:1;background:#fff;border:1px solid #fca5a5;color:#991b1b;padding:11px;border-radius:10px;font-weight:800;cursor:pointer;">Cancel</button>` : ''}
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+        ${canModify ? `<button onclick="openExtendBooking('${code}')" style="flex:1;background:#f8f5ef;border:1px solid #eee;padding:10px;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;">➕ Extend 1 Night</button>` : ''}
+        ${canModify ? `<button onclick="openUpgradeBooking('${code}')" style="flex:1;background:#f8f5ef;border:1px solid #eee;padding:10px;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;">⬆️ Upgrade Room</button>` : ''}
+        ${isActive ? `<button onclick="specialRequestFixed('${code}')" style="flex:1;background:#f8f5ef;border:1px solid #eee;padding:10px;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;">✨ Special Request</button>` : ''}
+        <button onclick="shareBooking('${code}')" style="flex:1;background:#f8f5ef;border:1px solid #eee;padding:10px;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;">📤 Share / Receipt</button>
+      </div>
+    `;
 
     return `<div style="background:#fff;border:1px solid #eee;border-radius:18px;padding:16px;box-shadow:0 4px 20px rgba(0,0,0,.05);">
       <div style="display:flex;justify-content:space-between;align-items:start;gap:10px;">
@@ -786,30 +821,15 @@ function renderMyBookings(){
         <span style="background:${statusBg};color:${statusColor};padding:6px 10px;border-radius:20px;font-size:11px;font-weight:900;">${status}</span>
       </div>
       <h3 style="font-family:'Playfair Display',serif;font-size:19px;margin:12px 0 4px 0;">${b.room}</h3>
-<p style="margin:0;color:#666;font-size:13px;">${b.payMethod || ''} • ${b.name || ''}</p>
-<p style="margin:4px 0 0 0;color:#666;font-size:12px;">👥 ${b.guests || (b.rooms ? b.rooms + ' room' + (b.rooms>1?'s':'') : '1 room')} • ${b.rooms || ''}</p>
+      <p style="margin:0;color:#666;font-size:13px;">${b.payMethod || ''} • ${b.name || ''}</p>
+      <p style="margin:4px 0 0 0;color:#666;font-size:12px;">👥 ${b.guests || (b.rooms ? b.rooms + ' room' + (b.rooms>1?'s':'') : '1 room')} • ${b.rooms || ''}</p>
       <p style="margin:6px 0;color:#333;font-size:13px;font-weight:700;">${fmtDateShort(b.checkin)} → ${fmtDateShort(b.checkout)} • ${nights} night${nights>1?'s':''} • $${b.amount}</p>
       ${b.status === 'Paused' ? `<p style="background:#fef3c7;padding:8px;border-radius:8px;font-size:12px;">⏸️ This booking is paused. Your room is free for others. Resume anytime if still available.</p>` : ''}
       ${b.status === 'Cancelled' ? `<p style="background:#fee2e2;padding:8px;border-radius:8px;font-size:12px;">Refund: <b>$${refund.refund}</b> (${refund.pct}%) — ${refund.label}. We go contact you on WhatsApp for refund.</p>` : ''}
-
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
-        ${isActive && (status === 'Unpaid' || status === 'Awaiting Verification') ? `<button onclick="payForBooking('${code}')" style="flex:1;background:#111;color:#D4AF37;border:none;padding:11px;border-radius:10px;font-weight:900;cursor:pointer;">💳 Pay Now</button>` : ''}
-        ${isActive ? `<button onclick="openReschedule('${code}')" style="flex:1;background:#FFFEFB;border:1px solid #C8B896;padding:11px;border-radius:10px;font-weight:800;cursor:pointer;">📅 Change Dates</button>` : ''}
-        ${isActive && status !== 'Paused' ? `<button onclick="orderFoodForBooking('${code}')" style="flex:1;background:#f8f5ef;border:1px solid #eee;padding:10px;border-radius:10px;font-weight:700;font-size:12px;">🍽️ Order Food</button>` : ''}
-${isActive && status !== 'Paused' ? `<button onclick="bookPoolPass()" style="flex:1;background:#f8f5ef;border:1px solid #eee;padding:10px;border-radius:10px;font-weight:700;font-size:12px;">🏊 Pool Pass</button>` : ''}
-        ${isActive && status !== 'Paused' ? `<button onclick="openPauseBooking('${code}')" style="flex:1;background:#fff;border:1px solid #ddd;padding:11px;border-radius:10px;font-weight:800;cursor:pointer;">⏸️ Pause</button>` : ''}
-        ${status === 'Paused' ? `<button onclick="updateBookingStatus('${code}','Unpaid')" style="flex:1;background:#16a34a;color:#fff;border:none;padding:11px;border-radius:10px;font-weight:900;cursor:pointer;">▶ Resume</button>` : ''}
-        ${isActive ? `<button onclick="openCancelBooking('${code}')" style="flex:1;background:#fff;border:1px solid #fca5a5;color:#991b1b;padding:11px;border-radius:10px;font-weight:800;cursor:pointer;">Cancel</button>` : ''}
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
-        <button onclick="openExtendBooking('${code}')" style="flex:1;background:#f8f5ef;border:1px solid #eee;padding:10px;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;">➕ Extend 1 Night</button>
-        <button onclick="specialRequest('${code}')" style="flex:1;background:#f8f5ef;border:1px solid #eee;padding:10px;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;">✨ Special Request</button>
-        <button onclick="shareBooking('${code}')" style="flex:1;background:#f8f5ef;border:1px solid #eee;padding:10px;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;">📤 Share / Receipt</button>
-      </div>
+      ${buttonsHtml}
     </div>`;
   }).join('');
 }
-
 // === ACTIONS - All go to Google Sheets via SCRIPT_URL ===
 async function callBookingAction(action, code, extra={}){
   try{
@@ -1022,34 +1042,37 @@ function payForBooking(code){
 }
 
 // PAYSTACK - auto Paid, because Paystack don verify
-function openPaystackForExisting(code){
+function openPaystackForExisting(code, payAmount){
   const b = findBooking(code); if(!b) return;
-  // Use your normal PaystackPop here
+  const amt = Number(payAmount || b.amount);
   PaystackPop.setup({
     key: 'pk_test_YOUR_PUBLIC_KEY_HERE',
     email: (b.email || b.phone + '@lumina.com'),
-    amount: Number(b.amount) * 100, // Paystack uses kobo if NGN, adjust if you use USD
+    amount: amt * 100,
     currency: 'NGN',
     ref: code + '-' + Date.now(),
     callback: async (res) => {
       closeManageModal();
-      await callBookingAction('pay_paystack', code, { paystackRef: res.reference });
-      refreshAfterAction(code, { status: 'Paid', payMethod: 'Paystack' });
-      alert('Payment verified by Paystack! Status: Paid ✅');
+      await callBookingAction('pay_paystack', code, { paystackRef: res.reference, paidAmount: amt });
+      refreshAfterAction(code, { status: amt >= Number(b.amount) ? 'Paid' : 'Awaiting Verification', payMethod: 'Paystack' });
+      alert(amt >= Number(b.amount) ? 'Payment verified! Paid ✅' : `Paid $${amt} deposit. Balance $${Number(b.amount)-amt} remain — pay for Check-In.`);
     }
   }).openIframe();
 }
 
 // OPAY - NEVER Paid straight, go to Awaiting Verification + receipt
-function openOPayForExisting(code){
+// FIX: Now e accept partial amount
+function openOPayForExisting(code, payAmount){
   const b = findBooking(code); if(!b) return;
+  const amt = Number(payAmount || b.amount); // Use the amount guest type for payForBooking, not always full
+  const balance = Math.max(0, Number(b.amount) - amt);
   openManageModal('OPay Payment — Upload Receipt', `
-    <p style="font-size:13px;color:#666;">Transfer <b>$${b.amount}</b> to our OPay account, then upload receipt here.</p>
-    <div style="background:#f8f5ef;padding:10px;border-radius:10px;font-size:12px;">OPay Account: <b>Your OPay Number / Name here</b><br>Use code <b>${code}</b> as narration</div>
-    <label style="display:block;margin-top:12px;font-size:12px;font-weight:800;">Upload OPay Receipt</label>
+    <p style="font-size:13px;color:#666;">Transfer <b>$${amt}</b> to our OPay account, then upload receipt here.</p>
+    <div style="background:#f8f5ef;padding:10px;border-radius:10px;font-size:12px;">OPay Account: <b>9134435650 - Lumina Hotel</b><br>Use code <b>${code}</b> as narration<br>${balance > 0 ? `Balance after this: <b>$${balance}</b> — you go pay am for Check-In` : `This na full payment ✅`}</div>
+    <label style="display:block;margin-top:12px;font-size:12px;font-weight:800;">Upload OPay Receipt for $${amt}</label>
     <input type="file" id="opayReceiptInput" accept="image/*,.pdf" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:10px;margin-top:6px;">
     <div id="opayReceiptName" style="font-size:12px;color:#666;margin-top:6px;"></div>
-    <button onclick="confirmOPayExisting('${code}')" style="width:100%;background:#16a34a;color:#fff;border:none;padding:13px;border-radius:10px;font-weight:900;margin-top:12px;cursor:pointer;">Submit Receipt for Verification</button>
+    <button onclick="confirmOPayExisting('${code}', ${amt})" style="width:100%;background:#16a34a;color:#fff;border:none;padding:13px;border-radius:10px;font-weight:900;margin-top:12px;cursor:pointer;">Submit Receipt for $${amt} for Verification</button>
   `);
   document.getElementById('opayReceiptInput').onchange = (e) => {
     const f = e.target.files[0];
@@ -1057,8 +1080,9 @@ function openOPayForExisting(code){
   };
 }
 
-async function confirmOPayExisting(code){
+async function confirmOPayExisting(code, paidAmount){
   const b = findBooking(code); if(!b) return;
+  const amt = Number(paidAmount || b.amount);
   const fileInput = document.getElementById('opayReceiptInput');
   const file = fileInput?.files[0];
   if(!file) return alert('Please upload your OPay receipt first');
@@ -1068,15 +1092,15 @@ async function confirmOPayExisting(code){
   reader.onload = async (ev) => {
     const base64 = ev.target.result.split(',')[1];
     closeManageModal();
-    // Send to Sheets: status = Awaiting Verification, NOT Paid
     await callBookingAction('pay_opay', code, {
       receiptBase64: base64,
       receiptName: file.name,
       receiptMime: file.type,
-      status: 'Awaiting Verification'
+      status: 'Awaiting Verification',
+      paidAmount: amt // <-- NEW: Tell Admin how much guest claim e pay
     });
     refreshAfterAction(code, { status: 'Awaiting Verification', payMethod: 'OPay Transfer' });
-    alert('Receipt submitted! Status: Awaiting Verification ⏳\nWe go verify your payment and mark am Paid once money enter. No need to call us.');
+    alert(`Receipt submitted for $${amt}! Status: Awaiting Verification ⏳\nWe go verify your payment and mark am Paid once money enter.`);
   };
   reader.readAsDataURL(file);
 }
@@ -1359,13 +1383,174 @@ function updateHomeSearchBar(){
 // updateHomeSearchBar();
 
 
+// ===== USER SIDE FIX — ADD THESE 4 MISSING FUNCTIONS =====
+const FOOD_MENU_USER = [
+  {name:'Fried Rice + Chicken', price:8000},
+  {name:'Jollof Rice + Chicken', price:7500},
+  {name:'Pepper Soup', price:6000},
+  {name:'Grilled Fish', price:12000},
+  {name:'Club Sandwich', price:5000},
+  {name:'Soft Drink', price:2000},
+  {name:'Beer', price:3500},
+  {name:'Bottled Water', price:1000},
+  {name:'Tea / Coffee', price:2500},
+  {name:'Breakfast (Full)', price:10000},
+];
+const ROOM_PRICES_USER = {
+  "The Grand Opera Suite": 420,
+  "Eiffel River View Room": 350,
+  "Montmartre Boutique Room": 220,
+  "Penthouse Loft": 450,
+  "Royal Garden Room": 280,
+  "Oceanfront Villa": 500
+};
+const POOL_PRICE_USER = 5000;
+
+// --- 1. FOOD — This was missing, na why button do nothing ---
+let _foodQtyUser = {};
 function orderFoodForBooking(code){
   const b = findBooking(code); if(!b) return;
-  const msg = encodeURIComponent(`Hello Lumina! I want to order food to my room — Booking ${code} (${b.room}): `);
-  window.open('https://wa.me/2349134435650?text=' + msg, '_blank');
-  // For Phase 3 v2, we go replace this WhatsApp with real menu + add to bill — for now, waiter go add am for Admin POS when guest order via WhatsApp.
+  // Only Checked-In or Paid guest fit order food to room
+  if(b.status==='Cancelled' || b.status==='Paused'){ alert('This booking no active'); return; }
+  _foodQtyUser = {};
+  let itemsHtml = FOOD_MENU_USER.map((f,i)=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #eee;">
+      <span style="font-size:13px;">${f.name} - $${f.price.toLocaleString()}</span>
+      <div><button onclick="changeFoodQtyUser(${i},-1)">-</button> <span id="fqty${i}">0</span> <button onclick="changeFoodQtyUser(${i},1)">+</button></div>
+    </div>`).join('');
+  openManageModal('🍽️ Order Food to Room', `
+    <p style="font-size:13px;color:#666;">${b.room} • ${b.code} • ${fmtDateShort(b.checkin)} → ${fmtDateShort(b.checkout)}<br>E go add to your bill. You pay for Check-Out.</p>
+    ${itemsHtml}
+    <p id="foodTotalUser" style="font-weight:900;margin-top:10px;">Total: $0</p>
+    <button onclick="submitFoodUser('${code}')" style="width:100%;background:#111;color:#D4AF37;border:none;padding:13px;border-radius:10px;font-weight:900;margin-top:10px;">Place Order →</button>
+  `);
 }
+function changeFoodQtyUser(i,d){
+  _foodQtyUser[i] = Math.max(0,(_foodQtyUser[i]||0)+d);
+  document.getElementById('fqty'+i).innerText = _foodQtyUser[i];
+  let total=0; Object.keys(_foodQtyUser).forEach(k=> total += _foodQtyUser[k]*FOOD_MENU_USER[k].price);
+  document.getElementById('foodTotalUser').innerText = `Total: $${total.toLocaleString()}`;
+}
+async function submitFoodUser(code){
+  const b = findBooking(code);
+  let items=[], total=0;
+  Object.keys(_foodQtyUser).forEach(k=>{ if(_foodQtyUser[k]>0){ items.push(`${FOOD_MENU_USER[k].name} x${_foodQtyUser[k]}`); total += _foodQtyUser[k]*FOOD_MENU_USER[k].price; }});
+  if(!items.length) return alert('Pick at least 1 item');
+  closeManageModal();
+  // Save to Sheets — Admin go see am for POS tab
+  await callBookingAction('orderFood', code, { room:b.room, items:items.join(', '), total, guestName:b.name });
+  alert(`Order placed! ${items.join(', ')} - $${total.toLocaleString()} added to your bill. Kitchen go prepare am.`);
+}
+
+// --- 2. POOL PASS — This was missing too ---
 function bookPoolPass(){
-  const msg = encodeURIComponent(`Hello Lumina! I want to book a Pool Day Pass. What is price for today?`);
+  // Can be called without code — walk-in or guest
+  openManageModal('🏊 Book Pool Pass', `
+    <label style="font-weight:800;font-size:12px;">Your Name</label>
+    <input id="poolNameUser" placeholder="Full name" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label style="font-weight:800;font-size:12px;">Date</label>
+    <input id="poolDateUser" type="date" value="${toISODate(new Date())}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label style="font-weight:800;font-size:12px;">How many people?</label>
+    <input id="poolQtyUser" type="number" value="2" min="1" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label style="font-weight:800;font-size:12px;">Pass Type</label>
+    <select id="poolTypeUser" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+      <option value="Adult Day Pass">Adult Day Pass - $${POOL_PRICE_USER}</option>
+      <option value="Child Day Pass">Child Day Pass - $3000</option>
+      <option value="Family Pass (4 ppl)">Family Pass (4 ppl) - $15000</option>
+    </select>
+    <div id="poolPreviewUser" style="font-size:12px;background:#f8f5ef;padding:10px;border-radius:10px;">Total: $${POOL_PRICE_USER*2}</div>
+    <button onclick="confirmPoolPassUser()" style="width:100%;background:#111;color:#D4AF37;border:none;padding:13px;border-radius:10px;font-weight:900;margin-top:12px;">Get Pool Code via WhatsApp →</button>
+  `);
+  const upd = ()=>{
+    const qty = Number(document.getElementById('poolQtyUser').value||1);
+    const type = document.getElementById('poolTypeUser').value;
+    let unit = POOL_PRICE_USER;
+    if(type.includes('Child')) unit=3000;
+    if(type.includes('Family')) unit=15000;
+    document.getElementById('poolPreviewUser').innerText = `Total: $${(unit*qty).toLocaleString()} — Pay for reception or WhatsApp to get code`;
+  };
+  document.getElementById('poolQtyUser').oninput = upd;
+  document.getElementById('poolTypeUser').onchange = upd;
+}
+async function confirmPoolPassUser(){
+  const name = document.getElementById('poolNameUser').value.trim();
+  const date = document.getElementById('poolDateUser').value;
+  const qty = Number(document.getElementById('poolQtyUser').value||1);
+  const type = document.getElementById('poolTypeUser').value;
+  if(!name || !date) return alert('Enter name + date');
+  let unit = POOL_PRICE_USER; if(type.includes('Child')) unit=3000; if(type.includes('Family')) unit=15000;
+  const total = unit*qty;
+  closeManageModal();
+  await callBookingAction('poolPass', 'WALK-IN', { name, date, qty, total, passType:type });
+  const msg = encodeURIComponent(`Hi Lumina, I want Pool Pass: ${type} for ${date} x ${qty} people. Total $${total}. Name: ${name}. Send me code after payment.`);
+  window.open('https://wa.me/2349134435650?text='+msg, '_blank');
+  alert('Pool request saved. WhatsApp opened — pay to get your POOL- code.');
+}
+
+// --- 3. UPGRADE ROOM — New, no button before ---
+function openUpgradeBooking(code){
+  const b = findBooking(code); if(!b) return;
+  openManageModal('⬆️ Upgrade Room', `
+    <p style="font-size:13px;color:#666;">Current: <b>${b.room}</b> • Total $${b.amount}</p>
+    <label style="font-weight:800;font-size:12px;">New Room</label>
+   <select id="upRoomUser">
+  <option value="The Grand Opera Suite">The Grand Opera Suite - $420/night</option>
+  <option value="Eiffel River View Room">Eiffel River View Room - $350/night</option>
+  <option value="Montmartre Boutique Room">Montmartre Boutique Room - $220/night</option>
+  <option value="Penthouse Loft">Penthouse Loft - $450/night</option>
+  <option value="Royal Garden Room">Royal Garden Room - $280/night</option>
+  <option value="Oceanfront Villa">Oceanfront Villa - $500/night</option>
+</select>
+    <div id="upPreviewUser" style="font-size:12px;background:#f8f5ef;padding:10px;border-radius:10px;"></div>
+    <label style="font-weight:800;font-size:12px;display:block;margin-top:12px;">How you go pay difference?</label>
+    <select id="upPayUser" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin-top:6px;">
+      <option value="Paystack">Paystack — Auto Verified</option>
+      <option value="OPay Transfer">OPay Transfer — Upload Receipt</option>
+      <option value="Pay at Reception">Pay at Reception</option>
+    </select>
+    <button onclick="confirmUpgradeUser('${code}')" style="width:100%;background:#111;color:#D4AF37;border:none;padding:13px;border-radius:10px;font-weight:900;margin-top:12px;">Confirm Upgrade →</button>
+  `);
+  const upd = ()=>{
+    const newRoom = document.getElementById('upRoomUser').value;
+    const oldPerNight = Math.round((b.amount||0)/Math.max(1,nightsBetween(b.checkin,b.checkout)));
+    const newPerNight = ROOM_PRICES_USER[newRoom]||0;
+    const diffPerNight = newPerNight - oldPerNight;
+    const totalDiff = diffPerNight * nightsBetween(b.checkin,b.checkout);
+    document.getElementById('upPreviewUser').innerHTML = totalDiff<=0 ? `That room no be upgrade — e cheaper or same. Pick higher room.` : `Difference to pay: <b>$${totalDiff.toLocaleString()}</b> (${nightsBetween(b.checkin,b.checkout)} nights x $${diffPerNight})`;
+  };
+  document.getElementById('upRoomUser').onchange = upd; upd();
+}
+async function confirmUpgradeUser(code){
+  const b = findBooking(code); if(!b) return;
+  const newRoom = document.getElementById('upRoomUser').value;
+  const payMethod = document.getElementById('upPayUser').value;
+  const oldPerNight = Math.round((b.amount||0)/Math.max(1,nightsBetween(b.checkin,b.checkout)));
+  const newPerNight = ROOM_PRICES_USER[newRoom]||0;
+  const diff = (newPerNight - oldPerNight) * nightsBetween(b.checkin,b.checkout);
+  if(diff<=0) return alert('Pick higher room to upgrade');
+  const newTotal = (b.amount||0)+diff;
+  if(payMethod==='Paystack'){
+    closeManageModal();
+    PaystackPop.setup({ key:'pk_test_YOUR_PUBLIC_KEY_HERE', email:(b.email||b.phone+'@lumina.com'), amount:diff*100, currency:'NGN', ref:code+'-UPG-'+Date.now(), callback: async (res)=>{
+      await callBookingAction('upgrade_paystack', code, { newRoom, newAmount:newTotal, diff, paystackRef:res.reference });
+      refreshAfterAction(code, { room:newRoom, amount:newTotal, status:'Paid' });
+      alert(`Upgraded to ${newRoom}! New total $${newTotal}`);
+    }}).openIframe(); return;
+  }
+  // OPay / Cash = Pending, same pattern as Extend
+  closeManageModal();
+  await callBookingAction('upgrade_pending', code, { newRoom, newAmount:newTotal, diff, payMethod });
+  refreshAfterAction(code, { status:'Awaiting Verification' });
+  alert(`Upgrade requested to ${newRoom}. Pay difference $${diff} via ${payMethod}. Admin go confirm am.`);
+}
+
+// --- 4. FIX specialRequest — Save to Sheets + WhatsApp ---
+async function specialRequestFixed(code){
+  const b = findBooking(code); if(!b) return;
+  const text = prompt('What you need? e.g. Extra towels, Late checkout, Birthday cake, Airport pickup');
+  if(!text) return;
+  await callBookingAction('specialRequest', code, { text, guestName:b.name, room:b.room });
+  const msg = encodeURIComponent(`Hello Lumina! Special request for booking ${code} (${b.room}, ${fmtDateShort(b.checkin)}): ${text}`);
   window.open('https://wa.me/2349134435650?text=' + msg, '_blank');
+  alert('Request saved + WhatsApp opened.');
 }

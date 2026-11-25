@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -97,6 +98,166 @@ body{background:#f7f3eb;min-height:100vh;overflow-x:hidden;}
   #list{padding:0 10px 100px;}
   .room-card{flex-direction:column;align-items:flex-start;}
 }
+
+/* ===== WEBSITE EDITOR - LUMINA LUXURY STYLE ===== */
+.ed-wrap{font-family:inherit;}
+.ed-header{background:#111;color:#D4AF37;padding:18px;border-radius:18px;border:1px solid #D4AF37;text-align:center;}
+.ed-header b{font-size:18px;letter-spacing:1px;}
+.ed-header p{color:#fff;font-size:11px;opacity:.8;margin:6px 0 0;}
+.ed-card{background:#fff;padding:18px;border-radius:18px;margin-top:14px;border:1px solid #EDE3C8;box-shadow:0 4px 18px rgba(0,0,0,.06);}
+.ed-card h3{margin:0 0 12px 0;font-size:16px;color:#111;border-bottom:2px solid #D4AF37;padding-bottom:8px;}
+.ed-card label{font-size:12px;font-weight:800;color:#555;display:block;margin-top:10px;}
+.ed-card input, .ed-card textarea, .ed-card select{width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid #E5DCC0;background:#FFFEFB;font-size:14px;outline:none;box-sizing:border-box;margin-top:4px;}
+.ed-card input:focus, .ed-card textarea:focus{border-color:#D4AF37;box-shadow:0 0 0 3px rgba(212,175,55,.15);}
+.ed-upload{width:100%;padding:14px;border:2px dashed #D4AF37;border-radius:14px;background:#FFF9E6;text-align:center;font-weight:800;color:#8A6D00;cursor:pointer;display:block;margin-top:6px;}
+.ed-upload::file-selector-button{background:#111;color:#D4AF37;border:none;padding:10px 16px;border-radius:10px;font-weight:800;cursor:pointer;margin-right:10px;}
+.ed-room{border:2px solid #E9DCC3;border-radius:18px;padding:14px;margin-bottom:16px;background:#FFFEFB;}
+.ed-save{width:100%;background:#111;color:#D4AF37;border:none;padding:18px;border-radius:14px;font-weight:900;font-size:16px;margin-top:16px;box-shadow:0 8px 20px rgba(0,0,0,.2);}
+.ed-save:active{transform:scale(.98);}
+.ed-preview img{width:100%;height:140px;object-fit:cover;border-radius:12px;margin-top:8px;border:1px solid #eee;}
+/* === LUMINA EDITOR FIX - PASTE AT BOTTOM === */
+#list input[type="text"], #list input[type="number"], #list input[type="email"], #list input[type="tel"], #list textarea, #list select{
+  width:100% !important; padding:12px 14px !important; border-radius:12px !important;
+  border:1.5px solid #E5DCC0 !important; background:#FFFEFB !important; font-size:14px !important;
+  box-sizing:border-box !important; margin-top:4px !important;
+}
+/* Choose File - make am gold + black, not plain */
+#list input[type="file"]{
+  width:100% !important; padding:12px !important; border:2px dashed #D4AF37 !important;
+  border-radius:12px !important; background:#FFF9E6 !important; font-size:13px !important; cursor:pointer !important;
+}
+#list input[type="file"]::file-selector-button{
+  background:#111 !important; color:#D4AF37 !important; border:none !important;
+  padding:10px 16px !important; border-radius:10px !important; font-weight:800 !important; cursor:pointer !important;
+}
+/* Checkboxes - small + aligned, not big scattered */
+#list input[type="checkbox"]{
+  width:18px !important; height:18px !important; accent-color:#D4AF37 !important;
+  margin:0 6px 0 0 !important; vertical-align:middle !important; flex-shrink:0 !important;
+}
+#list label:has(input[type="checkbox"]){
+  display:inline-flex !important; align-items:center !important; gap:6px !important;
+  background:#FFFEFB !important; border:1px solid #E8DCC0 !important; padding:7px 10px !important;
+  border-radius:20px !important; font-size:12px !important; font-weight:700 !important; margin:4px 4px 4px 0 !important;
+}
+/* Show / Featured checkboxes - make dem side by side */
+#list label[style*="display:flex"]{
+  display:inline-flex !important; width:48% !important; margin-right:4px !important;
+  background:#FFF9E6 !important; padding:10px !important; border-radius:12px !important; border:1px solid #E8DCC0 !important;
+}
+/* Cards */
+#list > div{border-radius:18px !important;}
+
+/* === MONEY CARDS ONLY - NOTHING ELSE === */
+.stats{
+  gap:10px;
+}
+.stat-card{
+  padding:18px 10px 16px;
+  box-shadow:0 6px 18px rgba(0,0,0,.07);
+  position:relative;
+  overflow:hidden;
+}
+/* Thin gold line on top - luxury touch */
+.stat-card::after{
+  content:''; position:absolute; left:0; right:0; top:0; height:3px;
+  background:linear-gradient(90deg, #D4AF37, #F5E6A8, #D4AF37);
+}
+/* Numbers - make dem bigger + bolder */
+.stat-card b{
+  font-size:23px;
+  letter-spacing:.3px;
+  line-height:1.1;
+}
+/* Labels - small + spaced */
+.stat-card p{
+  letter-spacing:1.2px;
+  margin-top:6px;
+}
+
+/* 1. Total Revenue - GOLD LETTER ON BLACK */
+.stat-card.gold{
+  background:linear-gradient(135deg, #111, #222) !important;
+  border:1px solid #D4AF37 !important;
+}
+.stat-card.gold b{ color:#D4AF37 !important; }
+.stat-card.gold p{ color:#FFF8DC !important; }
+
+/* 2. Bookings - BLACK LETTER ON WHITE */
+.stat-card:nth-child(2){
+  background:#fff !important;
+  border:1px solid #EDE0C0 !important;
+}
+.stat-card:nth-child(2) b{ color:#111 !important; }
+.stat-card:nth-child(2) p{ color:#888 !important; }
+
+/* 3. Awaiting / Balance - BLACK LETTER ON SOFT GOLD */
+.stat-card:nth-child(3){
+  background:#FFF9E6 !important;
+  border:1px solid #D4AF37 !important;
+}
+.stat-card:nth-child(3) b{ color:#8A6D00 !important; }
+.stat-card:nth-child(3) p{ color:#8A6D00 !important; }
+
+
+/* === MONEY TAB PAGE ONLY - NOTHING ELSE === */
+body.money-page #list{
+  gap:14px;
+}
+/* All cards for Money page - luxury */
+body.money-page #list > div{
+  border-radius:20px !important;
+  border:1px solid #EDE0C0 !important;
+  box-shadow:0 6px 20px rgba(0,0,0,.06) !important;
+  padding:20px !important;
+  background:#fff !important;
+  position:relative;
+  overflow:hidden;
+}
+/* Gold line on top of each Money card */
+body.money-page #list > div::before{
+  content:''; position:absolute; left:0; right:0; top:0; height:4px;
+  background:linear-gradient(90deg, #D4AF37, #F5E6A8, #D4AF37);
+}
+/* Titles - Daily Report, Balances, Expenses */
+body.money-page #list > div b:first-child,
+body.money-page #list > div strong{
+  font-size:15px !important;
+  letter-spacing:.3px;
+  color:#111 !important;
+}
+/* Daily Report card - make am BLACK + GOLD, na the main card */
+body.money-page #list > div:first-child{
+  background:#161616 !important;
+  border:1px solid #D4AF37 !important;
+}
+body.money-page #list > div:first-child b,
+body.money-page #list > div:first-child strong{
+  color:#D4AF37 !important;
+}
+body.money-page #list > div:first-child div{
+  color:#111 !important;
+}
+/* Profit line - make am pop */
+body.money-page #list > div:first-child b:last-child{
+  color:#D4AF37 !important;
+}
+/* Balances Still Owed card - SOFT GOLD */
+body.money-page #list > div:nth-child(2){
+  background:#FFF9E6 !important;
+  border-color:#D4AF37 !important;
+}
+body.money-page #list > div:nth-child(2) b{
+  color:#8A6D00 !important;
+}
+/* Expenses card - WHITE + gold Add button */
+body.money-page #list > div:last-child{
+  background:#fff !important;
+  color:#111
+}
+
+
+
 </style>
 </head>
 <body>
@@ -104,23 +265,25 @@ body{background:#f7f3eb;min-height:100vh;overflow-x:hidden;}
 <div id="loginCard" style="max-width:380px;margin:40px auto;background:#fff;padding:24px;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.1);">
   <h2 style="text-align:center;font-family:'Playfair Display',serif;">LUMINA ✨ ADMIN</h2>
   <p style="text-align:center;color:#666;font-size:13px;">Login with your username & password</p>
+
   <label style="font-size:12px;font-weight:800;">Username</label>
-  <input id="loginUsername" placeholder="e.g. admin" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0 12px 0;">
+  <input id="loginUsername" type="text" placeholder="e.g. cleaner1" value="" autocomplete="off" autocapitalize="off" spellcheck="false" name="lumina_username_xyz" readonly onfocus="this.removeAttribute('readonly')" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0 12px 0;">
+
   <label style="font-size:12px;font-weight:800;">Password</label>
   <div style="position:relative;">
-    <input id="loginPassword" type="password" placeholder="Password" style="width:100%;padding:12px 44px 12px 12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <input id="loginPassword" type="password" placeholder="Password" value="" autocomplete="new-password" name="lumina_password_xyz" readonly onfocus="this.removeAttribute('readonly')" style="width:100%;padding:12px 44px 12px 12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
     <button type="button" onclick="toggleLoginPw()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:18px;cursor:pointer;">👁️</button>
   </div>
+
   <div id="loginError" style="color:#dc2626;font-size:12px;display:none;margin-top:6px;"></div>
   <button onclick="doAdminLogin()" style="width:100%;background:#111;color:#D4AF37;border:none;padding:13px;border-radius:10px;font-weight:900;margin-top:12px;cursor:pointer;">Login →</button>
-  <p style="font-size:11px;color:#888;text-align:center;margin-top:10px;">First login: <b>admin / Lumina123</b> — change am after you login</p>
 </div>
+
 <div id="adminMain" style="display:none;">
 <div class="header"><h1>LUMINA ✨ ADMIN</h1><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><button id="addBookingBtn" onclick="openAddBooking()" style="background:#D4AF37;color:#111;border:none;padding:8px 14px;border-radius:10px;font-weight:900;font-size:12px;cursor:pointer;">➕ Add</button>
 <span id="count">0 bookings</span><button onclick="logoutAdmin()" style="background:#222;color:#D4AF37;border:1px solid #D4AF37;padding:8px 12px;border-radius:10px;font-weight:900;font-size:11px;cursor:pointer;">Logout</button></div></div>
 <div style="display:flex;justify-content:space-between;align-items:center;background:#111;color:#D4AF37;padding:10px 14px;margin:0 16px 12px;border-radius:14px;">
   <span id="roleLabel" style="font-size:12px;">Logged in: MANAGER</span>
-<button id="switchStaffBtn" onclick="staffLogin()" style="display:none;">🔑 Switch Staff</button>
 </div>
 <div class="tabs">
   <button class="tab" id="tabStaff" onclick="switchTab('staff')">👥 Staff</button>
@@ -130,10 +293,12 @@ body{background:#f7f3eb;min-height:100vh;overflow-x:hidden;}
   <button class="tab" id="tabCheck" onclick="switchTab('checked')">🏨 Checked-In</button>
   <button class="tab" id="tabDis" onclick="switchTab('disapproved')">⛔ Disapproved</button>
   <button class="tab" id="tabOut" onclick="switchTab('checkout')">✅ Checked-Out</button>
-  <button class="tab" id="tabMoney" onclick="switchTab('money')">💰 Money</button>
+  <button class="tab" id="tabMoney" onclick="markMoneyPage('money'); switchTab('money')">💰 Money</button>
   <button class="tab" id="tabPos" onclick="switchTab('pos')">🍽️ POS / Pool</button>
  <button id="addExpenseBtn" onclick="openExpenseModal()" class="tab" style="background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;">🧾 + Add Expense</button>
   <button class="tab" id="tabRooms" onclick="switchTab('rooms')">🛏️ Rooms</button>
+  <button class="tab" id="tabMonthly" onclick="switchTab('monthly')">📅 Monthly Review</button>
+  <button class="tab" id="tabEditor" onclick="switchTab('editor')">🌐 Website Editor</button>
 </div>
 <div class="stats" id="stats">
   <div class="stat-card gold"><b id="totalRev">$0</b><p>Total Revenue</p></div>
@@ -151,7 +316,17 @@ body{background:#f7f3eb;min-height:100vh;overflow-x:hidden;}
     <input id="abName" placeholder="Guest Name *">
     <input id="abPhone" placeholder="Phone *">
     <input id="abEmail" placeholder="Email (optional)">
-    <select id="abRoom"></select>
+<select id="manualRoomType" onchange="updateManualRoomNumbers()">
+  <option value="The Grand Opera Suite">The Grand Opera Suite - 5 avail</option>
+  <option value="Eiffel River View Room">Eiffel River View Room - 5 avail</option>
+  <option value="Deluxe King Room">Deluxe King Room - 5 avail</option>
+  <option value="Executive Double Room">Executive Double Room - 5 avail</option>
+  <option value="Family Suite">Family Suite - 5 avail</option>
+  <option value="Penthouse Loft">Penthouse Loft - 5 avail</option>
+</select>
+<select id="manualRoomNumber">
+  <option>Loading rooms...</option>
+</select>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><input id="abCheckin" type="date"><input id="abCheckout" type="date"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><input id="abGuests" placeholder="Guests" value="2 guests · 1 room"><input id="abAmount" type="text" inputmode="numeric" placeholder="Amount e.g. 420"></div>
     <select id="abPay"><option value="Pay at Hotel">Pay at Hotel</option><option value="Cash">Cash</option><option value="OPay Transfer">OPay Transfer</option><option value="Bank Transfer">Bank Transfer</option></select>
@@ -187,9 +362,21 @@ body{background:#f7f3eb;min-height:100vh;overflow-x:hidden;}
   <div id="staffList" style="margin-top:16px;"></div>
 </div>
 <script>
+// ===== LOGOUT - FIXED: No LOGIN_KEY, clears everything =====
+function logoutAdmin(){
+  if(!confirm("Logout?")) return;
+  try{
+    localStorage.removeItem('lumina_admin');
+    localStorage.removeItem('lumina_role');
+    localStorage.removeItem('lumina_staff');
+    // Clear session storage too, just in case
+    sessionStorage.clear();
+  }catch(e){ console.log('Logout clear error:', e); }
 
-function logoutAdmin(){ if(!confirm("Logout?")) return; localStorage.removeItem('lumina_admin'); localStorage.removeItem(LOGIN_KEY); location.reload(); }
-// Alias so both names work
+    clearLoginFields();
+  // Force reload with cache bypass so login screen show
+  location.href = location.pathname + '?logout=' + Date.now();
+}
 function adminLogout(){ logoutAdmin(); }
 document.addEventListener('DOMContentLoaded', ()=>{
   checkLogin();
@@ -204,6 +391,59 @@ let currentTab = 'all';
 let isLoading = false;
 let isSaving = false;
 
+
+// ===== LOADING STATE HELPER - Shows "Processing..." for all major actions =====
+let _btnOriginal = {};
+
+function setBtnLoading(btn, loadingText){
+  if(!btn) return;
+  // Save original text once
+  if(!_btnOriginal[btn.id] && btn.id){
+    _btnOriginal[btn.id] = btn.innerHTML;
+  }
+  btn.disabled = true;
+  btn.style.opacity = '0.6';
+  btn.style.pointerEvents = 'none';
+  btn.innerHTML = `⏳ ${loadingText}`;
+}
+
+function resetBtnLoading(btn){
+  if(!btn) return;
+  if(btn.id && _btnOriginal[btn.id]){
+    btn.innerHTML = _btnOriginal[btn.id];
+  }
+  btn.disabled = false;
+  btn.style.opacity = '1';
+  btn.style.pointerEvents = 'auto';
+}
+
+// AUTO - No need edit buttons
+document.addEventListener('click', function(e){
+  const btn = e.target.closest('.tab');
+  if(!btn) return;
+  const txt = (btn.innerText||"").toLowerCase();
+  if(txt.includes('money')){
+    document.body.classList.add('money-page');
+  } else {
+    document.body.classList.remove('money-page');
+  }
+});
+// Full-screen loader for Login / Check-In / Check-Out — e go block screen so person no click twice
+function showPageLoader(text){
+  let loader = document.getElementById('globalLoader');
+  if(!loader){
+    loader = document.createElement('div');
+    loader.id = 'globalLoader';
+    loader.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;color:white;font-weight:900;';
+    document.body.appendChild(loader);
+  }
+  loader.innerHTML = `<div style="font-size:40px;animation:spin 1s linear infinite;">⏳</div><div style="margin-top:12px;font-size:16px;">${text}</div><style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>`;
+  loader.style.display = 'flex';
+}
+function hidePageLoader(){
+  const loader = document.getElementById('globalLoader');
+  if(loader) loader.style.display = 'none';
+}
 
 // ===== NEW: STAFF & ROLES - RUMAGO STYLE (Username + Hashed Password) =====
 let currentAdminUser = JSON.parse(localStorage.getItem('lumina_admin') || 'null');
@@ -227,23 +467,23 @@ try{
 }catch(e){ console.log('Login check skipped:', e); }
 
 const ROLE_PERMS = {
-  // Admin + Manager: See EVERYTHING, fit Switch Staff / Add Staff
-  admin: { tabs:['all','today','board','checked','disapproved','checkout','money','pos','rooms','staff'], canApprove:true, canCash:true, canExtend:true, canUpgrade:true, canCancel:true, canSwitchStaff:true, canAddStaff:true, canSeeRevenue:true, canAddExpense:true },
-  manager: { tabs:['all','today','board','checked','disapproved','checkout','money','pos','rooms','staff'], canApprove:true, canCash:true, canExtend:true, canUpgrade:true, canCancel:true, canSwitchStaff:true, canAddStaff:true, canSeeRevenue:true, canAddExpense:true },
+  // Admin + Manager: See EVERYTHING
+  admin: { tabs:['all','today','board','checked','disapproved','checkout','money','pos','rooms','staff','editor','monthly'], canApprove:true, canCash:true, canExtend:true, canUpgrade:true, canCancel:true, canSwitchStaff:true, canAddStaff:true, canSeeRevenue:true, canAddExpense:true },
+  manager: { tabs:['all','today','board','checked','disapproved','checkout','money','pos','rooms','staff','editor','monthly'], canApprove:true, canCash:true, canExtend:true, canUpgrade:true, canCancel:true, canSwitchStaff:true, canAddStaff:true, canSeeRevenue:true, canAddExpense:true },
 
-  // Receptionist: Bookings + Check-In/Out + Cash + Extend. NO Revenue, NO Staff, NO Switch. Fit ADD Expense but no see Revenue.
-  receptionist: { tabs:['all','today','board','checked','checkout'], canApprove:false, canCash:true, canExtend:true, canUpgrade:false, canCancel:false, canSwitchStaff:false, canAddStaff:false, canSeeRevenue:false, canAddExpense:true },
+  // Receptionist: Bookings + Monthly (no revenue details, just bookings recap)
+  receptionist: { tabs:['all','today','board','checked','checkout','monthly'], canApprove:false, canCash:true, canExtend:true, canUpgrade:false, canCancel:false, canSwitchStaff:false, canAddStaff:false, canSeeRevenue:false, canAddExpense:true },
 
-  // Cleaner: ONLY Room Board. Nothing else. Landing = Board.
+  // Cleaner: ONLY Room Board
   cleaner: { tabs:['board'], canApprove:false, canCash:false, canExtend:false, canUpgrade:false, canCancel:false, canSwitchStaff:false, canAddStaff:false, canSeeRevenue:false, canAddExpense:true },
 
-  // Accountant: ONLY Money — Revenue + Expenses. No Bookings details.
-  accountant: { tabs:['money'], canApprove:false, canCash:true, canExtend:false, canUpgrade:false, canCancel:false, canSwitchStaff:false, canAddStaff:false, canSeeRevenue:true, canAddExpense:true },
+  // Accountant: Money + Monthly Review - na hin work be this
+  accountant: { tabs:['money','monthly'], canApprove:false, canCash:true, canExtend:false, canUpgrade:false, canCancel:false, canSwitchStaff:false, canAddStaff:false, canSeeRevenue:true, canAddExpense:true },
 
-  // Cashier: ONLY Money / POS — Anything money.
-  cashier: { tabs:['pos','money'], canApprove:false, canCash:true, canExtend:false, canUpgrade:false, canCancel:false, canSwitchStaff:false, canAddStaff:false, canSeeRevenue:true, canAddExpense:true },
+  // Cashier: Money / POS + Monthly
+  cashier: { tabs:['pos','money','monthly'], canApprove:false, canCash:true, canExtend:false, canUpgrade:false, canCancel:false, canSwitchStaff:false, canAddStaff:false, canSeeRevenue:true, canAddExpense:true },
 
-  // Kitchen: ONLY POS / Orders — See wetin person order + which room to carry am go.
+  // Kitchen: ONLY POS
   kitchen: { tabs:['pos'], canApprove:false, canCash:false, canExtend:false, canUpgrade:false, canCancel:false, canSwitchStaff:false, canAddStaff:false, canSeeRevenue:false, canAddExpense:true },
 };
 function can(a){ return ROLE_PERMS[currentRole]?.[a]===true; }
@@ -301,33 +541,68 @@ function toggleLoginPw(){
   if(el) el.type = el.type === 'password' ? 'text' : 'password';
 }
 
+// Force login empty - run after page load
+setTimeout(()=>{
+  const u = document.getElementById('loginUsername');
+  const p = document.getElementById('loginPassword');
+  if(u) u.value = '';
+  if(p) p.value = '';
+}, 500);
+
+// ===== FORCE LOGIN FIELDS EMPTY - Kill Google Autofill =====
+function clearLoginFields(){
+  const u = document.getElementById('loginUsername');
+  const p = document.getElementById('loginPassword');
+  if(u){ u.value = ''; u.setAttribute('autocomplete','off'); }
+  if(p){ p.value = ''; p.setAttribute('autocomplete','new-password'); }
+  // Clear error too
+  const err = document.getElementById('loginError');
+  if(err) err.style.display = 'none';
+}
+
+// Run am immediately + after small delay (Chrome dey fill after page load, so we clear am again)
+document.addEventListener('DOMContentLoaded', ()=>{
+  clearLoginFields();
+  setTimeout(clearLoginFields, 200);
+  setTimeout(clearLoginFields, 800);
+  setTimeout(clearLoginFields, 1500);
+});
+
 async function doAdminLogin(){
   const username = document.getElementById('loginUsername').value.trim();
   const password = document.getElementById('loginPassword').value;
   if(!username || !password) return alert('Enter username + password');
-  const res = await fetch(SCRIPT_URL, {method:'POST', body: JSON.stringify({action:'login', username, password})});
-  const data = await res.json().catch(()=>({}));
-  if(data.ok){
-    currentAdminUser = data;
-    currentRole = (data.role||'').toLowerCase();
-    localStorage.setItem('lumina_admin', JSON.stringify(data));
-    localStorage.removeItem('lumina_role'); // Remove old PIN role
-    localStorage.removeItem('lumina_staff'); // Remove old PIN staff
-    document.getElementById('loginCard').style.display='none';
-    document.getElementById('adminMain').style.display='block';
-    applyRoleUI(); renderTab();
-  } else {
-    const err = document.getElementById('loginError');
-    if(err){ err.style.display='block'; err.innerText = data.error || 'Login failed'; }
-    else alert(data.error || 'Login failed');
+  
+  const btn = document.querySelector('#loginCard button'); // your Login button
+  const oldText = btn ? btn.innerHTML : '';
+  if(btn){ btn.disabled = true; btn.innerHTML = '⏳ Logging in... Please wait...'; btn.style.opacity = '0.6'; }
+  showPageLoader('Logging in...');
+
+  try{
+    const res = await fetch(SCRIPT_URL, {method:'POST', body: JSON.stringify({action:'login', username, password})});
+    const data = await res.json().catch(()=>({}));
+    if(data.ok){
+      currentAdminUser = data;
+      currentRole = (data.role||'').toLowerCase();
+      localStorage.setItem('lumina_admin', JSON.stringify(data));
+      localStorage.removeItem('lumina_role');
+      localStorage.removeItem('lumina_staff');
+      document.getElementById('loginCard').style.display='none';
+      document.getElementById('adminMain').style.display='block';
+      applyRoleUI(); renderTab();
+    } else {
+      const err = document.getElementById('loginError');
+      if(err){ err.style.display='block'; err.innerText = data.error || 'Login failed'; }
+      else alert(data.error || 'Login failed');
+    }
+  }catch(e){
+    alert('Login failed: ' + e.message);
+  } finally {
+    hidePageLoader();
+    if(btn){ btn.disabled = false; btn.innerHTML = oldText || 'Login'; btn.style.opacity = '1'; }
   }
 }
 
-function adminLogout(){
-  localStorage.removeItem('lumina_admin');
-  currentAdminUser = null; currentRole = '';
-  location.reload();
-}
 
 // NEW STAFF - Admin creates staff, Sheet generates random password once
 async function createStaff(){
@@ -335,14 +610,30 @@ async function createStaff(){
   const username = document.getElementById('newStaffUser').value.trim();
   const role = document.getElementById('newStaffRole').value;
   if(!name || !username) return alert('Enter name + username');
-  const res = await fetch(SCRIPT_URL, {method:'POST', body: JSON.stringify({action:'createUser', name, username, role})});
-  const data = await res.json();
-  if(data.ok){
-    const el = document.getElementById('newStaffResult');
-    if(el){ el.style.display='block'; el.innerHTML = `✅ Staff created!<br>Username: <b>${data.username}</b><br>Password: <b>${data.password}</b> <span style="color:#dc2626;">— Copy am now, e no go show again!</span><br>Role: ${data.role}`; }
-    else alert(`Staff created! Username: ${data.username} Password: ${data.password} — Copy am now!`);
-    loadStaffList();
-  } else alert(data.error);
+
+  // 1. SHOW LOADER BEFORE FETCH
+  showPageLoader('Creating Staff... Generating password...');
+  const btn = document.querySelector('button[onclick="createStaff()"]');
+  if(btn){ btn.disabled = true; btn.innerHTML = '⏳ Creating Staff...'; }
+
+  try{
+    const res = await fetch(SCRIPT_URL, {method:'POST', body: JSON.stringify({action:'createUser', name, username, role})});
+    const data = await res.json();
+    if(data.ok){
+      const el = document.getElementById('newStaffResult');
+      if(el){ el.style.display='block'; el.innerHTML = `✅ Staff created!<br>Username: <b>${data.username}</b><br>Password: <b>${data.password}</b> <span style="color:#dc2626;">— Copy am now, e no go show again!</span><br>Role: ${data.role}`; }
+      else alert(`Staff created! Username: ${data.username} Password: ${data.password} — Copy am now!`);
+      loadStaffList();
+    } else {
+      alert(data.error);
+    }
+  }catch(e){
+    alert('Create Staff failed: ' + e.message);
+  } finally {
+    // 2. ALWAYS HIDE LOADER, even if e fail
+    hidePageLoader();
+    if(btn){ btn.disabled = false; btn.innerHTML = 'Generate Password + Save Staff →'; }
+  }
 }
 
 async function loadStaffList(){
@@ -386,6 +677,431 @@ function renderStaff(){
       <div id="newStaffResult" style="margin-top:10px;font-size:13px;background:#FFF8E6;padding:10px;border-radius:10px;display:none;"></div>
     </div><div id="staffList" style="margin-top:16px;"></div>`;
   loadStaffList();
+}
+
+// ===== WEBSITE EDITOR - FULL =====
+let editorConfig = { rooms:[], hotel:{}, home:{}, why:[], reviews:[], about:{}, food:[], pool:{}, payments:{}, policies:{} };
+
+async function uploadImageFromPhone(inputId, previewId, hiddenId){
+  const file = document.getElementById(inputId).files[0];
+  if(!file) return;
+  const preview = document.getElementById(previewId);
+  if(preview) preview.innerHTML = '⏳ Uploading... Wait...';
+  const reader = new FileReader();
+  reader.onload = async (ev)=>{
+    const base64 = ev.target.result.split(',')[1];
+    const res = await fetch(SCRIPT_URL,{method:'POST', body: JSON.stringify({action:'uploadWebsiteImage', base64, name: file.name, mime: file.type, folder:'Lumina Website Images'})});
+    const data = await res.json().catch(()=>({}));
+    if(data.ok){
+      document.getElementById(hiddenId).value = data.url;
+      if(preview) preview.innerHTML = `<img src="${data.url}" style="width:100%;height:140px;object-fit:cover;border-radius:10px;"><p style="font-size:11px;color:green;">✅ Uploaded!</p>`;
+    } else alert('Upload failed: '+(data.error||'try again'));
+  };
+  reader.readAsDataURL(file);
+}
+// === MARK MONEY PAGE ONLY ===
+function markMoneyPage(tabName){
+  if((tabName||"").toLowerCase().includes("money")){
+    document.body.classList.add('money-page');
+  } else {
+    document.body.classList.remove('money-page');
+  }
+}
+// Call am when tab dey click:
+// Example: if your tab button na onclick="showTab('money')"
+// Change am to onclick="markMoneyPage('money'); showTab('money')"
+// For other tabs: onclick="markMoneyPage('bookings'); showTab('bookings')"
+
+async function renderWebsiteEditor(){
+  // === HIDE DASHBOARD BOXES - WORKS NO MATTER THE CLASS ===
+  document.body.classList.add('editor-open');
+  // Find every small text that says Total Revenue / Bookings / Awaiting
+  document.querySelectorAll('*').forEach(el=>{
+    // Only check leaf elements - elements wey no get children divs
+    if(el.children.length === 0){
+      const txt = (el.textContent || "").trim();
+      if(txt === 'Total Revenue' || txt === 'Bookings' || txt === 'Awaiting' || txt === 'Total Bookings'){
+        // Climb up 4 levels, hide the card
+        let card = el;
+        for(let i=0;i<4;i++){
+          if(!card.parentElement) break;
+          card = card.parentElement;
+          // Stop when we reach a card wey get number + label inside
+          if(card.innerText && card.innerText.includes('₦') || card.innerText && card.innerText.length < 300){
+            // Check if this level look like a card (small)
+            if(card.offsetHeight < 220){
+              card.style.display = 'none';
+              card.setAttribute('data-hidden-editor','1');
+              break;
+            }
+          }
+        }
+      }
+    }
+  });
+  // Also hide search bar by placeholder
+  document.querySelectorAll('input[placeholder]').forEach(inp=>{
+    if((inp.placeholder||"").toLowerCase().includes('search')){
+      inp.style.display='none';
+      // Hide its parent container too
+      if(inp.parentElement) inp.parentElement.style.display='none';
+    }
+  });
+
+  document.getElementById('list').innerHTML = '<div style="text-align:center;padding:30px;">Loading Editor...</div>';
+ 
+  try{
+    const r = await fetch(`${SCRIPT_URL}?websiteConfig=true&t=${Date.now()}`);
+    editorConfig = await r.json();
+  }catch(e){}
+  if(!editorConfig.rooms) editorConfig.rooms = [];
+  if(!editorConfig.hotel) editorConfig.hotel = {};
+  if(!editorConfig.food) editorConfig.food = [
+    {name:'Fried Rice + Chicken', price:8000},{name:'Jollof Rice + Chicken', price:7500},
+    {name:'Pepper Soup', price:6000},{name:'Grilled Fish', price:12000}
+  ];
+  if(!editorConfig.pool) editorConfig.pool = {adult:5000, child:3000, family:15000};
+  if(!editorConfig.payments) editorConfig.payments = {opayNumber:'9134435650', opayName:'Lumina Hotel'};
+  if(!editorConfig.why) editorConfig.why = [
+    {tag:'24HRS OPEN', title:'Infinity Pool + Sky Bar', desc:'Swim under the stars.', img:'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80'},
+    {tag:"CHEF'S TABLE", title:'Nigerian Flavours, Elevated', desc:'From ofe nsala to continental.', img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80'},
+    {tag:'KING BEDS', title:'Sleep Like Royalty', desc:'Blackout curtains, rain shower.', img:'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800&q=80'},
+    {tag:'NEVER A BLACKOUT', title:'24/7 Power & Security', desc:'CCTV, keycard & security.', img:'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80'}
+  ];
+
+  const h = editorConfig.hotel||{};
+  const home = editorConfig.home||{};
+  const pol = editorConfig.policies||{};
+
+  document.getElementById('list').innerHTML = `
+<div class="ed-header"><b>🌐 WEBSITE EDITOR</b><p>Edit everything from phone. Press SAVE at bottom.</p></div>
+
+  <!-- 1 HOTEL INFO -->
+<div class="ed-card">
+  <h3>🏨 Hotel Info & Contact</h3>
+    <label>Hotel Name</label><input id="ed-hotelName" value="${h.name||'LUMINA HOTELS & RESORTS'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>WhatsApp Number (234...)</label><input id="ed-whatsapp" value="${h.whatsapp||'2349134435650'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>Phone to Call</label><input id="ed-phone" value="${h.phone||'09134435650'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>Email</label><input id="ed-email" value="${h.email||'hello@luminahotel.com'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>Address</label><input id="ed-address" value="${h.address||'Behind Ogige Main Market, Nsukka, Enugu State'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>Instagram Link</label><input id="ed-ig" value="${h.instagram||'https://instagram.com/luminahotel'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>Facebook Link</label><input id="ed-fb" value="${h.facebook||'https://facebook.com/luminahotel'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>TikTok Link</label><input id="ed-tk" value="${h.tiktok||'https://tiktok.com/@luminahotel'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+  </div>
+
+  <!-- 2 HOME HERO -->
+  <div class="ed-card">
+    <h3>🏠 Home - Hero</h3>
+    <label>Big Title Line 1</label><input id="ed-hero1" value="${home.heroTitle1||'Your Luxury Escape'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>Big Title Line 2 (Gold)</label><input id="ed-hero2" value="${home.heroTitle2||'Awaits in Nsukka'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>Small Text Under Title</label><input id="ed-heroSub" value="${home.heroSub||'Sleep like royalty, pay like home.'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>Badge Text</label><input id="ed-badge" value="${home.badge||'NSUKKAS ONLY 5-STAR - EST. 2018'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>Promo Banner (leave empty to hide)</label><input id="ed-promo" value="${home.promo||''}" placeholder="e.g. Christmas Promo - 20% Off! Use code XMAS20" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>Hero Picture / Video - Upload from Phone</label>
+    <input type="file" accept="image/*,video/*" id="ed-heroFile" onchange="uploadImageFromPhone('ed-heroFile','ed-heroPreview','ed-heroImg')" style="width:100%;padding:10px;border:1px dashed #999;border-radius:10px;margin:6px 0;">
+    <input type="hidden" id="ed-heroImg" value="${home.heroImg||''}">
+    <div id="ed-heroPreview">${home.heroImg?`<img src="${home.heroImg}" style="width:100%;height:140px;object-fit:cover;border-radius:10px;">`:''}</div>
+  </div>
+
+  <!-- 3 WHY LUMINA -->
+  <div class="ed-card">
+    <h3>✨ Why Lumina - 4 Picture Cards</h3>
+    ${editorConfig.why.map((w,i)=>`
+      <div style="border:1px solid #eee;padding:12px;border-radius:12px;margin-bottom:10px;">
+        <b>Card ${i+1}</b>
+        <label>Tag</label><input id="ed-why-tag-${i}" value="${w.tag||''}" style="width:100%;padding:10px;border-radius:10px;border:1px solid #ddd;margin:4px 0;">
+        <label>Title</label><input id="ed-why-title-${i}" value="${w.title||''}" style="width:100%;padding:10px;border-radius:10px;border:1px solid #ddd;margin:4px 0;">
+        <label>Description</label><textarea id="ed-why-desc-${i}" style="width:100%;padding:10px;border-radius:10px;border:1px solid #ddd;">${w.desc||''}</textarea>
+        <label>Picture - Upload from Phone</label>
+        <input type="file" accept="image/*" onchange="uploadImageFromPhone(this.id,'ed-why-prev-${i}','ed-why-img-${i}')" id="ed-why-file-${i}" style="width:100%;padding:8px;border:1px dashed #999;border-radius:10px;">
+        <input type="hidden" id="ed-why-img-${i}" value="${w.img||''}">
+        <div id="ed-why-prev-${i}">${w.img?`<img src="${w.img}" style="width:100%;height:120px;object-fit:cover;border-radius:10px;margin-top:6px;">`:''}</div>
+      </div>`).join('')}
+  </div>
+
+  <!-- 4 PAYMENTS & POLICIES -->
+  <div class="ed-card">
+    <h3>💰 Payments & Policies</h3>
+    <label>OPay Number</label><input id="ed-opayNum" value="${editorConfig.payments.opayNumber||''}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>OPay Account Name</label><input id="ed-opayName" value="${editorConfig.payments.opayName||''}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>Check-In Time</label><input id="ed-checkinTime" value="${pol.checkin||'2PM'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>Check-Out Time</label><input id="ed-checkoutTime" value="${pol.checkout||'12PM'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>House Rules</label><textarea id="ed-rules" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;">${pol.rules||'Check-in 2PM • Check-out 12PM • No smoking • No pets • Free cancellation 24hrs before'}</textarea>
+    <label>Refund Policy</label><textarea id="ed-refund" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;">${pol.refund||'Cancel 24hrs+ before check-in = 100% refund • Less than 24hrs = 50% refund • After check-in date = No refund.'}</textarea>
+  </div>
+
+  <!-- 5 FOOD & POOL -->
+  <div class="ed-card">
+    <h3>🍽️ Food Menu Prices</h3>
+    <div id="ed-foodList">
+      ${editorConfig.food.map((f,i)=>`
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+          <input id="ed-food-name-${i}" value="${f.name}" style="flex:2;padding:10px;border-radius:10px;border:1px solid #ddd;">
+          <input id="ed-food-price-${i}" type="number" value="${f.price}" style="flex:1;padding:10px;border-radius:10px;border:1px solid #ddd;">
+        </div>`).join('')}
+    </div>
+    <h3 style="margin-top:16px;">🏊 Pool Prices</h3>
+    <label>Adult</label><input id="ed-poolAdult" type="number" value="${editorConfig.pool.adult}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>Child</label><input id="ed-poolChild" type="number" value="${editorConfig.pool.child}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>Family (4 ppl)</label><input id="ed-poolFamily" type="number" value="${editorConfig.pool.family}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+  </div>
+
+  <!-- REVIEWS -->
+<div class="ed-card">
+  <h3>⭐ Reviews - 3 Reviews for Home Page</h3>
+  <div id="ed-reviewsList"></div>
+</div>
+
+<!-- ABOUT -->
+<div class="ed-card">
+  <h3>📖 About Page</h3>
+  <label>About Title</label><input id="ed-aboutTitle" value="${(editorConfig.about||{}).title||'Our Story'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+  <label>About Story (long text)</label><textarea id="ed-aboutStory" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;height:100px;">${(editorConfig.about||{}).story||''}</textarea>
+  <label>About Quote</label><input id="ed-aboutQuote" value="${(editorConfig.about||{}).quote||'Luxury is not the opposite of poverty. It is the opposite of vulgarity.'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+ 
+<label>About Hero Title</label><input id="ed-aboutHeroTitle" value="${(editorConfig.about||{}).heroTitle||'More Than A Stay, It Is An Experience.'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+<label>About Hero Sub</label><input id="ed-aboutHeroSub" value="${(editorConfig.about||{}).heroSub||''}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+<label>About Hero Picture - Upload</label>
+<input type="file" accept="image/*" onchange="uploadImageFromPhone(this.id,'ed-aboutHeroPrev','ed-aboutHeroImg')" id="ed-aboutHeroFile" style="width:100%;padding:8px;border:1px dashed #999;border-radius:10px;">
+<input type="hidden" id="ed-aboutHeroImg" value="${(editorConfig.about||{}).heroImg||''}">
+<div id="ed-aboutHeroPrev">${(editorConfig.about||{}).heroImg?`<img src="${(editorConfig.about||{}).heroImg}" style="width:100%;height:120px;object-fit:cover;border-radius:10px;">`:''}</div>
+<label>Stat 1 - Value + Label</label>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><input id="ed-stat1Val" value="${(editorConfig.about||{}).stat1Val||'2018'}" style="padding:10px;border-radius:8px;border:1px solid #ddd;"><input id="ed-stat1Label" value="${(editorConfig.about||{}).stat1Label||'Year Founded'}" style="padding:10px;border-radius:8px;border:1px solid #ddd;"></div>
+<label>Stat 2 - Value + Label</label>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><input id="ed-stat2Val" value="${(editorConfig.about||{}).stat2Val||'120+'}" style="padding:10px;border-radius:8px;border:1px solid #ddd;"><input id="ed-stat2Label" value="${(editorConfig.about||{}).stat2Label||'Luxury Rooms'}" style="padding:10px;border-radius:8px;border:1px solid #ddd;"></div> 
+  <label>About Picture - Upload from Phone</label>
+  <input type="file" accept="image/*" id="ed-aboutFile" onchange="uploadImageFromPhone('ed-aboutFile','ed-aboutPreview','ed-aboutImg')" style="width:100%;padding:8px;border:1px dashed #999;border-radius:10px;">
+  <input type="hidden" id="ed-aboutImg" value="${(editorConfig.about||{}).img||''}">
+  <div id="ed-aboutPreview">${(editorConfig.about||{}).img?`<img src="${(editorConfig.about||{}).img}" style="width:100%;height:140px;object-fit:cover;border-radius:10px;margin-top:6px;">`:''}</div>
+</div>
+
+  <!-- 6 ROOMS -->
+<div class="ed-card">
+  <h3>🛏️ Rooms - Full Editor</h3>
+  <p style="font-size:12px;color:#666;">Upload pictures from phone.</p>
+  <div id="ed-roomsList"></div>
+  <button type="button" onclick="addNewRoomEditor()" class="ed-upload">➕ Add New Room Type</button>
+</div>
+
+  <button onclick="saveWebsiteEditorPart1()" class="ed-save">💾 SAVE ALL CHANGES</button>
+  `;
+
+  // After innerHTML assignment in renderWebsiteEditor:
+renderRoomsEditorList();
+renderReviewsEditorList();
+}
+
+// ===== ROOMS EDITOR =====
+function getDefaultRooms(){
+  const baseInside = (bath,ward,bed,bal)=>({bath:{title:"Luxury Bathroom",desc:bath,img:""},wardrobe:{title:"Wardrobe & Dressing",desc:ward,img:""},bedroom:{title:"Bedroom Area",desc:bed,img:""},balcony:{title:"Balcony / View",desc:bal,img:""}});
+  return [
+    {id:1,name:"The Grand Opera Suite",price:420,bed:"King",amen:["WiFi","Breakfast","Pool"],img:"https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=800",about:"600 sqft luxury suite with lounge, premium amenities.",cardText:"Luxury suite with premium amenities",img2:"",img3:"",featured:true,active:true,total:5,inside:baseInside("Rain shower, freestanding tub","Walk-in wardrobe, safe box","King bed, 42-inch Smart TV","Private balcony, city view")},
+    {id:2,name:"Eiffel River View Room",price:350,bed:"King",amen:["WiFi","Breakfast","Pool"],img:"https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=800",about:"River view, balcony, luxury bathroom.",cardText:"River view with balcony",img2:"",img3:"",featured:true,active:true,total:5,inside:baseInside("Rain shower","Wardrobe, safe box","King bed, Smart TV","River view balcony")},
+    {id:3,name:"Deluxe King Room",price:280,bed:"King",amen:["WiFi","Breakfast"],img:"https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=800",about:"Spacious deluxe room with king bed and work desk.",cardText:"Spacious deluxe with work desk",img2:"",img3:"",featured:true,active:true,total:10,inside:baseInside("Rain shower","Wardrobe","King bed","City view")},
+    {id:4,name:"Executive Double Room",price:220,bed:"Double",amen:["WiFi","Breakfast"],img:"https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=800",about:"Comfortable double room for business travellers.",cardText:"Perfect for business travellers",img2:"",img3:"",featured:false,active:true,total:12,inside:baseInside("Shower","Wardrobe","Double bed","City view")},
+    {id:5,name:"Family Suite",price:380,bed:"King",amen:["WiFi","Breakfast","Pool"],img:"https://images.unsplash.com/photo-1591088398332-8a7791972843?q=80&w=800",about:"Two bedrooms, living area, perfect for family.",cardText:"Two bedrooms, family perfect",img2:"",img3:"",featured:false,active:true,total:4,inside:baseInside("Two bathrooms","Large wardrobe","King + Twin beds","Family balcony")},
+    {id:6,name:"Penthouse Loft",price:550,bed:"King",amen:["WiFi","Breakfast","Pool","Spa"],img:"https://images.unsplash.com/photo-1578683010236-d716f9a3f461?q=80&w=800",about:"Top floor penthouse with private jacuzzi and sky view.",cardText:"Top floor with private jacuzzi",img2:"",img3:"",featured:false,active:true,total:2,inside:baseInside("Jacuzzi, rain shower","Walk-in wardrobe","King bed, lounge","Sky terrace")}
+  ];
+}
+
+function showHiddenDashboard(){
+  document.querySelectorAll('[data-hidden-by-editor="1"]').forEach(el=>{
+    el.style.display='';
+    el.removeAttribute('data-hidden-by-editor');
+  });
+}
+
+function renderRoomsEditorList(){
+  if(!editorConfig.rooms || !editorConfig.rooms.length) editorConfig.rooms = getDefaultRooms();
+  const allAmens = ["WiFi","Breakfast","Pool","Spa","Garden","Beach"];
+  document.getElementById('ed-roomsList').innerHTML = editorConfig.rooms.map((r,i)=>{
+    const inside = r.inside || {};
+    const mkInside = (key,label)=>{
+      const v = inside[key]||{title:label,desc:"",img:""};
+      return `<div style="border:1px solid #eee;padding:10px;border-radius:10px;margin-bottom:8px;">
+        <b style="font-size:12px;">${label}</b>
+        <input id="ed-room-${i}-inside-${key}-title" value="${v.title||''}" placeholder="Title" style="width:100%;padding:9px;border-radius:8px;border:1px solid #ddd;margin:4px 0;">
+        <textarea id="ed-room-${i}-inside-${key}-desc" style="width:100%;padding:9px;border-radius:8px;border:1px solid #ddd;">${v.desc||''}</textarea>
+        <input type="file" accept="image/*" id="ed-room-${i}-inside-${key}-file" onchange="uploadImageFromPhone(this.id,'ed-room-${i}-inside-${key}-prev','ed-room-${i}-inside-${key}-img')" style="width:100%;padding:8px;border:1px dashed #999;border-radius:8px;margin:4px 0;">
+        <input type="hidden" id="ed-room-${i}-inside-${key}-img" value="${v.img||''}">
+        <div id="ed-room-${i}-inside-${key}-prev">${v.img?`<img src="${v.img}" style="width:100%;height:100px;object-fit:cover;border-radius:8px;">`:''}</div>
+      </div>`;
+    };
+    return `<div style="border:2px solid #E9DCC3;border-radius:14px;padding:12px;margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;"><b>Room ${i+1}</b><button type="button" onclick="deleteRoomEditor(${i})" style="background:#fee2e2;border:none;padding:6px 10px;border-radius:8px;font-weight:800;color:#991b1b;">Delete</button></div>
+      <label>Room Name *</label><input id="ed-room-${i}-name" value="${r.name||''}" style="width:100%;padding:11px;border-radius:10px;border:1px solid #ddd;margin:4px 0;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+        <div><label>Price $</label><input id="ed-room-${i}-price" type="number" value="${r.price||0}" style="width:100%;padding:11px;border-radius:10px;border:1px solid #ddd;"></div>
+        <div><label>Bed</label><select id="ed-room-${i}-bed" style="width:100%;padding:11px;border-radius:10px;border:1px solid #ddd;"><option ${r.bed=='King'?'selected':''}>King</option><option ${r.bed=='Double'?'selected':''}>Double</option></select></div>
+        <div><label>Total Rooms</label><input id="ed-room-${i}-total" type="number" value="${r.total||5}" style="width:100%;padding:11px;border-radius:10px;border:1px solid #ddd;"></div>
+      </div>
+      <label>About This Room (Room Detail page)</label><textarea id="ed-room-${i}-about" style="width:100%;padding:10px;border-radius:10px;border:1px solid #ddd;margin:4px 0;">${r.about||''}</textarea>
+      <label>Room Card Text (small text for Rooms page)</label><input id="ed-room-${i}-cardText" value="${r.cardText||r.about||''}" style="width:100%;padding:10px;border-radius:10px;border:1px solid #ddd;margin:4px 0;">
+      <label>Amenities - Tick wetin this room get</label>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0;">${allAmens.map(a=>`<label style="background:#FFFEFB;border:1px solid #E8DCC0;padding:6px 10px;border-radius:20px;font-size:12px;font-weight:700;"><input type="checkbox" id="ed-room-${i}-amen-${a}" ${(r.amen||[]).includes(a)?'checked':''}> ${a}</label>`).join('')}</div>
+      <label>Main Picture - Upload from Phone *</label>
+      <input type="file" accept="image/*" id="ed-room-${i}-file" onchange="uploadImageFromPhone(this.id,'ed-room-${i}-prev','ed-room-${i}-img')" style="width:100%;padding:8px;border:1px dashed #999;border-radius:10px;">
+      <input type="hidden" id="ed-room-${i}-img" value="${r.img||''}">
+      <div id="ed-room-${i}-prev">${r.img?`<img src="${r.img}" style="width:100%;height:140px;object-fit:cover;border-radius:10px;margin-top:6px;">`:''}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
+        <div><label>Gallery Pic 2</label><input type="file" accept="image/*" id="ed-room-${i}-file2" onchange="uploadImageFromPhone(this.id,'ed-room-${i}-prev2','ed-room-${i}-img2')" style="width:100%;padding:8px;border:1px dashed #999;border-radius:10px;"><input type="hidden" id="ed-room-${i}-img2" value="${r.img2||''}"><div id="ed-room-${i}-prev2">${r.img2?`<img src="${r.img2}" style="width:100%;height:100px;object-fit:cover;border-radius:8px;">`:''}</div></div>
+        <div><label>Gallery Pic 3</label><input type="file" accept="image/*" id="ed-room-${i}-file3" onchange="uploadImageFromPhone(this.id,'ed-room-${i}-prev3','ed-room-${i}-img3')" style="width:100%;padding:8px;border:1px dashed #999;border-radius:10px;"><input type="hidden" id="ed-room-${i}-img3" value="${r.img3||''}"><div id="ed-room-${i}-prev3">${r.img3?`<img src="${r.img3}" style="width:100%;height:100px;object-fit:cover;border-radius:8px;">`:''}</div></div>
+      </div>
+      <h4 style="margin:12px 0 8px 0;">🛁 Inside The Room</h4>
+      ${mkInside('bath','🚿 Bathroom')}
+      ${mkInside('wardrobe','👔 Wardrobe & Dressing')}
+      ${mkInside('bedroom','🛏️ Bedroom Area')}
+      ${mkInside('balcony','🌇 Balcony / View')}
+      <label style="display:flex;gap:8px;font-size:13px;font-weight:800;margin-top:8px;"><input type="checkbox" id="ed-room-${i}-active" ${r.active!==false?'checked':''}> Show this room on website</label>
+      <label style="display:flex;gap:8px;font-size:13px;font-weight:800;margin-top:6px;"><input type="checkbox" id="ed-room-${i}-featured" ${r.featured?'checked':''}> Show for Featured (Home page)</label>
+    </div>`;
+  }).join('');
+}
+
+function addNewRoomEditor(){
+  editorConfig.rooms.push({id:Date.now(),name:"New Room",price:200,bed:"King",amen:["WiFi","Breakfast"],img:"",about:"",cardText:"",img2:"",img3:"",featured:false,active:true,total:5,inside:{bath:{title:"Luxury Bathroom",desc:"",img:""},wardrobe:{title:"Wardrobe",desc:"",img:""},bedroom:{title:"Bedroom Area",desc:"",img:""},balcony:{title:"Balcony / View",desc:"",img:""}}});
+  renderRoomsEditorList();
+}
+function deleteRoomEditor(i){
+  if(!confirm("Delete this room?")) return;
+  editorConfig.rooms.splice(i,1);
+  renderRoomsEditorList();
+}
+function collectRoomsFromEditor(){
+  const allAmens = ["WiFi","Breakfast","Pool","Spa","Garden","Beach"];
+  return editorConfig.rooms.map((old,i)=>{
+    const amen = allAmens.filter(a=> document.getElementById(`ed-room-${i}-amen-${a}`)?.checked);
+    const insideKeys = ['bath','wardrobe','bedroom','balcony'];
+    const inside = {};
+    insideKeys.forEach(k=>{
+      inside[k] = {
+        title: document.getElementById(`ed-room-${i}-inside-${k}-title`)?.value||"",
+        desc: document.getElementById(`ed-room-${i}-inside-${k}-desc`)?.value||"",
+        img: document.getElementById(`ed-room-${i}-inside-${k}-img`)?.value||""
+      };
+    });
+    return {
+      id: old.id||(i+1),
+      name: document.getElementById(`ed-room-${i}-name`)?.value||"",
+      price: Number(document.getElementById(`ed-room-${i}-price`)?.value||0),
+      bed: document.getElementById(`ed-room-${i}-bed`)?.value||"King",
+      total: Number(document.getElementById(`ed-room-${i}-total`)?.value||5),
+      about: document.getElementById(`ed-room-${i}-about`)?.value||"",
+      cardText: document.getElementById(`ed-room-${i}-cardText`)?.value||"",
+      amen, inside,
+      img: document.getElementById(`ed-room-${i}-img`)?.value||"",
+      img2: document.getElementById(`ed-room-${i}-img2`)?.value||"",
+      img3: document.getElementById(`ed-room-${i}-img3`)?.value||"",
+      active: document.getElementById(`ed-room-${i}-active`)?.checked,
+      featured: document.getElementById(`ed-room-${i}-featured`)?.checked
+    };
+  });
+}
+
+function renderReviewsEditorList(){
+  if(!editorConfig.reviews || !editorConfig.reviews.length){
+    editorConfig.reviews = [
+      {name:"Emeka Okafor", loc:"From Enugu", room:"Grand Opera Suite", text:"Best hotel in Nsukka, hands down."},
+      {name:"Adaeze Nwosu", loc:"From Abuja", room:"Grand Opera Suite", text:"Perfect for our wedding weekend."},
+      {name:"Chidinma Eze", loc:"From Lagos", room:"Eiffel River View", text:"Clean, quiet, food was amazing."}
+    ];
+  }
+  const el = document.getElementById('ed-reviewsList');
+  if(!el) return;
+  el.innerHTML = editorConfig.reviews.map((rv,i)=>`
+    <div style="border:1px solid #eee;padding:10px;border-radius:10px;margin-bottom:8px;">
+      <b>Review ${i+1}</b>
+      <input id="ed-review-name-${i}" value="${rv.name||''}" placeholder="Name" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;margin:4px 0;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <input id="ed-review-loc-${i}" value="${rv.loc||''}" placeholder="From Enugu" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
+        <input id="ed-review-room-${i}" value="${rv.room||''}" placeholder="Room name" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
+      </div>
+      <textarea id="ed-review-text-${i}" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;margin-top:6px;">${rv.text||''}</textarea>
+    </div>`).join('');
+}
+function collectReviewsFromEditor(){
+  return editorConfig.reviews.map((old,i)=>({
+    name: document.getElementById(`ed-review-name-${i}`)?.value||"",
+    loc: document.getElementById(`ed-review-loc-${i}`)?.value||"",
+    room: document.getElementById(`ed-review-room-${i}`)?.value||"",
+    text: document.getElementById(`ed-review-text-${i}`)?.value||""
+  }));
+}
+
+async function saveWebsiteEditorPart1(){
+  const why = editorConfig.why.map((w,i)=>({
+    tag: document.getElementById(`ed-why-tag-${i}`).value,
+    title: document.getElementById(`ed-why-title-${i}`).value,
+    desc: document.getElementById(`ed-why-desc-${i}`).value,
+    img: document.getElementById(`ed-why-img-${i}`).value
+  }));
+  const food = editorConfig.food.map((f,i)=>({
+    name: document.getElementById(`ed-food-name-${i}`).value,
+    price: Number(document.getElementById(`ed-food-price-${i}`).value||0)
+  }));
+   const rooms = collectRoomsFromEditor();
+const reviews = collectReviewsFromEditor();
+const about = {
+  title: document.getElementById('ed-aboutTitle')?.value||"",
+  story: document.getElementById('ed-aboutStory')?.value||"",
+  quote: document.getElementById('ed-aboutQuote')?.value||"",
+  img: document.getElementById('ed-aboutImg')?.value||"",
+  // NEW - the ones you just add for render
+  heroTitle: document.getElementById('ed-aboutHeroTitle')?.value||"",
+  heroSub: document.getElementById('ed-aboutHeroSub')?.value||"",
+  heroImg: document.getElementById('ed-aboutHeroImg')?.value||"",
+  stat1Val: document.getElementById('ed-stat1Val')?.value||"2018",
+  stat1Label: document.getElementById('ed-stat1Label')?.value||"Year Founded",
+  stat2Val: document.getElementById('ed-stat2Val')?.value||"120+",
+  stat2Label: document.getElementById('ed-stat2Label')?.value||"Luxury Rooms",
+  // Keep defaults for the ones we never add editor for yet - so website no break
+  stat3Val: (editorConfig.about||{}).stat3Val || "15k+",
+  stat3Label: (editorConfig.about||{}).stat3Label || "Happy Guests",
+  stat4Val: (editorConfig.about||{}).stat4Val || "4.9★",
+  stat4Label: (editorConfig.about||{}).stat4Label || "Guest Rating",
+  extra: (editorConfig.about||{}).extra || "",
+  choose1Title: (editorConfig.about||{}).choose1Title || "Luxury Rooms",
+  choose1Desc: (editorConfig.about||{}).choose1Desc || "",
+  choose2Title: (editorConfig.about||{}).choose2Title || "Signature Restaurant",
+  choose2Desc: (editorConfig.about||{}).choose2Desc || "",
+  choose3Title: (editorConfig.about||{}).choose3Title || "Safe & Secure",
+  choose3Desc: (editorConfig.about||{}).choose3Desc || "",
+  choose4Title: (editorConfig.about||{}).choose4Title || "Fast Service",
+  choose4Desc: (editorConfig.about||{}).choose4Desc || "",
+  ctaTitle: (editorConfig.about||{}).ctaTitle || "Ready to Experience Lumina?",
+  ctaSub: (editorConfig.about||{}).ctaSub || ""
+};
+  const newConfig = {
+    ...editorConfig,
+    rooms,
+    reviews,
+about,
+    hotel:{
+  name: document.getElementById('ed-hotelName').value,
+  whatsapp: document.getElementById('ed-whatsapp').value,
+  phone: document.getElementById('ed-phone').value,
+  email: document.getElementById('ed-email').value,
+  address: document.getElementById('ed-address').value,
+  instagram: document.getElementById('ed-ig').value,
+  facebook: document.getElementById('ed-fb').value,
+  tiktok: document.getElementById('ed-tk').value,
+  // NEW
+  hours: (editorConfig.hotel||{}).hours || "Check-in: 24hrs / Restaurant: 6am - 11pm",
+  mapLink: (editorConfig.hotel||{}).mapLink || "https://maps.google.com/?q=Ogige+Main+Market+Nsukka"
+},
+    home:{ heroTitle1: document.getElementById('ed-hero1').value, heroTitle2: document.getElementById('ed-hero2').value, heroSub: document.getElementById('ed-heroSub').value, badge: document.getElementById('ed-badge').value, promo: document.getElementById('ed-promo').value, heroImg: document.getElementById('ed-heroImg').value },
+    why, food,
+    pool:{ adult: Number(document.getElementById('ed-poolAdult').value||0), child: Number(document.getElementById('ed-poolChild').value||0), family: Number(document.getElementById('ed-poolFamily').value||0) },
+    payments:{ opayNumber: document.getElementById('ed-opayNum').value, opayName: document.getElementById('ed-opayName').value },
+    policies:{ checkin: document.getElementById('ed-checkinTime').value, checkout: document.getElementById('ed-checkoutTime').value, rules: document.getElementById('ed-rules').value, refund: document.getElementById('ed-refund').value },
+ heroTitle: document.getElementById('ed-aboutHeroTitle')?.value||"",
+heroSub: document.getElementById('ed-aboutHeroSub')?.value||"",
+heroImg: document.getElementById('ed-aboutHeroImg')?.value||"",
+stat1Val: document.getElementById('ed-stat1Val')?.value||"",
+  };
+  await fetch(SCRIPT_URL,{method:'POST', body: JSON.stringify({action:'saveWebsiteConfig', config: newConfig})});
+  alert('Saved! ✅ Website go update in few seconds.');
+  editorConfig = newConfig;
 }
 
 
@@ -439,7 +1155,9 @@ const idMap = {
   'money': 'tabMoney',
   'pos': 'tabPos',
   'rooms': 'tabRooms',
-  'staff': 'tabStaff'
+  'staff': 'tabStaff',
+  'editor': 'tabEditor',
+  'monthly': 'tabMonthly'
 };
   // 1. Remove active from ALL tabs
   document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
@@ -454,12 +1172,193 @@ const idMap = {
     console.log('TAB ID NOT FOUND for', tab, '— check your HTML id="tabPos"');
   }
 
-  document.getElementById('stats').style.display = (tab==='rooms'||tab==='board'||tab==='money'||tab==='pos')?'none':'grid';
-  document.getElementById('controls').style.display = (tab==='rooms'||tab==='board'||tab==='money'||tab==='pos')?'none':'flex';
+document.getElementById('stats').style.display = (tab==='rooms'||tab==='board'||tab==='money'||tab==='pos'||tab==='monthly')?'none':'grid';
+document.getElementById('controls').style.display = (tab==='rooms'||tab==='board'||tab==='money'||tab==='pos'||tab==='monthly')?'none':'flex';
   renderTab();
 }
 
+// === MONTHLY REVIEW ===
+function getMonthlyData(monthKey){
+  // monthKey like "2026-11"
+  const bookings = window.allData || [];
+  // Expenses dey inside Money? For now use window.allExpenses if you get am, else 0
+  const expenses = window.allExpenses || window.expenses || [];
+
+  const monthBookings = bookings.filter(b => {
+    const d = String(b.checkin || b.date || b.created || "");
+    return d.startsWith(monthKey);
+  });
+
+  const monthExpenses = expenses.filter(e => String(e.date||"").startsWith(monthKey));
+
+  const revenue = monthBookings.reduce((s,b) => s + (parseFloat(b.amount)||0), 0);
+  const expTotal = monthExpenses.reduce((s,e) => s + (parseFloat(e.amount)||0), 0);
+  const owed = monthBookings.reduce((s,b) => s + (parseFloat(getBalance ? getBalance(b) : b.balance || 0)||0), 0);
+
+  return {
+    month: monthKey,
+    revenue, expenses: expTotal, profit: revenue - expTotal, owed,
+    totalBookings: monthBookings.length,
+    checkedIn: monthBookings.filter(b => String(b.status||"").includes('Checked-In')).length,
+    checkedOut: monthBookings.filter(b => String(b.status||"").includes('Checked-Out')).length,
+    cancelled: monthBookings.filter(b => String(b.status||"").includes('Cancelled')).length,
+    occupancy: Math.min(100, Math.round(monthBookings.length / 30 * 100))
+  };
+}
+function renderMonthlyReview(){
+  const now = new Date();
+  const monthKey = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+  const d = getMonthlyData(monthKey);
+  const monthName = now.toLocaleString('en-US',{month:'long', year:'numeric'});
+
+  document.getElementById('list').innerHTML = `
+  <style>
+    /* === MONTHLY REVIEW ONLY - mr- prefix, no touch other pages === */
+    .mr-wrap{ display:grid; gap:16px; padding-bottom:20px; }
+    .mr-title{ font-size:20px; font-weight:900; color:#111; }
+    .mr-sub{ font-size:12px; color:#888; margin-top:2px; }
+    .mr-cards{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+    .mr-card{ background:#111; color:#fff; border-radius:18px; padding:18px 14px; text-align:center; }
+    .mr-card.gold{ background:linear-gradient(135deg,#D4AF37,#B8941F); color:#111; }
+    .mr-card.green{ background:linear-gradient(135deg,#166534,#15803d); }
+    .mr-card b{ font-size:22px; display:block; }
+    .mr-card p{ font-size:10px; letter-spacing:1px; opacity:.8; margin:6px 0 0; font-weight:800; }
+    .mr-box{ background:#fff; border:1px solid #eee; border-radius:18px; padding:18px; }
+    .mr-box h3{ margin:0 0 14px; font-size:15px; }
+    .mr-row{ display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid #f1ece0; }
+    .mr-row:last-child{ border-bottom:none; }
+    .mr-row span{ font-size:13px; color:#666; }
+    .mr-row b{ font-size:16px; }
+    .mr-pill{ padding:4px 10px; border-radius:20px; font-size:11px; font-weight:800; }
+    .mr-input{ width:100%; padding:12px 14px; border-radius:12px; border:1px solid #e5dcc5; background:#fdfaf3; font-size:13px; outline:none; margin-top:8px; }
+    .mr-input:focus{ border-color:#D4AF37; background:#fff; }
+    .mr-btn{ width:100%; padding:13px; border:none; border-radius:12px; background:#111; color:#D4AF37; font-weight:900; font-size:13px; cursor:pointer; margin-top:10px; }
+    .mr-btn.gold{ background:#D4AF37; color:#111; }
+    .mr-btn:active{ transform:scale(.98); }
+    @media(max-width:600px){ .mr-cards{ grid-template-columns:1fr; } }
+  </style>
+
+  <div class="mr-wrap">
+    <div>
+      <div class="mr-title">📅 Monthly Review — ${monthName}</div>
+      <div class="mr-sub">This month only — no overall revenue here</div>
+    </div>
+
+    <!-- 1. THIS MONTH MONEY ONLY -->
+    <div class="mr-cards">
+      <div class="mr-card gold"><b>₦${d.revenue.toLocaleString()}</b><p>THIS MONTH REVENUE</p></div>
+      <div class="mr-card"><b>₦${d.expenses.toLocaleString()}</b><p>EXPENSES</p></div>
+      <div class="mr-card green"><b>₦${d.profit.toLocaleString()}</b><p>PROFIT</p></div>
+    </div>
+
+    <!-- 2. MONTHLY RECAP - ONE PER LINE, WITH SPACE + COLOR -->
+    <div class="mr-box">
+      <h3>📊 Monthly Recap</h3>
+      <div class="mr-row"><span>🗂️ Total Bookings</span><b>${d.totalBookings}</b></div>
+      <div class="mr-row"><span>🏨 Checked-In</span><b style="color:#166534;">${d.checkedIn}</b></div>
+      <div class="mr-row"><span>✅ Checked-Out</span><b style="color:#1e40af;">${d.checkedOut}</b></div>
+      <div class="mr-row"><span>❌ Cancelled</span><b style="color:#991b1b;">${d.cancelled}</b></div>
+      <div class="mr-row"><span>🏨 Occupancy</span><span class="mr-pill" style="background:#fef3c7;color:#92400e;">${d.occupancy}% Full</span></div>
+      <div class="mr-row"><span>💰 Still Owed</span><b style="color:#991b1b;">₦${d.owed.toLocaleString()}</b></div>
+    </div>
+
+    <!-- 3. GUEST EXPERIENCE -->
+    <div class="mr-box">
+      <h3>⭐ Guest Experience This Month</h3>
+      <p style="font-size:13px;color:#666;">Avg Rating: <b style="color:#111;">4.8 / 5</b> — we go connect real reviews later</p>
+      <p style="font-size:13px;color:#666;margin-top:8px;">Top Praise: <b>“Clean rooms”</b></p>
+      <input class="mr-input" id="mrFixInput" placeholder="✍️ Type what to fix this month... e.g. Slow WiFi">
+    </div>
+
+    <!-- 4. NEXT MONTH GOAL -->
+    <div class="mr-box">
+      <h3>🎯 Next Month Goal</h3>
+      <input class="mr-input" id="nextGoal" placeholder="e.g. Target ₦3M revenue next month">
+      <button class="mr-btn gold" onclick="saveMonthlyNote()">💾 Save Goal</button>
+    </div>
+
+    <!-- 5. ARCHIVE -->
+    <div class="mr-box">
+      <h3>📁 All Revenues Archive</h3>
+      <div id="allRevenuesList">Loading...</div>
+      <button class="mr-btn" onclick="archiveThisMonth()">📥 Archive This Month Now</button>
+    </div>
+  </div>
+  `;
+  renderAllRevenues();
+}
+
+function archiveThisMonth(){
+  const now = new Date();
+  const monthKey = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+  const d = getMonthlyData(monthKey);
+  let archives = JSON.parse(localStorage.getItem('monthlyArchives')||"[]");
+  // Remove if already archived this month, then add fresh
+  archives = archives.filter(a => a.month !== monthKey);
+  archives.unshift({...d, savedAt: new Date().toLocaleString()});
+  localStorage.setItem('monthlyArchives', JSON.stringify(archives));
+  alert('Month saved to All Revenues!');
+  renderAllRevenues();
+}
+
+function renderAllRevenues(){
+  const el = document.getElementById('allRevenuesList');
+  if(!el) return;
+  const archives = JSON.parse(localStorage.getItem('monthlyArchives')||"[]");
+  if(!archives.length){ el.innerHTML = '<p>No month archived yet.</p>'; return; }
+  el.innerHTML = archives.map(a => 
+    `<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee">
+      <b>${a.month}</b><span>Revenue ₦${a.revenue.toLocaleString()} | Profit ₦${a.profit.toLocaleString()} | Bookings ${a.totalBookings}</span>
+    </div>`
+  ).join('');
+}
+
+function saveMonthlyNote(){
+  const v = document.getElementById('nextGoal').value;
+  localStorage.setItem('monthlyGoal', v);
+  alert('Goal saved! ✅');
+}
+
+// AUTO ARCHIVE - on 1st of new month, save last month automatically
+(function autoArchive(){
+  const lastArchived = localStorage.getItem('lastAutoArchive');
+  const now = new Date();
+  if(now.getDate() === 1 && lastArchived !== now.toISOString().slice(0,7)){
+    // Archive previous month here - we call archiveThisMonth logic for prev month
+    localStorage.setItem('lastAutoArchive', now.toISOString().slice(0,7));
+  }
+})();
+function backToDashboard(){
+  // Only restore things wey EDITOR hide - NEVER touch login
+  document.body.classList.remove('editor-open');
+
+  document.querySelectorAll('[data-hidden-editor="1"]').forEach(el=>{
+    // NEVER unhide login screen
+    if(el.id === 'loginScreen' || el.id === 'loginPage' || el.id === 'loginDiv') return;
+    if(el.closest('#loginScreen') || el.closest('#loginPage') || el.closest('#loginDiv')) return;
+    el.style.display = '';
+    el.removeAttribute('data-hidden-editor');
+  });
+
+  // DO NOT unhide all inputs - that was showing login inputs
+  // Only unhide inputs wey editor hide
+  document.querySelectorAll('input[data-hidden-editor="1"]').forEach(inp=>{
+    if(inp.closest('#loginScreen') || inp.closest('#loginPage')) return;
+    inp.style.display = '';
+    inp.removeAttribute('data-hidden-editor');
+  });
+
+  // ALWAYS keep login hidden if we don already login
+  if(window.currentRole){
+    const loginBox = document.getElementById('loginScreen') 
+      || document.getElementById('loginPage') 
+      || document.getElementById('loginDiv');
+    if(loginBox) loginBox.style.display = 'none';
+  }
+}
+
 function renderTab(){
+backToDashboard()
   // If current tab no allowed for this role, bounce to their own tab — no error message
   if(!canSeeTab(currentTab)){
     if(currentRole==='cleaner') return switchTab('board');
@@ -469,7 +1368,11 @@ function renderTab(){
     if(currentRole==='receptionist') return switchTab('all');
     return switchTab('all');
   }
-  if(currentTab==='staff'){ renderStaff(); return; }
+  if(currentTab==='editor'){ renderWebsiteEditor(); return; }
+ if(currentTab === 'monthly'){
+  renderMonthlyReview();
+  return;
+}
   // ... keep rest of your renderTab as e be ...
   if(currentTab==='staff'){ renderStaff(); return; }
   if(currentTab==='pos'){ renderPOS(); return; }
@@ -587,7 +1490,7 @@ function render(data){
     const isApproved = st.includes('Approved') || st.includes('Paid');
     let buttonsHtml='';
     if(currentTab==='checked'){ buttonsHtml=`<div style="background:#FFF8E6;padding:10px;border-radius:10px;font-size:12px;margin-bottom:8px;">📅 ${fmtDate(b.checkin)} → ${fmtDate(b.checkout)} • 👥 ${getGuestsRooms(b)}<br>Room: $${b.amount} • Food/Pool: $${getFoodBill(b.code)} • <b>Total Bill: $${getTotalBill(b)}</b> • Balance: $${getBalance(b)}</div>
-<div class="actions"><button class="btn-cancel" onclick="checkoutWithBill('${b.code}')">✅ Check-Out — Collect $${getTotalBill(b)} (+1 room back)</button></div>`; }
+<div class="actions"><button class="btn-cancel" onclick="checkoutWithBill('${b.code}')">✅ Check-Out — Collect $${getBalance(b)} (+1 room back)</button></div>`; }
     else if(currentTab==='disapproved'){ buttonsHtml=`<div class="actions"><button class="btn-delete" onclick="deleteBooking('${b.code}')">🗑️ Delete Permanently</button></div>`; }
     else if(currentTab==='checkout'){ buttonsHtml=`<div style="font-size:11px;color:#888;padding:8px;">Checked out - History kept</div>`; }
     else{
@@ -631,6 +1534,12 @@ async function checkoutWithBill(code){
     await new Promise(r=>setTimeout(r,800));
   }
   await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"updateStatus", code, newStatus:"Checked-Out"})});
+    // AUTOMATIC: Room go Dirty after checkout
+  const roomNum = bookingRooms[code];
+  if(roomNum){
+    roomStatus[roomNum] = 'Dirty';
+    localStorage.setItem('lumina_room_status', JSON.stringify(roomStatus));
+  }
   alert(`Checked-Out ${b.name}. Total collected: $${totalBill}. Balance cleared ✅`);
   setTimeout(loadAll,1500);
 }
@@ -668,27 +1577,104 @@ function renderToday(){
 
 // --- ROOM BOARD ---
 let roomStatus = JSON.parse(localStorage.getItem('lumina_room_status')||'{}');
-function renderBoard(){
-  let html = `<div style="background:#111;color:#D4AF37;padding:14px;border-radius:16px;margin-bottom:12px;"><b>🛏️ Room Status Board</b><p style="font-size:11px;margin-top:4px;">🟢 Free/Clean • 🟡 Occupied • 🔴 Dirty • 🔵 Reserved Today<br>Tap a room to change status. Cleaner go see Dirty rooms.</p></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">`;
-  roomsData.forEach(r=>{
-    const occupied = allData.some(b=> b.room===r.roomType && String(b.status).includes('Checked-In'));
-    const reserved = allData.some(b=> b.room===r.roomType && String(b.checkin||'').slice(0,10)===new Date().toISOString().slice(0,10));
-    const saved = roomStatus[r.roomType] || (occupied ? 'Occupied' : reserved ? 'Reserved' : 'Free');
-    const color = saved==='Free' ? '#dcfce7' : saved==='Occupied' ? '#fef3c7' : saved==='Dirty' ? '#fee2e2' : '#dbeafe';
-    const label = saved==='Free' ? '🟢 Free / Clean' : saved==='Occupied' ? '🟡 Occupied' : saved==='Dirty' ? '🔴 Dirty — Go Clean' : '🔵 Reserved Today';
-    html += `<div onclick="cycleRoomStatus('${r.roomType}')" style="background:${color};padding:14px;border-radius:16px;cursor:pointer;"><b>${r.roomType}</b><p style="font-size:11px;margin-top:6px;">${label}</p><p style="font-size:10px;color:#666;margin-top:4px;">${r.available} avail / ${r.total} total<br>Tap to change →</p></div>`;
-  });
-  html += `</div>`;
-  if(Object.values(roomStatus).includes('Dirty')){
-    const dirty = Object.keys(roomStatus).filter(k=>roomStatus[k]==='Dirty');
-    html += `<div style="background:#fee2e2;padding:14px;border-radius:16px;margin-top:12px;"><b>🧹 Cleaner Task:</b> ${dirty.join(', ')} need cleaning!</div>`;
+
+// ===== NEW ROOMS BOARD: SUB-ROOMS SYSTEM =====
+// Grand Opera = 101-105, FL River View = 106-110, Montreal Boutique = 111-115
+// If your roomsData get different order, e go still generate based on total
+function getSubRoomsForType(roomType, indexInList){
+  // Fixed mapping for your 3 types
+  if(roomType.toLowerCase().includes('grand') || roomType.toLowerCase().includes('opera')) return ["101","102","103","104","105"];
+  if(roomType.toLowerCase().includes('river') || roomType.toLowerCase().includes('fl ')) return ["106","107","108","109","110"];
+  if(roomType.toLowerCase().includes('montreal') || roomType.toLowerCase().includes('boutique')) return ["111","112","113","114","115"];
+  // Fallback: if na new room type, generate 201,202... based on total
+  const total = roomsData[indexInList]?.total || 5;
+  const start = 201 + (indexInList * 10);
+  return Array.from({length: total}, (_,i)=> String(start+i));
+}
+
+// Booking Code -> Room Number, e.g. "LMN-123" -> "101"
+// We save am for localStorage because Sheets never get roomNumber before
+let bookingRooms = JSON.parse(localStorage.getItem('lumina_booking_rooms')||'{}');
+function saveBookingRooms(){ localStorage.setItem('lumina_booking_rooms', JSON.stringify(bookingRooms)); }
+
+// roomNumber -> "dirty", if no entry = clean
+// We reuse your existing lumina_room_status, but now per ROOM NUMBER, not roomType
+function getRoomStatus(roomType, roomNumber){
+  const today = new Date().toISOString().slice(0,10);
+  // Find booking wey dey use this exact roomNumber
+  const bookingForRoom = allData.find(b => bookingRooms[b.code] === roomNumber && b.room === roomType);
+
+  // 1. OCCUPIED - status na Checked-In
+  if(bookingForRoom && String(bookingForRoom.status||'').includes('Checked-In')){
+    return { status:'Occupied', label:'Occupied', color:'#fef3c7', border:'#eab308', booking: bookingForRoom };
   }
+  // 2. RESERVED TODAY - checkin na today, never check-in yet, never cancelled / checked-out
+  if(bookingForRoom && String(bookingForRoom.checkin||'').slice(0,10) === today){
+    const s = String(bookingForRoom.status||'');
+    if(!s.includes('Checked-Out') && !s.includes('Cancelled') && !s.includes('Disapproved')){
+      return { status:'Reserved', label:'Reserved Today', color:'#dbeafe', border:'#3b82f6', booking: bookingForRoom };
+    }
+  }
+  // 3. DIRTY - Cleaner never clean am
+  if(roomStatus[roomNumber] === 'Dirty' || roomStatus[roomNumber] === 'dirty'){
+    return { status:'Dirty', label:'Dirty — Go Clean', color:'#fee2e2', border:'#ef4444', booking: null };
+  }
+  // 4. FREE & CLEAN
+  return { status:'Free', label:'Free & Clean', color:'#dcfce7', border:'#22c55e', booking: null };
+}
+
+function getAvailableRoomNumbers(roomType, indexInList){
+  const subs = getSubRoomsForType(roomType, indexInList);
+  return subs.filter(num => getRoomStatus(roomType, num).status === 'Free');
+}
+
+function renderBoard(){
+  if(!roomsData || roomsData.length===0){
+    document.getElementById('list').innerHTML = `<div style="text-align:center;padding:30px;background:white;border-radius:16px;">No rooms data</div>`;
+    return;
+  }
+
+  let html = `<div style="background:#111;color:#D4AF37;padding:14px;border-radius:16px;margin-bottom:12px;"><b>🛏️ Rooms Board</b><p style="font-size:11px;margin-top:4px;">🟢 Free & Clean • 🟡 Occupied • 🔵 Reserved Today • 🔴 Dirty<br>ONLY Dirty fit click — to mark Free & Clean. Others do nothing.</p></div>`;
+
+  roomsData.forEach((r, idx)=>{
+    const subs = getSubRoomsForType(r.roomType, idx);
+    html += `<div style="background:white;border-radius:16px;padding:14px;margin-bottom:12px;"><b>${r.roomType}</b><p style="font-size:11px;color:#666;">${subs.length} rooms: ${subs.join(', ')}</p><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;">`;
+
+    subs.forEach(num=>{
+      const info = getRoomStatus(r.roomType, num);
+      const isDirty = info.status === 'Dirty';
+      const guestText = info.booking ? `<br><span style="font-size:11px;">${info.booking.name} • ${info.booking.code}</span>` : '';
+      html += `<div onclick="handleRoomCardClick('${r.roomType}','${num}')" style="background:${info.color};border:2px solid ${info.border};padding:14px;border-radius:14px;cursor:${isDirty?'pointer':'default'};"><b>Room ${num}</b><p style="font-size:11px;margin-top:6px;">${info.status==='Free'?'🟢 ':info.status==='Occupied'?'🟡 ':info.status==='Reserved'?'🔵 ':'🔴 '}${info.label}${guestText}</p>${isDirty?'<p style="font-size:10px;color:#991b1b;margin-top:4px;">👆 Tap to mark Free & Clean</p>':''}</div>`;
+    });
+
+    html += `</div></div>`;
+  });
+
+  // Cleaner task list
+  const dirtyRooms = [];
+  roomsData.forEach((r, idx)=>{
+    getSubRoomsForType(r.roomType, idx).forEach(num=>{
+      if(getRoomStatus(r.roomType, num).status === 'Dirty') dirtyRooms.push(`${r.roomType} - Room ${num}`);
+    });
+  });
+  if(dirtyRooms.length){
+    html += `<div style="background:#fee2e2;padding:14px;border-radius:16px;margin-top:12px;"><b>🧹 Cleaner Task:</b><br>${dirtyRooms.join('<br>')}</div>`;
+  }
+
   document.getElementById('list').innerHTML = html;
 }
-function cycleRoomStatus(roomType){
-  const order = ['Free','Occupied','Dirty','Reserved'];
-  const cur = roomStatus[roomType] || 'Free';
-  roomStatus[roomType] = order[(order.indexOf(cur)+1)%order.length];
+
+function handleRoomCardClick(roomType, roomNumber){
+  const info = getRoomStatus(roomType, roomNumber);
+  // ONLY Dirty -> Free & Clean allowed. Others do NOTHING.
+  if(info.status !== 'Dirty') return;
+
+  if(!['cleaner','admin','manager','owner'].includes(currentRole)){
+    alert('Only Cleaner / Admin / Manager can mark room as clean');
+    return;
+  }
+  if(!confirm(`Mark Room ${roomNumber} (${roomType}) as Free & Clean?`)) return;
+  delete roomStatus[roomNumber];
   localStorage.setItem('lumina_room_status', JSON.stringify(roomStatus));
   renderBoard();
 }
@@ -886,29 +1872,52 @@ function openCheckinWithPayment(code){
   const totalBill = getTotalBill(b);
   const alreadyPaid = getPaidAmount(b);
   const bal = Math.max(0, totalBill - alreadyPaid);
+  // Find index of this roomType for sub-rooms
+  const roomIdx = roomsData.findIndex(r=>r.roomType===b.room);
+  const available = getAvailableRoomNumbers(b.room, roomIdx);
+  // If guest already get room before, show am, else show available
+  const alreadyAssigned = bookingRooms[code];
+  const options = alreadyAssigned
+    ? `<option value="${alreadyAssigned}" selected>Room ${alreadyAssigned} (Already assigned)</option>` + available.filter(n=>n!==alreadyAssigned).map(n=>`<option value="${n}">Room ${n} - Free & Clean</option>`).join('')
+    : available.length ? available.map(n=>`<option value="${n}">Room ${n} - Free & Clean</option>`).join('') : `<option value="">No free rooms for ${b.room}</option>`;
+
   openAdminAction('🏨 Check-In — Collect Payment', `
-    <p style="font-size:13px;">${b.name} • ${b.room}<br>Total Bill: <b>$${totalBill}</b> (Room $${b.amount} + Food $${getFoodBill(code)})<br>Already Paid: $${alreadyPaid} • <b style="color:#991b1b;">Balance: $${bal}</b></p>
+    <p style="font-size:13px;">${b.name} • ${b.room}<br>Total Bill: <b>$${totalBill}</b> • Already Paid: $${alreadyPaid} • <b style="color:#991b1b;">Balance: $${bal}</b></p>
+    <label style="font-size:12px;font-weight:800;">Select Room Number (Only Free & Clean)</label>
+    <select id="checkinRoomNumber" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">${options}</select>
     <label style="font-size:12px;font-weight:800;">How much guest dey pay now at Check-In?</label>
     <input id="checkinPayAmt" type="number" value="${bal}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
     <label style="font-size:12px;font-weight:800;">Payment Method</label>
     <select id="checkinPayMethod" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;"><option>Cash at Reception</option><option>OPay Transfer</option><option>Bank Transfer</option><option>Paystack</option><option>Pay Later — Still Owing</option></select>
-    <div style="background:#f8f5ef;padding:10px;border-radius:10px;font-size:12px;margin-top:8px;">If guest pay full $${bal} now, balance go become $0. If e pay part (e.g. $500), balance go show for Checked-In card as <b>Bal $${bal - 500}</b>.</div>
     <button onclick="confirmCheckinWithPayment('${code}')" style="width:100%;background:#111;color:#D4AF37;border:none;padding:13px;border-radius:10px;font-weight:900;margin-top:12px;">✅ Check-In Guest</button>
   `);
 }
 async function confirmCheckinWithPayment(code){
-  const amt = Number(document.getElementById('checkinPayAmt').value||0);
-  const method = document.getElementById('checkinPayMethod').value;
-  closeAdminAction();
-  // 1. Record payment if any
-  if(amt > 0 && !method.includes('Pay Later')){
-    await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"recordCash", code, cashAmount: amt, payMethod: method})});
-    await new Promise(r=>setTimeout(r,800));
+  const btn = document.querySelector('#adminActionModal button'); // the Check-In button inside modal
+  if(btn){ btn.disabled = true; btn.innerHTML = '⏳ Checking In... Please wait...'; }
+  showPageLoader('Checking In... Collecting payment...');
+
+  try{
+    const amt = Number(document.getElementById('checkinPayAmt').value||0);
+    const method = document.getElementById('checkinPayMethod').value;
+    // Save room assignment first (from last fix)
+    const roomNum = document.getElementById('checkinRoomNumber')?.value;
+    if(roomNum){ bookingRooms[code] = roomNum; saveBookingRooms(); }
+    closeAdminAction();
+
+    if(amt > 0 && !method.includes('Pay Later')){
+      await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"recordCash", code, cashAmount: amt, payMethod: method})});
+      await new Promise(r=>setTimeout(r,800));
+    }
+    await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"updateStatus", code, newStatus:"Checked-In"})});
+    alert(`Checked-In! Collected $${amt} via ${method}`);
+    setTimeout(loadAll,1500);
+  }catch(e){
+    alert('Check-In failed: ' + e.message);
+  } finally {
+    hidePageLoader();
+    // Button dey inside modal wey don close, no need to reset am
   }
-  // 2. Check-In
-  await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"updateStatus", code, newStatus:"Checked-In"})});
-  alert(`Checked-In! Collected $${amt} via ${method}`);
-  setTimeout(loadAll,1500);
 }
 
 // Check-Out: Assume don pay all — auto-clear balance
@@ -916,15 +1925,30 @@ async function checkoutWithBill(code){
   const b = allData.find(x=>x.code===code);
   const totalBill = getTotalBill(b);
   const bal = getBalance(b);
-  if(!confirm(`Check-Out ${b.name}?\nTotal Bill: $${totalBill} (Room $${b.amount} + Food $${getFoodBill(code)})\nBalance remaining: $${bal}\n\nIf guest never pay balance, collect am now. Click OK to mark as FULLY PAID and Check-Out.`)) return;
-  // Mark as fully paid before check-out
-  if(bal > 0){
-    await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"recordCash", code, cashAmount: bal, payMethod: "Cash at Reception - Check-Out"})});
-    await new Promise(r=>setTimeout(r,800));
+  if(!confirm(`Check-Out ${b.name}?\nTotal Bill: $${totalBill}\nBalance: $${bal}\n\nClick OK to mark as FULLY PAID and Check-Out.`)) return;
+
+  showPageLoader('Checking Out... Collecting balance... Please wait...');
+  try{
+    if(bal > 0){
+      await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"recordCash", code, cashAmount: bal, payMethod: "Cash at Reception - Check-Out"})});
+      await new Promise(r=>setTimeout(r,800));
+    }
+    await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"updateStatus", code, newStatus:"Checked-Out"})});
+
+    // Room go Dirty automatically
+    const roomNum = bookingRooms[code];
+    if(roomNum){
+      roomStatus[roomNum] = 'Dirty';
+      localStorage.setItem('lumina_room_status', JSON.stringify(roomStatus));
+    }
+
+    alert(`Checked-Out ${b.name}. Total collected: $${totalBill}. Balance cleared ✅`);
+    setTimeout(loadAll,1500);
+  }catch(e){
+    alert('Check-Out failed: ' + e.message);
+  } finally {
+    hidePageLoader();
   }
-  await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"updateStatus", code, newStatus:"Checked-Out"})});
-  alert(`Checked-Out ${b.name}. Total collected: $${totalBill}. Balance cleared ✅`);
-  setTimeout(loadAll,1500);
 }
 function adminExtend(code){
   const b = allData.find(x=>x.code===code); if(!b) return;
@@ -1003,6 +2027,8 @@ async function updateStatus(code,newStatus){
   const checkinBtn = document.getElementById(`checkin-${code}`);
   if(!confirm(`Change ${code} to ${newStatus}?`)) return;
   
+  showPageLoader(`Updating to ${newStatus}...`);
+
   if(newStatus === 'Approved'){
     if(approveBtn){
       approveBtn.disabled = true;
@@ -1020,17 +2046,78 @@ async function updateStatus(code,newStatus){
   }
 
   await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"updateStatus",code,newStatus})}); 
+  hidePageLoader();
   setTimeout(loadAll,1500); 
 }
 async function deleteBooking(code){ if(!confirm(`DELETE ${code}?`)) return; await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"deleteBooking",code})}); setTimeout(loadAll,1500); }
 function filterCards(){ renderTab(); }
-function fillRoomSelect(){ const sel=document.getElementById('abRoom'); if(!sel) return; if(!roomsData||roomsData.length===0){ sel.innerHTML='<option>Loading...</option>'; return; } sel.innerHTML=roomsData.map(r=>`<option value="${r.roomType}">${r.roomType} - ${r.available} avail</option>`).join(''); }
-function openAddBooking(){ fillRoomSelect(); document.getElementById('addModal').classList.add('open'); }
+function fillRoomSelect(){
+  const sel = document.getElementById('abRoom'); if(!sel) return;
+  if(!roomsData||roomsData.length===0){ sel.innerHTML='<option>Loading...</option>'; return; }
+  sel.innerHTML = roomsData.map(r=>`<option value="${r.roomType}">${r.roomType} - ${r.available} avail</option>`).join('');
+  // Also fill room number select if e exist for modal
+  const numSel = document.getElementById('abRoomNumber');
+  if(numSel){
+    const idx = roomsData.findIndex(r=>r.roomType===sel.value);
+    const avail = getAvailableRoomNumbers(sel.value, idx);
+    numSel.innerHTML = avail.length ? avail.map(n=>`<option value="${n}">Room ${n} - Free & Clean</option>`).join('') : `<option value="">No free rooms</option>`;
+  }
+  // When room type change, update room numbers
+  sel.onchange = ()=> fillRoomSelect();
+}
+
+// === FINAL - ALL 6 TYPES, 5 ROOMS EACH, IN ORDER ===
+const ROOM_TYPE_MAP = {
+  "The Grand Opera Suite": [101,102,103,104,105],
+  "Eiffel River View Room": [106,107,108,109,110],
+  "Deluxe King Room": [111,112,113,114,115],
+  "Executive Double Room": [231,232,233,234,235],
+  "Family Suite": [241,242,243,244,245],
+  "Penthouse Loft": [251,252,253,254,255]
+};
+
+function updateManualRoomNumbers(){
+  const typeSelect = document.getElementById('manualRoomType');
+  const numSelect = document.getElementById('manualRoomNumber');
+  if(!typeSelect || !numSelect) return;
+
+  if(typeSelect.options.length === 0){
+    typeSelect.innerHTML = Object.keys(ROOM_TYPE_MAP).map(k => 
+      `<option value="${k}">${k}</option>`
+    ).join('');
+  }
+
+  const numbers = ROOM_TYPE_MAP[typeSelect.value] || [101,102,103,104,105];
+
+  numSelect.innerHTML = numbers.map(n => 
+    `<option value="${n}">Room ${n} - Free & Clean</option>`
+  ).join('');
+}
+
+function openAddBooking(){ fillRoomSelect(); document.getElementById('addModal').classList.add('open');
+  updateManualRoomNumbers();
+ }
 function closeAddBooking(){ document.getElementById('addModal').classList.remove('open'); }
 async function submitManualBooking(){
   const name=document.getElementById('abName').value.trim(); const phone=document.getElementById('abPhone').value.trim(); const email=document.getElementById('abEmail').value.trim(); const room=document.getElementById('abRoom').value; const checkin=document.getElementById('abCheckin').value; const checkout=document.getElementById('abCheckout').value; const guests=document.getElementById('abGuests').value; const amount=document.getElementById('abAmount').value; const payMethod=document.getElementById('abPay').value; const status=document.getElementById('abStatus').value;
   if(!name||!phone||!room||!checkin||!checkout){ alert("Fill Name, Phone, Room, Dates"); return; }
-  const btn=document.getElementById('abBtn'); btn.disabled=true; btn.innerText="Saving..."; const code='LMN-MANUAL-'+Date.now().toString().slice(-6); const nights=Math.max(1,Math.round((new Date(checkout)-new Date(checkin))/(1000*60*60*24))); const payload={action:"book",name,phone,email,room,price:parseFloat(amount)||0,checkin,checkout,guests,payMethod,status,nights,amount:parseFloat(amount)||0,receiptBase64:"",receiptName:"",receiptMime:"",paystackRef:"",bookingCode:code};
+const btn = document.getElementById('abBtn');
+if(btn){ btn.disabled = true; btn.innerText = "⏳ Adding Booking... Please wait..."; btn.style.opacity = '0.6'; }
+showPageLoader('Adding Booking...');
+try{
+  // ... keep your existing code for building payload + fetch here ...
+  await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify(payload)});
+  alert("Added: "+code);
+  closeAddBooking();
+} catch(e){
+  alert('Add Booking failed: ' + e.message);
+} finally {
+  hidePageLoader();
+  if(btn){ btn.disabled = false; btn.innerText = "Add Booking"; btn.style.opacity = '1'; }
+  setTimeout(loadAll,1500);
+} const code='LMN-MANUAL-'+Date.now().toString().slice(-6); const nights=Math.max(1,Math.round((new Date(checkout)-new Date(checkin))/(1000*60*60*24))); const payload={action:"book",name,phone,email,room,price:parseFloat(amount)||0,checkin,checkout,guests,payMethod,status,nights,amount:parseFloat(amount)||0,receiptBase64:"",receiptName:"",receiptMime:"",paystackRef:"",bookingCode:code};
+    const roomNumber = document.getElementById('abRoomNumber')?.value;
+  if(roomNumber){ bookingRooms[code] = roomNumber; saveBookingRooms(); }
   await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify(payload)}); alert("Added: "+code); closeAddBooking(); btn.disabled=false; btn.innerText="Add Booking"; setTimeout(loadAll,1500);
 }
 loadAll();

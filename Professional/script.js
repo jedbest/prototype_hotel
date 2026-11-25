@@ -2,15 +2,115 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwR1T2dlroFlXNZq20is
 const ROOMS_URL = "https://script.google.com/macros/s/AKfycbwR1T2dlroFlXNZq20is5C1hc2xrHY2jRTKtAUhUKSBgDxmXdmN28oz0tAL9clv2TteSQ/exec";
 const cleanPhone = (p)=> String(p).replace(/[^0-9]/g,'').slice(-10);
 
-const roomsData = [
- {id:1,name:"The Grand Opera Suite",price:420,bed:"King",amen:["WiFi","Breakfast","Pool"],img:"https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=800",about:"600 sqft luxury suite with Eiffel view."},
- {id:2,name:"Eiffel River View Room",price:350,bed:"King",amen:["WiFi","Breakfast","Pool"],img:"https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=800",about:"River view, balcony, luxury bathroom."},
- {id:3,name:"Montmartre Boutique Room",price:220,bed:"Double",amen:["WiFi","Breakfast"],img:"https://images.unsplash.com/photo-1618773928121-c32242e63f39?q=80&w=800",about:"Cozy boutique in Montmartre."},
- {id:4,name:"Penthouse Loft",price:450,bed:"King",amen:["WiFi","Pool","Spa"],img:"https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=800",about:"Luxury penthouse with panoramic city view."},
- {id:5,name:"Royal Garden Room",price:280,bed:"Double",amen:["WiFi","Breakfast","Garden"],img:"https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=800",about:"Garden view room with private balcony."},
- {id:6,name:"Oceanfront Villa",price:500,bed:"King",amen:["WiFi","Breakfast","Pool","Beach"],img:"https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=800",about:"Oceanfront villa with private pool."},
-];
+let roomsData = [];
+let websiteConfig = { hotel:{}, home:{}, why:[], reviews:[], about:{}, food:[], pool:{}, payments:{}, policies:{} };
 
+async function loadWebsiteConfig(){
+  try{
+    const res = await fetch(`${SCRIPT_URL}?websiteConfig=true&t=${Date.now()}`);
+    websiteConfig = await res.json();
+    if(websiteConfig.rooms && websiteConfig.rooms.length){
+      roomsData = websiteConfig.rooms.filter(r=>r.active!==false);
+    }
+  }catch(e){}
+  if(!roomsData.length){
+    roomsData = [{id:1,name:"The Grand Opera Suite",price:420,bed:"King",amen:["WiFi","Breakfast","Pool"],img:"https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=800",about:"600 sqft luxury suite."}];
+  }
+  selectedRoom = roomsData[0];
+  // Apply hotel info
+  applyWebsiteConfigToPage();
+  renderFeatured();
+  renderRooms(roomsData);
+}
+
+function applyWebsiteConfigToPage(){
+  const h = websiteConfig.hotel||{};
+  const home = websiteConfig.home||{};
+  const why = websiteConfig.why||[];
+  const reviews = websiteConfig.reviews||[];
+  const about = websiteConfig.about||{};
+  window.WEBSITE_CONFIG = websiteConfig;
+
+  // 1. Hero texts - try to update if IDs exist
+  // If your index.html no get IDs for hero, skip - we go add IDs for Part 3E
+  const setText = (id, val)=>{ const el=document.getElementById(id); if(el && val) el.innerText = val; };
+  setText('heroTitle1', home.heroTitle1);
+  setText('heroTitle2', home.heroTitle2);
+  setText('heroSub', home.heroSub);
+  setText('heroBadge', home.badge);
+
+  // 2. Promo banner
+  const promoEl = document.getElementById('promoBanner');
+  if(promoEl){
+    if(home.promo){ promoEl.style.display='block'; promoEl.innerText = '🎉 ' + home.promo; }
+    else promoEl.style.display='none';
+  }
+
+  // 3. Why Lumina - if your page get container
+  const whyGrid = document.getElementById('whyGrid');
+  if(whyGrid && why.length){
+    whyGrid.innerHTML = why.map(w=>`
+      <div class="why-card" style="background-image:url('${w.img}');">
+        <span>${w.tag}</span><h3>${w.title}</h3><p>${w.desc}</p>
+      </div>`).join('');
+  }
+
+  // 4. Reviews
+  const revGrid = document.getElementById('reviewsGrid');
+  if(revGrid && reviews.length){
+    revGrid.innerHTML = reviews.map(rv=>`
+      <div class="review-card"><p>"${rv.text}"</p><b>${rv.name}</b><span>${rv.loc} • ${rv.room}</span></div>`).join('');
+  }
+
+  // 5. About
+  setText('aboutTitle', about.title);
+  setText('aboutStory', about.story);
+  setText('aboutQuote', about.quote);
+  if(about.img){
+    const ai = document.getElementById('aboutImg');
+    if(ai) ai.src = about.img;
+  }
+
+  // 6. WhatsApp everywhere
+  if(h.whatsapp){
+    document.querySelectorAll('a[href*="wa.me"]').forEach(a=> a.href = `https://wa.me/${h.whatsapp}`);
+  }
+
+  // ABOUT
+const ab = websiteConfig.about||{};
+const setT = (id,v)=>{const e=document.getElementById(id); if(e&&v) e.innerText=v;};
+const setImg = (id,v)=>{const e=document.getElementById(id); if(e&&v) e.src=v;};
+setT('aboutHeroTitle', ab.heroTitle); setT('aboutHeroSub', ab.heroSub);
+setImg('aboutHeroImg', ab.heroImg); setImg('aboutImg1', ab.img1); setImg('aboutImg2', ab.img2);
+setT('aboutTitle', ab.title); setT('aboutStory', ab.story); setT('aboutExtra', ab.extra); setT('aboutQuote', ab.quote);
+setT('aboutStat1Val', ab.stat1Val); setT('aboutStat2Val', ab.stat2Val); setT('aboutStat3Val', ab.stat3Val); setT('aboutStat4Val', ab.stat4Val);
+setT('chooseTitle1', ab.choose1Title); setT('chooseDesc1', ab.choose1Desc);
+setT('chooseTitle2', ab.choose2Title); setT('chooseDesc2', ab.choose2Desc);
+setT('chooseTitle3', ab.choose3Title); setT('chooseDesc3', ab.choose3Desc);
+setT('chooseTitle4', ab.choose4Title); setT('chooseDesc4', ab.choose4Desc);
+setT('aboutCtaTitle', ab.ctaTitle); setT('aboutCtaSub', ab.ctaSub);
+
+// CONTACT
+const ct = websiteConfig.hotel||{};
+if(ct.phone){
+  const cl=document.getElementById('contactCallLink'); if(cl) cl.href='tel:'+ct.phone;
+  setT('contactCallText', ct.phone+' — Instant Response');
+}
+if(ct.whatsapp){
+  const wl=document.getElementById('contactWaLink'); if(wl) wl.href='https://wa.me/'+ct.whatsapp;
+  const sw=document.getElementById('socialWa'); if(sw) sw.href='https://wa.me/'+ct.whatsapp;
+}
+if(ct.email){
+  const el=document.getElementById('contactEmailLink'); if(el) el.href='mailto:'+ct.email;
+  setT('contactEmailText', ct.email);
+}
+setT('contactAddress', ct.address);
+setT('contactHours', ct.hours);
+if(ct.instagram){ const e=document.getElementById('socialIg'); if(e) e.href=ct.instagram; }
+if(ct.facebook){ const e=document.getElementById('socialFb'); if(e) e.href=ct.facebook; }
+if(ct.tiktok){ const e=document.getElementById('socialTk'); if(e) e.href=ct.tiktok; }
+if(ct.mapLink){ const e=document.getElementById('mapBtn'); if(e) e.href=ct.mapLink; const f=document.getElementById('mapEmbed'); if(f) f.src='https://maps.google.com/maps?q='+encodeURIComponent(ct.address||'Ogige Main Market Nsukka')+'&t=&z=15&ie=UTF8&iwloc=&output=embed'; }
+}
 let selectedRoom = roomsData[0];
 let guestsData = (()=>{
   try{
@@ -450,8 +550,13 @@ document.getElementById('dSub').innerText = `${selectedRoom.bed} Bed • ${selec
 document.getElementById('dImg2').src = selectedRoom.img;
 document.getElementById('dImg3').src = selectedRoom.img;
 // For now using same image, later you can add more per room:
-document.getElementById('dBathImg').src = "https://images.unsplash.com/photo-1620626011761-996317b8d101?w=600";
-document.getElementById('dBedImg').src = selectedRoom.img;
+const ins = selectedRoom.inside||{};
+if(document.getElementById('dBathImg') && ins.bath?.img) document.getElementById('dBathImg').src = ins.bath.img;
+if(document.getElementById('dWardrobeImg') && ins.wardrobe?.img) document.getElementById('dWardrobeImg').src = ins.wardrobe.img;
+if(document.getElementById('dBedImg')) document.getElementById('dBedImg').src = ins.bedroom?.img || selectedRoom.img;
+if(document.getElementById('dBalconyImg') && ins.balcony?.img) document.getElementById('dBalconyImg').src = ins.balcony.img;
+if(document.getElementById('dImg2')) document.getElementById('dImg2').src = selectedRoom.img2 || selectedRoom.img;
+if(document.getElementById('dImg3')) document.getElementById('dImg3').src = selectedRoom.img3 || selectedRoom.img;
   const imgEl = document.getElementById('dMainImg');
   if(imgEl) imgEl.src = selectedRoom.img;
   const aboutEl = document.getElementById('dAbout');
@@ -1240,8 +1345,17 @@ async function checkAvailabilityForRoom(roomName){
 
 
 
-document.addEventListener('DOMContentLoaded', ()=>{ renderRooms(roomsData); })
+document.addEventListener('DOMContentLoaded', ()=>{ loadWebsiteConfig(); })
 
+function renderFeatured(){
+  const g = document.getElementById('featuredGrid');
+  if(!g) return;
+  // If Owner tick "Show for Featured", show only those ones
+  // If Owner no tick any, show first 3 rooms
+  const featured = roomsData.filter(r=>r.featured);
+  const list = featured.length ? featured : roomsData.slice(0,3);
+  g.innerHTML = list.map(r=>cardHTML_Home(r)).join('');
+}
 
 async function loadLiveAvailability(){
   try{

@@ -21,15 +21,17 @@
 <section id="home" class="page">
   <!-- HERO -->
   <div class="hero">
-    <video autoplay muted loop playsinline class="hero-video">
+   <video id="heroVideo" autoplay muted loop playsinline class="hero-video">
+    <img id="heroImg" src="" style="display:none;">
       <source src="hero_video.mp4" type="video/mp4">
     </video>
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <div class="hero-badge">✦ NSUKKA'S ONLY 5-STAR • EST. 2018</div>
+      <div class="hero-badge"><span id="heroBadge">✦ NSUKKA'S ONLY 5-STAR</span></div>
+      <div id="promoBanner" style="display:none;background:#D4AF37;color:#111;padding:10px;border-radius:10px;font-weight:800;margin:10px 0;text-align:center;"></div>
       <div class="hero-rating">★★★★★ <span>4.9</span> <i>• 2,300+ happy guests</i></div>
-      <h1>Your Luxury Escape<br><em>Awaits in Nsukka</em></h1>
-      <p class="hero-sub">Sleep like royalty, pay like home.</p>
+     <h1><span id="heroTitle1">Your Luxury Escape</span><br><span id="heroTitle2">Awaits in Nsukka</span></h1>
+      <p class="hero-sub" id="heroSub">Sleep like royalty, pay like home.</p>
     
     </div>
 
@@ -63,7 +65,7 @@
   <h2 style="text-align:center;">More Than Just A Stay</h2>
   <p style="text-align:center;color:#777;font-size:14px;margin:-8px 0 18px 0;">No be just room. Na experience.</p>
 
-  <div class="why-grid-img">
+  <div class="why-grid-img" id="whyGrid">
     <!-- 1. POOL -->
     <div class="why-img-card" onclick="showPage('rooms')">
       <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80" alt="Infinity Pool">
@@ -118,7 +120,7 @@
   <div class="reviews">
     <span class="eyebrow">GUEST LOVE</span>
     <h2>What Guests Say</h2>
-    <div class="review-scroll">
+    <div class="review-scroll"  id="reviewsGrid">
       <div class="review-card"><div>★★★★★</div><p>"Best sleep I don get for Enugu State. Room clean, AC cold, power no blink once."</p><b>— Chiamaka O., Lagos</b><small>Grand Opera Suite • 2 nights</small></div>
       <div class="review-card"><div>★★★★★</div><p>"I booked for my wedding night. Staff decorated the room, pool was magic."</p><b>— Mr & Mrs Eze, Enugu</b><small>Penthouse Loft • 1 night</small></div>
       <div class="review-card"><div>★★★★★</div><p>"Booked on WhatsApp in 5 mins. Paid at hotel. No wahala at all."</p><b>— Ifeanyi K., Abuja</b><small>Deluxe Room • 3 nights</small></div>
@@ -448,39 +450,40 @@
   <!-- SMALL HERO LIKE YOU WANTED -->
   <div class="about-hero">
     <div class="about-hero-text">
-      <span>ABOUT LUMINA</span>
-      <h1>More Than A Stay,<br>It's An Experience.</h1>
-      <p>Located in the heart of Nsukka, Lumina Hotel redefines 5-star comfort with modern luxury, warm hospitality, and unforgettable memories.</p>
-    </div>
+    <span id="aboutHeroLabel">ABOUT LUMINA</span>
+<h1 id="aboutHeroTitle">More Than A Stay,<br>It's An Experience.</h1>
+<p id="aboutHeroSub">Located in the heart of Nsukka, Lumina Hotel redefines 5-star comfort with modern luxury, warm hospitality, and unforgettable memories.</p>
+</div>
     <div class="about-hero-img">
-      <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=800" alt="Lumina Hotel">
+      <img id="aboutHeroImg" src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=800" alt="Lumina Hotel">
     </div>
   </div>
 
   <!-- STATS - LIKE ROOM CARDS -->
   <div class="about-stats">
-    <div class="stat-card"><h2>2018</h2><p>Year Founded</p></div>
-    <div class="stat-card"><h2>120+</h2><p>Luxury Rooms</p></div>
-    <div class="stat-card"><h2>15k+</h2><p>Happy Guests</p></div>
-    <div class="stat-card"><h2>4.9★</h2><p>Guest Rating</p></div>
+    <div class="stat-card"><h2 id="aboutStat1Val">2018</h2><p id="aboutStat1Label">Year Founded</p></div>
+<div class="stat-card"><h2 id="aboutStat2Val">120+</h2><p id="aboutStat2Label">Luxury Rooms</p></div>
+<div class="stat-card"><h2 id="aboutStat3Val">15k+</h2><p id="aboutStat3Label">Happy Guests</p></div>
+<div class="stat-card"><h2 id="aboutStat4Val">4.9★</h2><p id="aboutStat4Label">Guest Rating</p></div>
   </div>
 
   <!-- OUR STORY -->
   <div class="about-section">
     <div class="about-text">
-      <span class="section-label">OUR STORY</span>
-      <h2>From a Dream to Nsukka's Most Loved Hotel.</h2>
-      <p>Lumina started with a simple idea: Nsukka deserved a hotel that matches international standards without losing our Igbo warmth.</p>
-      <p>What began as a 20-room boutique lodge in 2018 has grown into a 5-star destination for business travelers, couples, and families. Every corner, from our scent to our bedsheets, was chosen to make you feel at home, but better.</p>
-      <div class="about-quote">
+      <span class="section-label" id="aboutLabel">OUR STORY</span>
+      <h2 id="aboutTitle">From a Dream to Nsukka's Most Loved Hotel.</h2>
+      <p id="aboutStory">Lumina started with a simple idea: Nsukka deserved a hotel that matches international standards without losing our Igbo warmth.</p>
+      <p id="aboutExtra">What began as a 20-room boutique lodge in 2018 has grown into a 5-star destination for business travelers, couples, and families. Every corner, from our scent to our bedsheets, was chosen to make you feel at home, but better.</p>
+      <div class="about-quote" id="aboutQuote">
         "We don't just give you a key, we give you peace of mind."
         <small>— Founder, Lumina Hotel & Suites</small>
       </div>
     </div>
     <div class="about-grid-images">
-      <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600" alt="lobby">
-      <img src="https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=600" alt="room">
-    </div>
+ <img id="aboutImg1" src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600" alt="lobby">
+<img id="aboutImg2" src="https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=600" alt="room">
+
+</div>
   </div>
 
   <!-- WHY CHOOSE US - CARD STYLE LIKE YOUR ROOMS -->
@@ -489,33 +492,31 @@
     <h2 style="text-align:center;">Comfort You Can Feel</h2>
     <div class="choose-grid">
       <div class="choose-card">
-        <div class="choose-icon">🛏️</div>
-        <h3>Luxury Rooms</h3>
-        <p>King beds, blackout curtains, Smart TVs and rain showers. Designed for deep sleep.</p>
-      </div>
+       <div class="choose-icon" id="chooseIcon1">🛏️</div>
+<h3 id="chooseTitle1">Luxury Rooms</h3>
+<p id="chooseDesc1">King beds, blackout curtains, Smart TVs and rain showers. Designed for deep sleep.</p>
+</div>
+     <div class="choose-icon" id="chooseIcon2">🍽️</div>
+<h3 id="chooseTitle2">Signature Restaurant</h3>
+<p id="chooseDesc2">Local and continental dishes from our award-winning chef, open 24/7.</p>
+</div>
       <div class="choose-card">
-        <div class="choose-icon">🍽️</div>
-        <h3>Signature Restaurant</h3>
-        <p>Local and continental dishes from our award-winning chef, open 24/7.</p>
-      </div>
-      <div class="choose-card">
-        <div class="choose-icon">🔒</div>
-        <h3>Safe & Secure</h3>
-        <p>24/7 power, CCTV, keycard access, and trained security. Your safety first.</p>
-      </div>
-      <div class="choose-card">
-        <div class="choose-icon">⚡</div>
-        <h3>Fast Service</h3>
-        <p>Room service in under 15 minutes. Because luxury should not wait.</p>
-      </div>
+       <div class="choose-icon" id="chooseIcon3">🔒</div>
+<h3 id="chooseTitle3">Safe & Secure</h3>
+<p id="chooseDesc3">24/7 power, CCTV, keycard access, and trained security. Your safety first.</p>
+</div>
+      <div class="choose-icon" id="chooseIcon4">⚡</div>
+<h3 id="chooseTitle4">Fast Service</h3>
+<p id="chooseDesc4">Room service in under 15 minutes. Because luxury should not wait.</p>
+</div>
     </div>
   </div>
 
   <!-- CTA -->
   <div class="about-cta">
-    <h2>Ready to Experience Lumina?</h2>
-    <p>Your luxury escape is one click away. Best price guaranteed when you book direct.</p>
-    <div style="display:flex; gap:10px; justify-content:center; margin-top:18px; flex-wrap:wrap;">
+    <h2 id="aboutCtaTitle">Ready to Experience Lumina?</h2>
+<p id="aboutCtaSub">Your luxury escape is one click away. Best price guaranteed when you book direct.</p>
+<div style="display:flex; gap:10px; justify-content:center; margin-top:18px; flex-wrap:wrap;">
       <button class="reserve" style="width:auto; padding:13px 28px;" onclick="showPage('rooms')">View Rooms</button>
       <a class="btn outline" style="padding:13px 28px; background:#fff;" onclick="showPage('contact')">Contact Us</a>
     </div>
@@ -528,23 +529,21 @@
   
   <div class="contact-header">
     <span>GET IN TOUCH</span>
-    <h2>We’re Here For You, 24/7</h2>
-    <p>Have a question about your stay? Want to book directly and get best price? Reach us anyway you like — we reply in under 5 minutes.</p>
-  </div>
+   <h2 id="contactTitle">We’re Here For You, 24/7</h2>
+<p id="contactSub">Have a question about your stay? Want to book directly and get best price? Reach us anyway you like — we reply in under 5 minutes.</p>
+ </div>
 
   <div class="contact-cards">
-    <a href="tel:09134435650" class="c-card">
-      <div class="c-icon">📞</div>
-      <div><b>Call Direct</b><small>09134435650 — Instant Response</small></div>
-    </a>
-    <a href="https://wa.me/2349134435650" target="_blank" class="c-card c-gold">
+    <a id="contactCallLink" href="tel:09134435650" class="c-card">
+  <div><b>Call Direct</b><small id="contactCallText">09134435650 — Instant Response</small></div>
+</a>
+    <a id="contactWaLink" href="https://wa.me/2349134435650" target="_blank" class="c-card c-gold">
       <div class="c-icon" style="background:#111; color:#fff;">💬</div>
       <div><b>WhatsApp Us</b><small>Chat with reservation team</small></div>
     </a>
-    <a href="mailto:hello@luminahotel.com" class="c-card">
-      <div class="c-icon">✉️</div>
-      <div><b>Email</b><small>hello@luminahotel.com</small></div>
-    </a>
+   <a id="contactEmailLink" href="mailto:hello@luminahotel.com" class="c-card">
+  <div><b>Email</b><small id="contactEmailText">hello@luminahotel.com</small></div>
+</a>
   </div>
 
   <div class="contact-grid">
@@ -563,26 +562,20 @@
     <div class="contact-info-box">
       <h3>Visit Us</h3>
       
-      <div class="info-row">
-        <span>📍</span>
-        <div><b>Address</b><br>Behind Ogige Main Market, Nsukka, Enugu State, Nigeria</div>
-      </div>
-      <div class="info-row">
-        <span>🕐</span>
-        <div><b>Open Hours</b><br>Check-in: 24hrs / Restaurant: 6am - 11pm</div>
-      </div>
+   <div><b>Address</b><br><span id="contactAddress">Behind Ogige Main Market, Nsukka, Enugu State, Nigeria</span></div>
+<div><b>Open Hours</b><br><span id="contactHours">Check-in: 24hrs / Restaurant: 6am - 11pm</span></div>
 
       <div class="socials">
         <h4>Follow Lumina</h4>
         <div class="social-grid">
-          <a href="https://instagram.com/luminahotel" target="_blank" class="social-btn ig">📸 <b>Instagram</b><small>@luminahotel</small></a>
-          <a href="https://facebook.com/luminahotel" target="_blank" class="social-btn fb">📘 <b>Facebook</b><small>Lumina Hotel</small></a>
-          <a href="https://wa.me/2349134435650" target="_blank" class="social-btn wa">💬 <b>WhatsApp</b><small>Chat Now</small></a>
-          <a href="https://tiktok.com/@luminahotel" target="_blank" class="social-btn tk">🎵 <b>TikTok</b><small>Tour Rooms</small></a>
+         <a id="socialIg" href="https://instagram.com/luminahotel" target="_blank" class="social-btn ig">📸 <b>Instagram</b><small>@luminahotel</small></a>
+          <a id="socialFb" href="https://facebook.com/luminahotel" target="_blank" class="social-btn fb">📘 <b>Facebook</b><small>Lumina Hotel</small></a>
+         <a id="socialWa" href="https://wa.me/2349134435650"  target="_blank" class="social-btn wa">💬 <b>WhatsApp</b><small>Chat Now</small></a>
+         <a id="socialTk" href="https://tiktok.com/@luminahotel" target="_blank" class="social-btn tk">🎵 <b>TikTok</b><small>Tour Rooms</small></a>
         </div>
       </div>
 
-      <a class="map-btn" target="_blank" href="https://maps.google.com/?q=Ogige+Main+Market+Nsukka" style="width:100%; justify-content:center; margin-top:16px;">
+     <a id="mapBtn" class="map-btn" ... href="https://maps.google.com/?q=Ogige+Main+Market+Nsukka"> style="width:100%; justify-content:center; margin-top:16px;">
         📍 Open in Google Maps
       </a>
     </div>
@@ -590,7 +583,7 @@
 
   <!-- MAP -->
   <div class="map-embed">
-    <iframe src="https://maps.google.com/maps?q=Ogige%20Main%20Market%20Nsukka&t=&z=15&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
+<iframe id="mapEmbed" src="https://maps.google.com/maps?q=Ogige%20Main%20Market%20Nsukka&t=&z=15&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
   </div>
 
 </section>

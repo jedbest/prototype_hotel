@@ -1,0 +1,2827 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumina Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',system-ui;}
+body{background:#f7f3eb;min-height:100vh;overflow-x:hidden;}
+.header{background:#111;color:#D4AF37;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10;flex-wrap:wrap;gap:10px;}
+.header h1{font-size:18px;font-weight:900;flex:1;min-width:120px;}
+/* === TABS - Scrollable, no scatter, no cut === */
+.tabs{
+  display:flex;
+  flex-wrap:nowrap; /* NEVER wrap — keep for one line */
+  gap:6px;
+  padding:12px 12px;
+  overflow-x:auto; /* scroll left-right */
+  overflow-y:hidden;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+  scroll-snap-type:x proximity;
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{
+  flex:0 0 auto; /* NEVER shrink, NEVER grow — keep size */
+  padding:10px 14px;
+  border-radius:12px;
+  border:1px solid #d9cdb0;
+  background:white;
+  font-weight:900;
+  font-size:11px;
+  cursor:pointer;
+  white-space:nowrap; /* NEVER break text to 2 lines */
+  scroll-snap-align:start;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.tab.active{background:#111;color:#D4AF37;border-color:#111;}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;padding:0 16px 16px;}
+.stat-card{background:white;border-radius:16px;padding:14px;border:1px solid #e8e0cc;text-align:center;}
+.stat-card b{font-size:20px;display:block;}
+.stat-card p{font-size:10px;color:#888;font-weight:700;margin-top:4px;text-transform:uppercase;}
+.stat-card.gold{background:linear-gradient(135deg,#111,#2a2a2a);border:1px solid #D4AF37;}
+.stat-card.gold b{color:#D4AF37;}
+.controls{padding:0 16px 16px;display:flex;gap:8px;}
+.controls input,.controls select{flex:1;padding:12px;border-radius:12px;border:1px solid #d9cdb0;background:white;font-weight:600;font-size:12px;min-width:0;}
+#list{padding:0 16px 100px;display:grid;gap:12px;}
+.card{background:white;border-radius:20px;padding:16px;border:1px solid #eee;box-shadow:0 2px 12px rgba(0,0,0,0.04);position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:#D4AF37;}
+.code{font-weight:900;background:#111;color:#D4AF37;padding:4px 10px;border-radius:8px;font-size:11px;}
+.status{padding:5px 10px;border-radius:20px;font-size:10px;font-weight:900;text-transform:uppercase;}
+.Paid,.Approved{background:#dcfce7;color:#166534;}.Awaiting{background:#fee2e2;color:#991b1b;}.Unpaid{background:#fef3c7;color:#92400e;}.Cancelled{background:#f3f4f6;color:#666;}.Checked-In{background:#111;color:#D4AF37;}.Disapproved{background:#fee2e2;color:#991b1b;}.Checked-Out{background:#dbeafe;color:#1e40af;}
+.actions{margin-top:12px;display:grid;gap:8px;}
+.actions.two{grid-template-columns:1fr 1fr;}.actions.three{grid-template-columns:1fr 1fr 1fr;}
+.actions button{padding:11px;border-radius:12px;border:none;font-size:11px;font-weight:800;cursor:pointer;}
+.actions button:disabled{opacity:0.35;pointer-events:none;}
+.btn-approve{background:#111;color:#D4AF37;}.btn-disapprove{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5!important;}.btn-check{background:#D4AF37;color:#111;}.btn-cancel{background:#f5f5f5;color:#999;border:1px solid #ddd!important;}.btn-delete{background:#000;color:white;}
+.room-card{background:white;border-radius:20px;padding:16px;border:1px solid #e8e0cc;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.room-card b{font-size:14px;}
+.room-card input{width:65px;padding:8px;border-radius:8px;border:1px solid #d9cdb0;text-align:center;font-weight:800;}
+.room-number-input{appearance:textfield;-moz-appearance:textfield;-webkit-appearance:none;}
+#addModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100;align-items:center;justify-content:center;padding:16px;}
+#addModal.open{display:flex;}
+.modal-box{background:white;border-radius:20px;padding:20px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto;}
+.modal-box h2{font-size:16px;font-weight:900;margin-bottom:12px;}
+.modal-box input,.modal-box select{width:100%;padding:12px;border-radius:10px;border:1px solid #d9cdb0;margin-bottom:10px;font-weight:600;}
+#loginScreen.hidden{display:none!important;}
+/* === MOBILE TABS - Tight, scrollable, no scatter === */
+@media(max-width:600px){
+  .header{padding:12px 12px;gap:8px;}
+  .header h1{font-size:14px;min-width:100px;}
+  .tabs{
+    padding:8px 10px;
+    gap:6px;
+    flex-wrap:nowrap; /* Force one line even for mobile */
+    overflow-x:auto;
+    overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    /* Hide scrollbar but still scrollable */
+    -ms-overflow-style:none;
+  }
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab{
+    flex:0 0 auto; /* Don't shrink */
+    padding:9px 12px;
+    font-size:10px;
+    border-radius:11px;
+    white-space:nowrap;
+    min-width:max-content; /* Make tab as wide as its text, no squeeze */
+  }
+  .stats{gap:8px;padding:0 10px 12px;}
+  #list{padding:0 10px 100px;}
+  .room-card{flex-direction:column;align-items:flex-start;}
+}
+
+/* ===== WEBSITE EDITOR - LUMINA LUXURY STYLE ===== */
+.ed-wrap{font-family:inherit;}
+.ed-header{background:#111;color:#D4AF37;padding:18px;border-radius:18px;border:1px solid #D4AF37;text-align:center;}
+.ed-header b{font-size:18px;letter-spacing:1px;}
+.ed-header p{color:#fff;font-size:11px;opacity:.8;margin:6px 0 0;}
+.ed-card{background:#fff;padding:18px;border-radius:18px;margin-top:14px;border:1px solid #EDE3C8;box-shadow:0 4px 18px rgba(0,0,0,.06);}
+.ed-card h3{margin:0 0 12px 0;font-size:16px;color:#111;border-bottom:2px solid #D4AF37;padding-bottom:8px;}
+.ed-card label{font-size:12px;font-weight:800;color:#555;display:block;margin-top:10px;}
+.ed-card input, .ed-card textarea, .ed-card select{width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid #E5DCC0;background:#FFFEFB;font-size:14px;outline:none;box-sizing:border-box;margin-top:4px;}
+.ed-card input:focus, .ed-card textarea:focus{border-color:#D4AF37;box-shadow:0 0 0 3px rgba(212,175,55,.15);}
+.ed-upload{width:100%;padding:14px;border:2px dashed #D4AF37;border-radius:14px;background:#FFF9E6;text-align:center;font-weight:800;color:#8A6D00;cursor:pointer;display:block;margin-top:6px;}
+.ed-upload::file-selector-button{background:#111;color:#D4AF37;border:none;padding:10px 16px;border-radius:10px;font-weight:800;cursor:pointer;margin-right:10px;}
+.ed-room{border:2px solid #E9DCC3;border-radius:18px;padding:14px;margin-bottom:16px;background:#FFFEFB;}
+.ed-save{width:100%;background:#111;color:#D4AF37;border:none;padding:18px;border-radius:14px;font-weight:900;font-size:16px;margin-top:16px;box-shadow:0 8px 20px rgba(0,0,0,.2);}
+.ed-save:active{transform:scale(.98);}
+.ed-preview img{width:100%;height:140px;object-fit:cover;border-radius:12px;margin-top:8px;border:1px solid #eee;}
+/* === LUMINA EDITOR FIX - PASTE AT BOTTOM === */
+#list input[type="text"], #list input[type="number"], #list input[type="email"], #list input[type="tel"], #list textarea, #list select{
+  width:100% !important; padding:12px 14px !important; border-radius:12px !important;
+  border:1.5px solid #E5DCC0 !important; background:#FFFEFB !important; font-size:14px !important;
+  box-sizing:border-box !important; margin-top:4px !important;
+}
+/* Choose File - make am gold + black, not plain */
+#list input[type="file"]{
+  width:100% !important; padding:12px !important; border:2px dashed #D4AF37 !important;
+  border-radius:12px !important; background:#FFF9E6 !important; font-size:13px !important; cursor:pointer !important;
+}
+#list input[type="file"]::file-selector-button{
+  background:#111 !important; color:#D4AF37 !important; border:none !important;
+  padding:10px 16px !important; border-radius:10px !important; font-weight:800 !important; cursor:pointer !important;
+}
+/* Checkboxes - small + aligned, not big scattered */
+#list input[type="checkbox"]{
+  width:18px !important; height:18px !important; accent-color:#D4AF37 !important;
+  margin:0 6px 0 0 !important; vertical-align:middle !important; flex-shrink:0 !important;
+}
+#list label:has(input[type="checkbox"]){
+  display:inline-flex !important; align-items:center !important; gap:6px !important;
+  background:#FFFEFB !important; border:1px solid #E8DCC0 !important; padding:7px 10px !important;
+  border-radius:20px !important; font-size:12px !important; font-weight:700 !important; margin:4px 4px 4px 0 !important;
+}
+/* Show / Featured checkboxes - make dem side by side */
+#list label[style*="display:flex"]{
+  display:inline-flex !important; width:48% !important; margin-right:4px !important;
+  background:#FFF9E6 !important; padding:10px !important; border-radius:12px !important; border:1px solid #E8DCC0 !important;
+}
+/* Cards */
+#list > div{border-radius:18px !important;}
+
+/* === MONEY CARDS ONLY - NOTHING ELSE === */
+.stats{
+  gap:10px;
+}
+.stat-card{
+  padding:18px 10px 16px;
+  box-shadow:0 6px 18px rgba(0,0,0,.07);
+  position:relative;
+  overflow:hidden;
+}
+/* Thin gold line on top - luxury touch */
+.stat-card::after{
+  content:''; position:absolute; left:0; right:0; top:0; height:3px;
+  background:linear-gradient(90deg, #D4AF37, #F5E6A8, #D4AF37);
+}
+/* Numbers - make dem bigger + bolder */
+.stat-card b{
+  font-size:23px;
+  letter-spacing:.3px;
+  line-height:1.1;
+}
+/* Labels - small + spaced */
+.stat-card p{
+  letter-spacing:1.2px;
+  margin-top:6px;
+}
+
+/* 1. Total Revenue - GOLD LETTER ON BLACK */
+.stat-card.gold{
+  background:linear-gradient(135deg, #111, #222) !important;
+  border:1px solid #D4AF37 !important;
+}
+.stat-card.gold b{ color:#D4AF37 !important; }
+.stat-card.gold p{ color:#FFF8DC !important; }
+
+/* 2. Bookings - BLACK LETTER ON WHITE */
+.stat-card:nth-child(2){
+  background:#fff !important;
+  border:1px solid #EDE0C0 !important;
+}
+.stat-card:nth-child(2) b{ color:#111 !important; }
+.stat-card:nth-child(2) p{ color:#888 !important; }
+
+/* 3. Awaiting / Balance - BLACK LETTER ON SOFT GOLD */
+.stat-card:nth-child(3){
+  background:#FFF9E6 !important;
+  border:1px solid #D4AF37 !important;
+}
+.stat-card:nth-child(3) b{ color:#8A6D00 !important; }
+.stat-card:nth-child(3) p{ color:#8A6D00 !important; }
+
+
+/* === MONEY TAB PAGE ONLY - NOTHING ELSE === */
+body.money-page #list{
+  gap:14px;
+}
+/* All cards for Money page - luxury */
+body.money-page #list > div{
+  border-radius:20px !important;
+  border:1px solid #EDE0C0 !important;
+  box-shadow:0 6px 20px rgba(0,0,0,.06) !important;
+  padding:20px !important;
+  background:#fff !important;
+  position:relative;
+  overflow:hidden;
+}
+/* Gold line on top of each Money card */
+body.money-page #list > div::before{
+  content:''; position:absolute; left:0; right:0; top:0; height:4px;
+  background:linear-gradient(90deg, #D4AF37, #F5E6A8, #D4AF37);
+}
+/* Titles - Daily Report, Balances, Expenses */
+body.money-page #list > div b:first-child,
+body.money-page #list > div strong{
+  font-size:15px !important;
+  letter-spacing:.3px;
+  color:#111 !important;
+}
+/* Daily Report card - make am BLACK + GOLD, na the main card */
+body.money-page #list > div:first-child{
+  background:#161616 !important;
+  border:1px solid #D4AF37 !important;
+}
+body.money-page #list > div:first-child b,
+body.money-page #list > div:first-child strong{
+  color:#D4AF37 !important;
+}
+body.money-page #list > div:first-child div{
+  color:#111 !important;
+}
+/* Profit line - make am pop */
+body.money-page #list > div:first-child b:last-child{
+  color:#D4AF37 !important;
+}
+/* Balances Still Owed card - SOFT GOLD */
+body.money-page #list > div:nth-child(2){
+  background:#FFF9E6 !important;
+  border-color:#D4AF37 !important;
+}
+body.money-page #list > div:nth-child(2) b{
+  color:#8A6D00 !important;
+}
+/* Expenses card - WHITE + gold Add button */
+body.money-page #list > div:last-child{
+  background:#fff !important;
+  color:#111
+}
+
+
+
+</style>
+</head>
+<body>
+<!-- LOGIN CARD - Rumago style -->
+<div id="loginCard" style="max-width:380px;margin:40px auto;background:#fff;padding:24px;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.1);">
+  <h2 style="text-align:center;font-family:'Playfair Display',serif;">LUMINA ✨ ADMIN</h2>
+  <p style="text-align:center;color:#666;font-size:13px;">Login with your username & password</p>
+
+  <label style="font-size:12px;font-weight:800;">Username</label>
+  <input id="loginUsername" type="text" placeholder="e.g. cleaner1" value="" autocomplete="off" autocapitalize="off" spellcheck="false" name="lumina_username_xyz" readonly onfocus="this.removeAttribute('readonly')" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0 12px 0;">
+
+  <label style="font-size:12px;font-weight:800;">Password</label>
+  <div style="position:relative;">
+    <input id="loginPassword" type="password" placeholder="Password" value="" autocomplete="new-password" name="lumina_password_xyz" readonly onfocus="this.removeAttribute('readonly')" style="width:100%;padding:12px 44px 12px 12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <button type="button" onclick="toggleLoginPw()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:18px;cursor:pointer;">👁️</button>
+  </div>
+
+  <div id="loginError" style="color:#dc2626;font-size:12px;display:none;margin-top:6px;"></div>
+  <button onclick="doAdminLogin()" style="width:100%;background:#111;color:#D4AF37;border:none;padding:13px;border-radius:10px;font-weight:900;margin-top:12px;cursor:pointer;">Login →</button>
+</div>
+
+<div id="adminMain" style="display:none;">
+<div class="header"><h1>LUMINA ✨ ADMIN</h1><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><button id="addBookingBtn" onclick="openAddBooking()" style="background:#D4AF37;color:#111;border:none;padding:8px 14px;border-radius:10px;font-weight:900;font-size:12px;cursor:pointer;">➕ Add</button>
+<span id="count">0 bookings</span><button onclick="logoutAdmin()" style="background:#222;color:#D4AF37;border:1px solid #D4AF37;padding:8px 12px;border-radius:10px;font-weight:900;font-size:11px;cursor:pointer;">Logout</button></div></div>
+<div style="display:flex;justify-content:space-between;align-items:center;background:#111;color:#D4AF37;padding:10px 14px;margin:0 16px 12px;border-radius:14px;">
+  <span id="roleLabel" style="font-size:12px;">Logged in: MANAGER</span>
+</div>
+<div class="tabs">
+  <button class="tab" id="tabStaff" onclick="switchTab('staff')">👥 Staff</button>
+  <button class="tab active" id="tabAll" onclick="switchTab('all')">📋 Bookings</button>
+  <button class="tab" id="tabToday" onclick="switchTab('today')">🗓️ TODAY</button>
+  <button class="tab" id="tabBoard" onclick="switchTab('board')">🛏️ Room Board</button>
+  <button class="tab" id="tabCheck" onclick="switchTab('checked')">🏨 Checked-In</button>
+  <button class="tab" id="tabDis" onclick="switchTab('disapproved')">⛔ Disapproved</button>
+  <button class="tab" id="tabOut" onclick="switchTab('checkout')">✅ Checked-Out</button>
+  <button class="tab" id="tabMoney" onclick="markMoneyPage('money'); switchTab('money')">💰 Money</button>
+  <button class="tab" id="tabPos" onclick="switchTab('pos')">🍽️ POS / Pool</button>
+ <button id="addExpenseBtn" onclick="openExpenseModal()" class="tab" style="background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;">🧾 + Add Expense</button>
+  <button class="tab" id="tabRooms" onclick="switchTab('rooms')">🛏️ Rooms</button>
+  <button class="tab" id="tabMonthly" onclick="switchTab('monthly')">📅 Monthly Review</button>
+  <button class="tab" id="tabEditor" onclick="switchTab('editor')">🌐 Website Editor</button>
+</div>
+<div class="stats" id="stats">
+  <div class="stat-card gold"><b id="totalRev">$0</b><p>Total Revenue</p></div>
+  <div class="stat-card"><b id="totalBook">0</b><p>Bookings</p></div>
+  <div class="stat-card"><b id="pending">0</b><p>Awaiting</p></div>
+</div>
+<div class="controls" id="controls">
+  <input id="search" placeholder="🔍 Search name, phone, code..." oninput="filterCards()">
+  <select id="filterStatus" onchange="filterCards()"><option value="all">All Status</option><option value="Paid">Paid</option><option value="Awaiting">Awaiting</option><option value="Approved">Approved</option><option value="Disapproved">Disapproved</option><option value="Checked-In">Checked-In</option></select>
+</div>
+<div id="list">Loading...</div>
+<div id="addModal" onclick="if(event.target===this) closeAddBooking()">
+  <div class="modal-box">
+    <h2>➕ Add Booking Manually</h2>
+    <input id="abName" placeholder="Guest Name *">
+    <input id="abPhone" placeholder="Phone *">
+    <input id="abEmail" placeholder="Email (optional)">
+<select id="manualRoomType" onchange="updateManualRoomNumbers()">
+  <option value="The Grand Opera Suite">The Grand Opera Suite - 5 avail</option>
+  <option value="Eiffel River View Room">Eiffel River View Room - 5 avail</option>
+  <option value="Deluxe King Room">Deluxe King Room - 5 avail</option>
+  <option value="Executive Double Room">Executive Double Room - 5 avail</option>
+  <option value="Family Suite">Family Suite - 5 avail</option>
+  <option value="Penthouse Loft">Penthouse Loft - 5 avail</option>
+</select>
+<select id="manualRoomNumber">
+  <option>Loading rooms...</option>
+</select>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><input id="abCheckin" type="date"><input id="abCheckout" type="date"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><input id="abGuests" placeholder="Guests" value="2 guests · 1 room"><input id="abAmount" type="text" inputmode="numeric" placeholder="Amount e.g. 420"></div>
+    <select id="abPay"><option value="Pay at Hotel">Pay at Hotel</option><option value="Cash">Cash</option><option value="OPay Transfer">OPay Transfer</option><option value="Bank Transfer">Bank Transfer</option></select>
+    <select id="abStatus"><option value="Approved">Approved - Paid</option><option value="Checked-In">Checked-In - Now in hotel</option><option value="Unpaid">Unpaid</option><option value="Awaiting Verification">Awaiting Verification</option></select>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;">
+      <button onclick="closeAddBooking()" style="padding:12px;border-radius:10px;border:1px solid #ddd;background:white;font-weight:800;">Cancel</button>
+      <button onclick="submitManualBooking()" id="abBtn" style="padding:12px;border-radius:10px;border:none;background:#111;color:#D4AF37;font-weight:900;">Add Booking</button>
+    </div>
+  </div>
+</div>
+
+<!-- STAFF TAB -->
+<div id="staffTab" style="display:none;">
+  <h3>👥 Staff Accounts</h3>
+  <div style="background:#fff;padding:16px;border-radius:14px;">
+    <label>Name</label>
+    <input id="newStaffName" placeholder="Full name" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>Username</label>
+    <input id="newStaffUser" placeholder="e.g. cashier1" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>Role</label>
+   <select id="newStaffRole" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+  <option value="Manager">Manager</option>
+  <option value="Receptionist">Receptionist</option>
+  <option value="Cashier">Cashier</option>
+  <option value="Kitchen">Kitchen</option>
+  <option value="Cleaner">Cleaner</option>
+  <option value="Accountant">Accountant</option>
+  <option value="Admin">Admin</option>
+</select>
+    <button onclick="createStaff()" style="width:100%;background:#111;color:#D4AF37;border:none;padding:13px;border-radius:10px;font-weight:900;">Generate Password + Save Staff →</button>
+    <div id="newStaffResult" style="margin-top:10px;font-size:13px;background:#FFF8E6;padding:10px;border-radius:10px;display:none;"></div>
+  </div>
+  <div id="staffList" style="margin-top:16px;"></div>
+</div>
+<script>
+// ===== LOGOUT - FIXED: No LOGIN_KEY, clears everything =====
+function logoutAdmin(){
+  if(!confirm("Logout?")) return;
+  try{
+    localStorage.removeItem('lumina_admin');
+    localStorage.removeItem('lumina_role');
+    localStorage.removeItem('lumina_staff');
+    // Clear session storage too, just in case
+    sessionStorage.clear();
+  }catch(e){ console.log('Logout clear error:', e); }
+
+    clearLoginFields();
+  // Force reload with cache bypass so login screen show
+  location.href = location.pathname + '?logout=' + Date.now();
+}
+function adminLogout(){ logoutAdmin(); }
+document.addEventListener('DOMContentLoaded', ()=>{
+  checkLogin();
+  const passInput = document.getElementById('adminPassInput');
+  if(passInput){ passInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') loginAdmin(); }); }
+});
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwR1T2dlroFlXNZq20is5C1hc2xrHY2jRTKtAUhUKSBgDxmXdmN28oz0tAL9clv2TteSQ/exec";
+
+let allData = [];
+let roomsData = [];
+let currentTab = 'all';
+let isLoading = false;
+let isSaving = false;
+
+
+// ===== LOADING STATE HELPER - Shows "Processing..." for all major actions =====
+let _btnOriginal = {};
+
+function setBtnLoading(btn, loadingText){
+  if(!btn) return;
+  // Save original text once
+  if(!_btnOriginal[btn.id] && btn.id){
+    _btnOriginal[btn.id] = btn.innerHTML;
+  }
+  btn.disabled = true;
+  btn.style.opacity = '0.6';
+  btn.style.pointerEvents = 'none';
+  btn.innerHTML = `⏳ ${loadingText}`;
+}
+
+function resetBtnLoading(btn){
+  if(!btn) return;
+  if(btn.id && _btnOriginal[btn.id]){
+    btn.innerHTML = _btnOriginal[btn.id];
+  }
+  btn.disabled = false;
+  btn.style.opacity = '1';
+  btn.style.pointerEvents = 'auto';
+}
+
+// AUTO - No need edit buttons
+document.addEventListener('click', function(e){
+  const btn = e.target.closest('.tab');
+  if(!btn) return;
+  const txt = (btn.innerText||"").toLowerCase();
+  if(txt.includes('money')){
+    document.body.classList.add('money-page');
+  } else {
+    document.body.classList.remove('money-page');
+  }
+});
+// Full-screen loader for Login / Check-In / Check-Out — e go block screen so person no click twice
+function showPageLoader(text){
+  let loader = document.getElementById('globalLoader');
+  if(!loader){
+    loader = document.createElement('div');
+    loader.id = 'globalLoader';
+    loader.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;color:white;font-weight:900;';
+    document.body.appendChild(loader);
+  }
+  loader.innerHTML = `<div style="font-size:40px;animation:spin 1s linear infinite;">⏳</div><div style="margin-top:12px;font-size:16px;">${text}</div><style>@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}</style>`;
+  loader.style.display = 'flex';
+}
+function hidePageLoader(){
+  const loader = document.getElementById('globalLoader');
+  if(loader) loader.style.display = 'none';
+}
+
+// ===== NEW: STAFF & ROLES - RUMAGO STYLE (Username + Hashed Password) =====
+let currentAdminUser = JSON.parse(localStorage.getItem('lumina_admin') || 'null');
+let currentRole = currentAdminUser?.role?.toLowerCase() || '';
+
+// SAFE LOGIN CHECK - runs after everything don load, no go break script if anything miss
+try{
+  const _saved = JSON.parse(localStorage.getItem('lumina_admin') || 'null');
+  const _loginCard = document.getElementById('loginCard');
+  const _main = document.getElementById('adminMain');
+  if(_saved && _loginCard && _main){
+    _loginCard.style.display='none';
+    _main.style.display='block';
+    // Sync globals
+    currentAdminUser = _saved;
+    currentRole = (_saved.role||'').toLowerCase();
+  } else if(_loginCard && _main){
+    _loginCard.style.display='block';
+    _main.style.display='none';
+  }
+}catch(e){ console.log('Login check skipped:', e); }
+
+const ROLE_PERMS = {
+  // Admin + Manager: See EVERYTHING
+  admin: { tabs:['all','today','board','checked','disapproved','checkout','money','pos','rooms','staff','editor','monthly'], canApprove:true, canCash:true, canExtend:true, canUpgrade:true, canCancel:true, canSwitchStaff:true, canAddStaff:true, canSeeRevenue:true, canAddExpense:true },
+  manager: { tabs:['all','today','board','checked','disapproved','checkout','money','pos','rooms','staff','editor','monthly'], canApprove:true, canCash:true, canExtend:true, canUpgrade:true, canCancel:true, canSwitchStaff:true, canAddStaff:true, canSeeRevenue:true, canAddExpense:true },
+
+  // Receptionist: Bookings + Monthly (no revenue details, just bookings recap)
+  receptionist: { tabs:['all','today','board','checked','checkout','monthly'], canApprove:false, canCash:true, canExtend:true, canUpgrade:false, canCancel:false, canSwitchStaff:false, canAddStaff:false, canSeeRevenue:false, canAddExpense:true },
+
+  // Cleaner: ONLY Room Board
+  cleaner: { tabs:['board'], canApprove:false, canCash:false, canExtend:false, canUpgrade:false, canCancel:false, canSwitchStaff:false, canAddStaff:false, canSeeRevenue:false, canAddExpense:true },
+
+  // Accountant: Money + Monthly Review - na hin work be this
+  accountant: { tabs:['money','monthly'], canApprove:false, canCash:true, canExtend:false, canUpgrade:false, canCancel:false, canSwitchStaff:false, canAddStaff:false, canSeeRevenue:true, canAddExpense:true },
+
+  // Cashier: Money / POS + Monthly
+  cashier: { tabs:['pos','money','monthly'], canApprove:false, canCash:true, canExtend:false, canUpgrade:false, canCancel:false, canSwitchStaff:false, canAddStaff:false, canSeeRevenue:true, canAddExpense:true },
+
+  // Kitchen: ONLY POS
+  kitchen: { tabs:['pos'], canApprove:false, canCash:false, canExtend:false, canUpgrade:false, canCancel:false, canSwitchStaff:false, canAddStaff:false, canSeeRevenue:false, canAddExpense:true },
+};
+function can(a){ return ROLE_PERMS[currentRole]?.[a]===true; }
+function canSeeTab(t){ return ROLE_PERMS[currentRole]?.tabs?.includes(t); }
+
+function applyRoleUI(){
+  // 1. Tabs - hide tabs wey role no fit see
+  document.querySelectorAll('.tab').forEach(btn=>{
+    const map = {tabAll:'all',tabToday:'today',tabBoard:'board',tabCheck:'checked',tabDis:'disapproved',tabOut:'checkout',tabMoney:'money',tabPos:'pos',tabRooms:'rooms',tabStaff:'staff'};
+    const key = map[btn.id];
+    // addExpenseBtn no dey for map, so e go stay visible — good, everybody need am
+    if(key && !canSeeTab(key)) btn.style.display='none'; else btn.style.display='';
+  });
+
+  const lbl = document.getElementById('roleLabel');
+  if(lbl) lbl.innerText = currentAdminUser ? `Logged in: ${currentAdminUser.username} • ${currentAdminUser.role}` : 'Not logged in';
+
+  // 2. HEADER - DO THIS BEFORE ANY return; — if you put am after return, Cleaner go skip am
+  // ➕ Add: ONLY Admin / Owner, Manager, Receptionist
+  const addBtn = document.getElementById('addBookingBtn');
+  if(addBtn) addBtn.style.display = (['admin','manager','receptionist','reception','owner'].includes(currentRole)) ? '' : 'none';
+
+  // Bookings count: Admin, Manager, Receptionist, Cashier, Accountant ONLY
+  // Cleaner + Kitchen = NO count
+  const countEl = document.getElementById('count');
+  if(countEl) countEl.style.display = (['admin','manager','receptionist','reception','owner','cashier','accountant'].includes(currentRole)) ? '' : 'none';
+
+  // Switch Staff: ONLY Admin / Manager
+  const sw = document.getElementById('switchStaffBtn');
+  if(sw) sw.style.display = (currentRole==='admin' || currentRole==='manager' || currentRole==='owner') ? '' : 'none';
+
+  // Expense button: EVERYBODY — never hide am
+  const expBtn = document.getElementById('addExpenseBtn');
+  if(expBtn) expBtn.style.display = '';
+
+  // 3. Cleaner / Kitchen special - hide stats + controls, go Board / POS
+  // This MUST be LAST, after header logic, so header hiding no go skip
+  if(currentRole==='cleaner'){
+    const stats = document.getElementById('stats'); if(stats) stats.style.display='none';
+    const controls = document.getElementById('controls'); if(controls) controls.style.display='none';
+    setTimeout(()=>{ switchTab('board'); }, 100);
+    return;
+  }
+  if(currentRole==='kitchen'){
+    const stats = document.getElementById('stats'); if(stats) stats.style.display='none';
+    const controls = document.getElementById('controls'); if(controls) controls.style.display='none';
+    // No auto switch for kitchen — e go stay for POS if e click am, but no show Add/Count
+    return;
+  }
+}
+
+// NEW LOGIN - Username + Password + Eye icon, password hashed for Sheet
+function toggleLoginPw(){
+  const el = document.getElementById('loginPassword');
+  if(el) el.type = el.type === 'password' ? 'text' : 'password';
+}
+
+// Force login empty - run after page load
+setTimeout(()=>{
+  const u = document.getElementById('loginUsername');
+  const p = document.getElementById('loginPassword');
+  if(u) u.value = '';
+  if(p) p.value = '';
+}, 500);
+
+// ===== FORCE LOGIN FIELDS EMPTY - Kill Google Autofill =====
+function clearLoginFields(){
+  const u = document.getElementById('loginUsername');
+  const p = document.getElementById('loginPassword');
+  if(u){ u.value = ''; u.setAttribute('autocomplete','off'); }
+  if(p){ p.value = ''; p.setAttribute('autocomplete','new-password'); }
+  // Clear error too
+  const err = document.getElementById('loginError');
+  if(err) err.style.display = 'none';
+}
+
+// Run am immediately + after small delay (Chrome dey fill after page load, so we clear am again)
+document.addEventListener('DOMContentLoaded', ()=>{
+  clearLoginFields();
+  setTimeout(clearLoginFields, 200);
+  setTimeout(clearLoginFields, 800);
+  setTimeout(clearLoginFields, 1500);
+});
+
+async function doAdminLogin(){
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  if(!username || !password) return alert('Enter username + password');
+  
+  const btn = document.querySelector('#loginCard button'); // your Login button
+  const oldText = btn ? btn.innerHTML : '';
+  if(btn){ btn.disabled = true; btn.innerHTML = '⏳ Logging in... Please wait...'; btn.style.opacity = '0.6'; }
+  showPageLoader('Logging in...');
+
+  try{
+    const res = await fetch(SCRIPT_URL, {method:'POST', body: JSON.stringify({action:'login', username, password})});
+    const data = await res.json().catch(()=>({}));
+    if(data.ok){
+      currentAdminUser = data;
+      currentRole = (data.role||'').toLowerCase();
+      localStorage.setItem('lumina_admin', JSON.stringify(data));
+      localStorage.removeItem('lumina_role');
+      localStorage.removeItem('lumina_staff');
+      document.getElementById('loginCard').style.display='none';
+      document.getElementById('adminMain').style.display='block';
+      applyRoleUI(); renderTab();
+    } else {
+      const err = document.getElementById('loginError');
+      if(err){ err.style.display='block'; err.innerText = data.error || 'Login failed'; }
+      else alert(data.error || 'Login failed');
+    }
+  }catch(e){
+    alert('Login failed: ' + e.message);
+  } finally {
+    hidePageLoader();
+    if(btn){ btn.disabled = false; btn.innerHTML = oldText || 'Login'; btn.style.opacity = '1'; }
+  }
+}
+
+
+// NEW STAFF - Admin creates staff, Sheet generates random password once
+async function createStaff(){
+  const name = document.getElementById('newStaffName').value.trim();
+  const username = document.getElementById('newStaffUser').value.trim();
+  const role = document.getElementById('newStaffRole').value;
+  if(!name || !username) return alert('Enter name + username');
+
+  // 1. SHOW LOADER BEFORE FETCH
+  showPageLoader('Creating Staff... Generating password...');
+  const btn = document.querySelector('button[onclick="createStaff()"]');
+  if(btn){ btn.disabled = true; btn.innerHTML = '⏳ Creating Staff...'; }
+
+  try{
+    const res = await fetch(SCRIPT_URL, {method:'POST', body: JSON.stringify({action:'createUser', name, username, role})});
+    const data = await res.json();
+    if(data.ok){
+      const el = document.getElementById('newStaffResult');
+      if(el){ el.style.display='block'; el.innerHTML = `✅ Staff created!<br>Username: <b>${data.username}</b><br>Password: <b>${data.password}</b> <span style="color:#dc2626;">— Copy am now, e no go show again!</span><br>Role: ${data.role}`; }
+      else alert(`Staff created! Username: ${data.username} Password: ${data.password} — Copy am now!`);
+      loadStaffList();
+    } else {
+      alert(data.error);
+    }
+  }catch(e){
+    alert('Create Staff failed: ' + e.message);
+  } finally {
+    // 2. ALWAYS HIDE LOADER, even if e fail
+    hidePageLoader();
+    if(btn){ btn.disabled = false; btn.innerHTML = 'Generate Password + Save Staff →'; }
+  }
+}
+
+async function loadStaffList(){
+  const res = await fetch(SCRIPT_URL, {method:'POST', body: JSON.stringify({action:'listUsers'})});
+  const data = await res.json();
+  const el = document.getElementById('staffList');
+  if(!el) return;
+  el.innerHTML = (data.users||[]).map(u=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;background:#fff;padding:12px;border-radius:12px;margin-bottom:8px;">
+      <div><b>${u.username}</b> • ${u.name}<br><span style="font-size:12px;color:#666;">${u.role} • ${u.status}</span></div>
+      <div style="display:flex;gap:6px;">
+        <button onclick="toggleStaffByName('${u.username}')" style="background:${u.status==='Active'?'#fee2e2':'#dcfce7'};border:none;padding:8px 12px;border-radius:8px;font-weight:800;cursor:pointer;">${u.status==='Active'?'Disable':'Enable'}</button>
+        <button onclick="resetStaffPw('${u.username}')" style="background:#f3f3f3;border:none;padding:8px 12px;border-radius:8px;font-weight:800;cursor:pointer;">Reset PW</button>
+      </div>
+    </div>`).join('');
+}
+
+async function toggleStaffByName(username){
+  if(!confirm(`Disable/Enable ${username}?`)) return;
+  await fetch(SCRIPT_URL, {method:'POST', body: JSON.stringify({action:'toggleUser', username})});
+  loadStaffList();
+}
+async function resetStaffPw(username){
+  const res = await fetch(SCRIPT_URL, {method:'POST', body: JSON.stringify({action:'resetUserPassword', username})});
+  const data = await res.json();
+  if(data.ok) alert(`New password for ${username}: ${data.password} — Copy am now!`);
+}
+
+// Keep old names so other buttons no break, but make dem point to new functions
+function staffLogin(){ document.getElementById('loginCard').scrollIntoView(); }
+function renderStaff(){
+  if(currentRole!=='admin' && currentRole!=='manager'){ document.getElementById('list').innerHTML='<p>Admin / Manager only</p>'; return; }
+  loadStaffList();
+  // Staff form dey for staffTab HTML - if you use old renderStaff HTML, show the new form instead
+  document.getElementById('list').innerHTML = `
+    <div style="background:#fff;padding:16px;border-radius:14px;">
+      <label>Name</label><input id="newStaffName" placeholder="Full name" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+      <label>Username</label><input id="newStaffUser" placeholder="e.g. cashier1" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+      <label>Role</label><select id="newStaffRole" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;"><option value="Cashier">Cashier</option><option value="Receptionist">Receptionist</option><option value="Kitchen">Kitchen</option><option value="Cleaner">Cleaner</option><option value="Accountant">Accountant</option><option value="Admin">Admin</option></select>
+      <button onclick="createStaff()" style="width:100%;background:#111;color:#D4AF37;border:none;padding:13px;border-radius:10px;font-weight:900;">Generate Password + Save Staff →</button>
+      <div id="newStaffResult" style="margin-top:10px;font-size:13px;background:#FFF8E6;padding:10px;border-radius:10px;display:none;"></div>
+    </div><div id="staffList" style="margin-top:16px;"></div>`;
+  loadStaffList();
+}
+
+async function saveSection(sectionName, sectionData){
+  // Merge only this section, no override other sections
+  const newConfig = { ...editorConfig, ...sectionData };
+  // Keep customer reviews safe - never send guestReviews inside editorConfig
+  await fetch(SCRIPT_URL,{method:'POST', body: JSON.stringify({action:'saveWebsiteConfig', config: newConfig})});
+  editorConfig = newConfig;
+  alert(sectionName + ' Saved! ✅ Reflected in website.');
+}
+
+// ===== WEBSITE EDITOR - FULL =====
+let editorConfig = { rooms:[], hotel:{}, home:{}, why:[], reviews:[], about:{}, food:[], pool:{}, payments:{}, policies:{} };
+
+async function uploadImageFromPhone(inputId, previewId, hiddenId){
+  const file = document.getElementById(inputId).files[0];
+  if(!file) return;
+  const preview = document.getElementById(previewId);
+  if(preview) preview.innerHTML = '⏳ Uploading... Wait...';
+  const reader = new FileReader();
+  reader.onload = async (ev)=>{
+    const base64 = ev.target.result.split(',')[1];
+    const res = await fetch(SCRIPT_URL,{method:'POST', body: JSON.stringify({action:'uploadWebsiteImage', base64, name: file.name, mime: file.type, folder:'Lumina Website Images'})});
+    const data = await res.json().catch(()=>({}));
+    if(data.ok){
+      document.getElementById(hiddenId).value = data.url;
+      if(preview) preview.innerHTML = `<img src="${data.url}" style="width:100%;height:140px;object-fit:cover;border-radius:10px;"><p style="font-size:11px;color:green;">✅ Uploaded!</p>`;
+    } else alert('Upload failed: '+(data.error||'try again'));
+  };
+  reader.readAsDataURL(file);
+}
+// === MARK MONEY PAGE ONLY ===
+function markMoneyPage(tabName){
+  if((tabName||"").toLowerCase().includes("money")){
+    document.body.classList.add('money-page');
+  } else {
+    document.body.classList.remove('money-page');
+  }
+}
+// Call am when tab dey click:
+// Example: if your tab button na onclick="showTab('money')"
+// Change am to onclick="markMoneyPage('money'); showTab('money')"
+// For other tabs: onclick="markMoneyPage('bookings'); showTab('bookings')"
+
+// ===== ALL HELPERS - MUST DEY OUTSIDE renderWebsiteEditor =====
+async function saveSection(sectionName, sectionData){
+  const newConfig = { ...editorConfig, ...sectionData };
+  await fetch(SCRIPT_URL,{method:'POST', body: JSON.stringify({action:'saveWebsiteConfig', config: newConfig})});
+  editorConfig = newConfig;
+  alert(sectionName + ' Saved! ✅ E don reflect for website.');
+}
+
+// --- HOTEL CONTACTS - Dynamic ---
+function renderHotelContactsEditor(){
+  if(!editorConfig.hotelContacts) editorConfig.hotelContacts = [];
+  const el = document.getElementById('ed-hotelContactsList');
+  if(!el) return;
+  el.innerHTML = editorConfig.hotelContacts.map((c,i)=>`
+    <div style="border:1px solid #eee;padding:10px;border-radius:10px;margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;"><b>Contact ${i+1}</b><button type="button" onclick="deleteHotelContact(${i})" style="background:#fee2e2;border:none;padding:5px 10px;border-radius:8px;color:#991b1b;font-weight:800;">Delete</button></div>
+      <input id="ed-contact-title-${i}" value="${c.title||''}" placeholder="Title e.g. YouTube, X, Second Phone, Telegram" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;margin:4px 0;">
+      <input id="ed-contact-value-${i}" value="${c.value||''}" placeholder="Value e.g. https://youtube.com/@luminahotel or 0913..." style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;margin:4px 0;">
+    </div>`).join('');
+}
+function addHotelContact(){
+  editorConfig.hotelContacts = collectHotelContacts();
+  editorConfig.hotelContacts.push({title:"New Contact", value:""});
+  renderHotelContactsEditor();
+}
+function deleteHotelContact(i){
+  if(!confirm("Delete this contact?")) return;
+  editorConfig.hotelContacts = collectHotelContacts();
+  editorConfig.hotelContacts.splice(i,1);
+  renderHotelContactsEditor();
+}
+function collectHotelContacts(){
+  return (editorConfig.hotelContacts||[]).map((c,i)=>({
+    title: document.getElementById(`ed-contact-title-${i}`)?.value||"",
+    value: document.getElementById(`ed-contact-value-${i}`)?.value||""
+  })).filter(c=>c.title.trim() || c.value.trim());
+}
+
+function renderWhyEditor(){
+  const el = document.getElementById('ed-whyList');
+  if(!el) return;
+  el.innerHTML = editorConfig.why.map((w,i)=>`
+    <div style="border:1px solid #eee;padding:12px;border-radius:12px;margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;"><b>Card ${i+1}</b><button type="button" onclick="deleteWhyCard(${i})" style="background:#fee2e2;border:none;padding:5px 10px;border-radius:8px;color:#991b1b;font-weight:800;">Delete</button></div>
+      <label>Tag</label><input id="ed-why-tag-${i}" value="${w.tag||''}" style="width:100%;padding:10px;border-radius:10px;border:1px solid #ddd;margin:4px 0;">
+      <label>Title</label><input id="ed-why-title-${i}" value="${w.title||''}" style="width:100%;padding:10px;border-radius:10px;border:1px solid #ddd;margin:4px 0;">
+      <label>Description</label><textarea id="ed-why-desc-${i}" style="width:100%;padding:10px;border-radius:10px;border:1px solid #ddd;">${w.desc||''}</textarea>
+      <label>Picture</label>
+      <input type="file" accept="image/*" onchange="uploadImageFromPhone(this.id,'ed-why-prev-${i}','ed-why-img-${i}')" id="ed-why-file-${i}" style="width:100%;padding:8px;border:1px dashed #999;border-radius:10px;">
+      <input type="hidden" id="ed-why-img-${i}" value="${w.img||''}">
+      <div id="ed-why-prev-${i}">${w.img?`<img src="${w.img}" style="width:100%;height:120px;object-fit:cover;border-radius:10px;">`:''}</div>
+    </div>`).join('');
+}
+function addWhyCard(){
+  // First collect wetin user don type, so e no lose am
+  editorConfig.why = collectWhyFromEditor();
+  editorConfig.why.push({tag:"NEW", title:"New Card", desc:"", img:""});
+  renderWhyEditor();
+}
+function deleteWhyCard(i){
+  if(!confirm("Delete this card?")) return;
+  editorConfig.why = collectWhyFromEditor();
+  editorConfig.why.splice(i,1);
+  renderWhyEditor();
+}
+function collectWhyFromEditor(){
+  return editorConfig.why.map((w,i)=>({
+    tag: document.getElementById(`ed-why-tag-${i}`)?.value||"",
+    title: document.getElementById(`ed-why-title-${i}`)?.value||"",
+    desc: document.getElementById(`ed-why-desc-${i}`)?.value||"",
+    img: document.getElementById(`ed-why-img-${i}`)?.value||""
+  }));
+}
+function saveWhyOnly(){ saveSection('Why Lumina', { why: collectWhyFromEditor() }); }
+
+// --- FOOD ---
+function renderFoodEditor(){
+  const el = document.getElementById('ed-foodList');
+  if(!el) return;
+  el.innerHTML = editorConfig.food.map((f,i)=>`
+    <div style="display:flex;gap:8px;margin-bottom:8px;">
+      <input id="ed-food-name-${i}" value="${f.name}" style="flex:2;padding:10px;border-radius:10px;border:1px solid #ddd;">
+      <input id="ed-food-price-${i}" type="number" value="${f.price}" style="flex:1;padding:10px;border-radius:10px;border:1px solid #ddd;">
+      <button type="button" onclick="deleteFoodEditor(${i})" style="background:#fee2e2;border:none;padding:8px 10px;border-radius:8px;color:#991b1b;">✕</button>
+    </div>`).join('');
+}
+function collectFoodFromEditor(){
+  return editorConfig.food.map((f,i)=>({
+    name: document.getElementById(`ed-food-name-${i}`)?.value||"",
+    price: Number(document.getElementById(`ed-food-price-${i}`)?.value||0)
+  })).filter(f=>f.name.trim());
+}
+function addFoodEditor(){
+  editorConfig.food = collectFoodFromEditor();
+  editorConfig.food.push({name:"New Food", price:0});
+  renderFoodEditor();
+}
+function deleteFoodEditor(i){
+  if(!confirm("Delete this food?")) return;
+  editorConfig.food = collectFoodFromEditor();
+  editorConfig.food.splice(i,1);
+  renderFoodEditor();
+}
+function saveFoodOnly(){
+  saveSection('Food Menu', { 
+    food: collectFoodFromEditor(),
+    pool:{ adult: Number(document.getElementById('ed-poolAdult')?.value||0), child: Number(document.getElementById('ed-poolChild')?.value||0), family: Number(document.getElementById('ed-poolFamily')?.value||0) }
+  });
+}
+
+// --- POLICIES ---
+function renderPoliciesEditor(){
+  const el = document.getElementById('ed-policiesList');
+  if(!el) return;
+  el.innerHTML = editorConfig.policiesList.map((p,i)=>`
+    <div style="border:1px solid #eee;padding:10px;border-radius:10px;margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;"><b>Policy ${i+1}</b><button type="button" onclick="deletePolicyField(${i})" style="background:#fee2e2;border:none;padding:5px 10px;border-radius:8px;color:#991b1b;font-weight:800;">Delete</button></div>
+      <input id="ed-pol-title-${i}" value="${p.title||''}" placeholder="Title e.g. Refund Policy" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;margin:4px 0;">
+      <textarea id="ed-pol-value-${i}" placeholder="What is inside?" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">${p.value||''}</textarea>
+      <label style="font-size:12px;font-weight:800;">Where should this show for website?</label>
+      <select id="ed-pol-show-${i}" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;margin:4px 0;">
+        <option value="room" ${(!p.showIn||p.showIn=='room')?'selected':''}>📍 Room Details Only (before booking form)</option>
+        <option value="bookings" ${p.showIn=='bookings'?'selected':''}>📍 My Bookings Only</option>
+        <option value="both" ${p.showIn=='both'?'selected':''}>📍 Both - Room Details + My Bookings</option>
+      </select>
+    </div>`).join('');
+}
+function collectPolicies(){
+  return editorConfig.policiesList.map((p,i)=>({
+    title: document.getElementById(`ed-pol-title-${i}`)?.value||"",
+    value: document.getElementById(`ed-pol-value-${i}`)?.value||"",
+    showIn: document.getElementById(`ed-pol-show-${i}`)?.value||"room"
+  })).filter(p=>p.title.trim());
+}
+function addPolicyField(){
+  editorConfig.policiesList = collectPolicies();
+  editorConfig.policiesList.push({title:"New Policy", value:""});
+  renderPoliciesEditor();
+}
+function deletePolicyField(i){
+  if(!confirm("Delete this policy?")) return;
+  editorConfig.policiesList = collectPolicies();
+  editorConfig.policiesList.splice(i,1);
+  renderPoliciesEditor();
+}
+function collectPolicies(){
+  return editorConfig.policiesList.map((p,i)=>({
+    title: document.getElementById(`ed-pol-title-${i}`)?.value||"",
+    value: document.getElementById(`ed-pol-value-${i}`)?.value||""
+  })).filter(p=>p.title.trim());
+}
+function savePoliciesOnly(){
+  saveSection('Payments & Policies', { 
+    policiesList: collectPolicies(),
+    payments:{ opayNumber: document.getElementById('ed-opayNum')?.value||"", opayName: document.getElementById('ed-opayName')?.value||"" }
+  });
+}
+
+// --- HOTEL / HERO / REVIEWS ---
+function saveHotelInfo(){
+  saveSection('Hotel Info', { 
+    hotel:{
+      name: document.getElementById('ed-hotelName').value,
+      whatsapp: document.getElementById('ed-whatsapp').value,
+      phone: document.getElementById('ed-phone').value,
+      email: document.getElementById('ed-email').value,
+      address: document.getElementById('ed-address').value,
+      instagram: document.getElementById('ed-ig').value,
+      facebook: document.getElementById('ed-fb').value,
+      tiktok: document.getElementById('ed-tk').value,
+    },
+    hotelContacts: collectHotelContacts() // <-- NEW
+  });
+}
+function saveReviewsOnly(){
+  const reviews = collectReviewsFromEditor();
+  saveSection('Reviews', { reviews });
+}
+function saveAboutOnly(){
+  saveSection('About', { about:{
+    title: document.getElementById('ed-aboutTitle')?.value||"",
+    story: document.getElementById('ed-aboutStory')?.value||"",
+    quote: document.getElementById('ed-aboutQuote')?.value||"",
+    heroTitle: document.getElementById('ed-aboutHeroTitle')?.value||"",
+    heroSub: document.getElementById('ed-aboutHeroSub')?.value||"",
+    heroImg: document.getElementById('ed-aboutHeroImg')?.value||"",
+    img: document.getElementById('ed-aboutImg')?.value||"",
+    stat1Val: document.getElementById('ed-stat1Val')?.value||"",
+    stat1Label: document.getElementById('ed-stat1Label')?.value||"",
+    stat2Val: document.getElementById('ed-stat2Val')?.value||"",
+    stat2Label: document.getElementById('ed-stat2Label')?.value||""
+  }});
+}
+
+// --- PAYMENTS - SEPARATE ---
+function renderPaymentsEditor(){
+  if(!editorConfig.paymentsList) editorConfig.paymentsList = [];
+  const el = document.getElementById('ed-paymentsList');
+  if(!el) return;
+  el.innerHTML = editorConfig.paymentsList.map((p,i)=>`
+    <div style="border:1px solid #eee;padding:10px;border-radius:10px;margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;"><b>Payment ${i+1}</b><button type="button" onclick="deletePaymentMethod(${i})" style="background:#fee2e2;border:none;padding:5px 10px;border-radius:8px;color:#991b1b;font-weight:800;">Delete</button></div>
+      <input id="ed-pay-title-${i}" value="${p.title||''}" placeholder="Title e.g. Bank Transfer, Pay on Arrival" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;margin:4px 0;">
+      <input id="ed-pay-value-${i}" value="${p.value||''}" placeholder="Details e.g. GTB 0123456789 - Lumina Hotel" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;margin:4px 0;">
+    </div>`).join('');
+}
+function collectPaymentsList(){
+  return (editorConfig.paymentsList||[]).map((p,i)=>({
+    title: document.getElementById(`ed-pay-title-${i}`)?.value||"",
+    value: document.getElementById(`ed-pay-value-${i}`)?.value||""
+  })).filter(p=>p.title.trim() || p.value.trim());
+}
+function addPaymentMethod(){
+  editorConfig.paymentsList = collectPaymentsList();
+  editorConfig.paymentsList.push({title:"New Payment", value:""});
+  renderPaymentsEditor();
+}
+function deletePaymentMethod(i){
+  if(!confirm("Delete this payment method?")) return;
+  editorConfig.paymentsList = collectPaymentsList();
+  editorConfig.paymentsList.splice(i,1);
+  renderPaymentsEditor();
+}
+function savePaymentsOnly(){
+  saveSection('Payments', {
+    payments:{ opayNumber: document.getElementById('ed-opayNum')?.value||"", opayName: document.getElementById('ed-opayName')?.value||"" },
+    paymentsList: collectPaymentsList()
+  });
+}
+
+// --- POLICIES - NOW SEPARATE, NO PAYMENTS INSIDE ---
+function savePoliciesOnly(){
+  saveSection('Policies', {
+    policiesList: collectPolicies()
+    // NOTE: No payments here again - dem don separate
+  });
+}
+
+
+// --- ABOUT - DYNAMIC ---
+function renderAboutEditor(){
+  // Stats
+  const statsEl = document.getElementById('ed-aboutStatsList');
+  if(statsEl){
+    if(!editorConfig.aboutStats) editorConfig.aboutStats = [
+      {value: (editorConfig.about||{}).stat1Val||'2018', label: (editorConfig.about||{}).stat1Label||'Year Founded'},
+      {value: (editorConfig.about||{}).stat2Val||'120+', label: (editorConfig.about||{}).stat2Label||'Luxury Rooms'},
+      {value: (editorConfig.about||{}).stat3Val||'15k+', label: (editorConfig.about||{}).stat3Label||'Happy Guests'},
+      {value: (editorConfig.about||{}).stat4Val||'4.9★', label: (editorConfig.about||{}).stat4Label||'Guest Rating'},
+    ];
+    statsEl.innerHTML = editorConfig.aboutStats.map((s,i)=>`
+      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:8px;">
+        <input id="ed-stat-val-${i}" value="${s.value||''}" placeholder="Value e.g. 2018" style="padding:10px;border-radius:8px;border:1px solid #ddd;">
+        <input id="ed-stat-label-${i}" value="${s.label||''}" placeholder="Label e.g. Year Founded" style="padding:10px;border-radius:8px;border:1px solid #ddd;">
+        <button type="button" onclick="deleteAboutStat(${i})" style="background:#fee2e2;border:none;padding:8px 10px;border-radius:8px;color:#991b1b;">✕</button>
+      </div>`).join('');
+  }
+  // Choose Cards
+  const chooseEl = document.getElementById('ed-aboutChooseList');
+  if(chooseEl){
+    if(!editorConfig.aboutChoose) editorConfig.aboutChoose = [
+      {title:(editorConfig.about||{}).choose1Title||'Luxury Rooms', desc:(editorConfig.about||{}).choose1Desc||''},
+      {title:(editorConfig.about||{}).choose2Title||'Signature Restaurant', desc:(editorConfig.about||{}).choose2Desc||''},
+      {title:(editorConfig.about||{}).choose3Title||'Safe & Secure', desc:(editorConfig.about||{}).choose3Desc||''},
+      {title:(editorConfig.about||{}).choose4Title||'Fast Service', desc:(editorConfig.about||{}).choose4Desc||''},
+    ];
+    chooseEl.innerHTML = editorConfig.aboutChoose.map((c,i)=>`
+      <div style="border:1px solid #eee;padding:10px;border-radius:10px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;"><b>Choose Card ${i+1}</b><button type="button" onclick="deleteAboutChoose(${i})" style="background:#fee2e2;border:none;padding:5px 10px;border-radius:8px;color:#991b1b;font-weight:800;">Delete</button></div>
+        <input id="ed-choose-title-${i}" value="${c.title||''}" placeholder="Title" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;margin:4px 0;">
+        <textarea id="ed-choose-desc-${i}" placeholder="Description" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">${c.desc||''}</textarea>
+      </div>`).join('');
+  }
+  // Custom Fields - Any new field like Our Mission, Our Vision
+  const customEl = document.getElementById('ed-aboutCustomList');
+  if(customEl){
+    if(!editorConfig.aboutCustom) editorConfig.aboutCustom = [];
+    customEl.innerHTML = editorConfig.aboutCustom.map((f,i)=>`
+      <div style="border:1px solid #eee;padding:10px;border-radius:10px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;"><b>Field ${i+1}</b><button type="button" onclick="deleteAboutCustom(${i})" style="background:#fee2e2;border:none;padding:5px 10px;border-radius:8px;color:#991b1b;font-weight:800;">Delete</button></div>
+        <input id="ed-about-custom-title-${i}" value="${f.title||''}" placeholder="Title e.g. Our Mission" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;margin:4px 0;">
+        <textarea id="ed-about-custom-value-${i}" placeholder="Write wetin dey inside" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">${f.value||''}</textarea>
+      </div>`).join('');
+  }
+}
+function collectAboutStats(){
+  return (editorConfig.aboutStats||[]).map((s,i)=>({
+    value: document.getElementById(`ed-stat-val-${i}`)?.value||"",
+    label: document.getElementById(`ed-stat-label-${i}`)?.value||""
+  })).filter(s=>s.value.trim() || s.label.trim());
+}
+function collectAboutChoose(){
+  return (editorConfig.aboutChoose||[]).map((c,i)=>({
+    title: document.getElementById(`ed-choose-title-${i}`)?.value||"",
+    desc: document.getElementById(`ed-choose-desc-${i}`)?.value||""
+  })).filter(c=>c.title.trim());
+}
+function collectAboutCustom(){
+  return (editorConfig.aboutCustom||[]).map((f,i)=>({
+    title: document.getElementById(`ed-about-custom-title-${i}`)?.value||"",
+    value: document.getElementById(`ed-about-custom-value-${i}`)?.value||""
+  })).filter(f=>f.title.trim());
+}
+function addAboutStat(){
+  editorConfig.aboutStats = collectAboutStats();
+  editorConfig.aboutStats.push({value:"", label:"New Stat"});
+  renderAboutEditor();
+}
+function deleteAboutStat(i){
+  if(!confirm("Delete this stat?")) return;
+  editorConfig.aboutStats = collectAboutStats();
+  editorConfig.aboutStats.splice(i,1);
+  renderAboutEditor();
+}
+function addAboutChoose(){
+  editorConfig.aboutChoose = collectAboutChoose();
+  editorConfig.aboutChoose.push({title:"New Card", desc:""});
+  renderAboutEditor();
+}
+function deleteAboutChoose(i){
+  if(!confirm("Delete this card?")) return;
+  editorConfig.aboutChoose = collectAboutChoose();
+  editorConfig.aboutChoose.splice(i,1);
+  renderAboutEditor();
+}
+function addAboutCustom(){
+  editorConfig.aboutCustom = collectAboutCustom();
+  editorConfig.aboutCustom.push({title:"New Field", value:""});
+  renderAboutEditor();
+}
+function deleteAboutCustom(i){
+  if(!confirm("Delete this field?")) return;
+  editorConfig.aboutCustom = collectAboutCustom();
+  editorConfig.aboutCustom.splice(i,1);
+  renderAboutEditor();
+}
+function saveAboutOnly(){
+  saveSection('About', {
+    about:{
+      title: document.getElementById('ed-aboutTitle')?.value||"",
+      story: document.getElementById('ed-aboutStory')?.value||"",
+      quote: document.getElementById('ed-aboutQuote')?.value||"",
+      heroTitle: document.getElementById('ed-aboutHeroTitle')?.value||"",
+      heroSub: document.getElementById('ed-aboutHeroSub')?.value||"",
+      heroImg: document.getElementById('ed-aboutHeroImg')?.value||"",
+      img: document.getElementById('ed-aboutImg')?.value||"",
+      stat1Val: "", stat1Label: "", stat2Val: "", stat2Label: "", // old fixed stats no use again
+    },
+    aboutStats: collectAboutStats(),
+    aboutChoose: collectAboutChoose(),
+    aboutCustom: collectAboutCustom()
+  });
+}
+
+
+// --- HOME - DYNAMIC STATS + WHY ---
+function renderHomeEditor(){
+  // Home Stats
+  const statsEl = document.getElementById('ed-homeStatsList');
+  if(statsEl){
+    if(!editorConfig.homeStats) editorConfig.homeStats = [
+      {value:'120+', label:'Luxury Rooms'},
+      {value:'15k+', label:'Happy Guests'},
+      {value:'4.9★', label:'Guest Rating'},
+      {value:'24/7', label:'Power & Service'},
+    ];
+    statsEl.innerHTML = editorConfig.homeStats.map((s,i)=>`
+      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:8px;">
+        <input id="ed-home-stat-val-${i}" value="${s.value||''}" placeholder="Value e.g. 120+" style="padding:10px;border-radius:8px;border:1px solid #ddd;">
+        <input id="ed-home-stat-label-${i}" value="${s.label||''}" placeholder="Label e.g. Luxury Rooms" style="padding:10px;border-radius:8px;border:1px solid #ddd;">
+        <button type="button" onclick="deleteHomeStat(${i})" style="background:#fee2e2;border:none;padding:8px 10px;border-radius:8px;color:#991b1b;">✕</button>
+      </div>`).join('');
+  }
+  // Why Lumina
+  const whyEl = document.getElementById('ed-whyList');
+  if(whyEl){
+    if(!editorConfig.whyList) editorConfig.whyList = [
+      {tag:'24HRS OPEN', title:'Infinity Pool + Sky Bar', desc:'Swim under the stars. Sunset view over Nsukka hills.', img:'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80'},
+      {tag:"CHEF'S TABLE", title:'Nigerian Flavours, Elevated', desc:'From ofe nsala to continental — served in-room in 15 mins.', img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80'},
+      {tag:'KING BEDS', title:'Sleep Like Royalty', desc:'Blackout curtains, rain shower & premium toiletries.', img:'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800&q=80'},
+      {tag:'NEVER A BLACKOUT', title:'24/7 Power & Security', desc:'CCTV, keycard & trained security, day and night.', img:'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80'},
+    ];
+    whyEl.innerHTML = editorConfig.whyList.map((w,i)=>`
+      <div style="border:1px solid #eee;padding:10px;border-radius:10px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;"><b>Why Card ${i+1}</b><button type="button" onclick="deleteWhyCard(${i})" style="background:#fee2e2;border:none;padding:5px 10px;border-radius:8px;color:#991b1b;font-weight:800;">Delete</button></div>
+        <input id="ed-why-tag-${i}" value="${w.tag||''}" placeholder="Tag e.g. 24HRS OPEN" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;margin:4px 0;">
+        <input id="ed-why-title-${i}" value="${w.title||''}" placeholder="Title e.g. Infinity Pool + Sky Bar" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;margin:4px 0;">
+        <textarea id="ed-why-desc-${i}" placeholder="Description" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">${w.desc||''}</textarea>
+        <label style="font-size:12px;font-weight:800;">Image</label>
+        <input type="file" accept="image/*" onchange="uploadImageFromPhone(this.id,'ed-why-prev-${i}','ed-why-img-${i}')" id="ed-why-file-${i}" style="width:100%;padding:8px;border:1px dashed #999;border-radius:10px;">
+        <input type="hidden" id="ed-why-img-${i}" value="${w.img||''}">
+        <div id="ed-why-prev-${i}">${w.img?`<img src="${w.img}" style="width:100%;height:100px;object-fit:cover;border-radius:8px;margin-top:6px;">`:''}</div>
+      </div>`).join('');
+  }
+}
+function collectHomeStats(){
+  return (editorConfig.homeStats||[]).map((s,i)=>({
+    value: document.getElementById(`ed-home-stat-val-${i}`)?.value||"",
+    label: document.getElementById(`ed-home-stat-label-${i}`)?.value||""
+  })).filter(s=>s.value.trim() || s.label.trim());
+}
+function collectWhyList(){
+  return (editorConfig.whyList||[]).map((w,i)=>({
+    tag: document.getElementById(`ed-why-tag-${i}`)?.value||"",
+    title: document.getElementById(`ed-why-title-${i}`)?.value||"",
+    desc: document.getElementById(`ed-why-desc-${i}`)?.value||"",
+    img: document.getElementById(`ed-why-img-${i}`)?.value||""
+  })).filter(w=>w.title.trim());
+}
+function addHomeStat(){
+  editorConfig.homeStats = collectHomeStats();
+  editorConfig.homeStats.push({value:"", label:"New Stat"});
+  renderHomeEditor();
+}
+function deleteHomeStat(i){
+  if(!confirm("Delete this stat?")) return;
+  editorConfig.homeStats = collectHomeStats();
+  editorConfig.homeStats.splice(i,1);
+  renderHomeEditor();
+}
+function addWhyCard(){
+  editorConfig.whyList = collectWhyList();
+  editorConfig.whyList.push({tag:"NEW", title:"New Card", desc:"", img:""});
+  renderHomeEditor();
+}
+function deleteWhyCard(i){
+  if(!confirm("Delete this Why card?")) return;
+  editorConfig.whyList = collectWhyList();
+  editorConfig.whyList.splice(i,1);
+  renderHomeEditor();
+}
+function saveHomeOnly(){
+  saveSection('Home', {
+    hero:{
+      title1: document.getElementById('ed-hero1')?.value||"",
+      title2: document.getElementById('ed-hero2')?.value||"",
+      sub: document.getElementById('ed-heroSub')?.value||"",
+      badge: document.getElementById('ed-badge')?.value||"",
+      promo: document.getElementById('ed-promo')?.value||"",
+      img: document.getElementById('ed-heroImg')?.value||"",
+      rating: document.getElementById('ed-heroRating')?.value||"",
+      ctaTitle: document.getElementById('ed-homeCtaTitle')?.value||"",
+    },
+    homeStats: collectHomeStats(),
+    // NOTE: No whyList here - Why get its own save
+  });
+}
+function saveWhyOnly(){
+  saveSection('Why', {
+    whyList: collectWhyList()
+  });
+}
+
+async function renderWebsiteEditor(){
+  // === HIDE DASHBOARD BOXES - WORKS NO MATTER THE CLASS ===
+  document.body.classList.add('editor-open');
+  // Find every small text that says Total Revenue / Bookings / Awaiting
+  document.querySelectorAll('*').forEach(el=>{
+    // Only check leaf elements - elements wey no get children divs
+    if(el.children.length === 0){
+      const txt = (el.textContent || "").trim();
+      if(txt === 'Total Revenue' || txt === 'Bookings' || txt === 'Awaiting' || txt === 'Total Bookings'){
+        // Climb up 4 levels, hide the card
+        let card = el;
+        for(let i=0;i<4;i++){
+          if(!card.parentElement) break;
+          card = card.parentElement;
+          // Stop when we reach a card wey get number + label inside
+          if(card.innerText && card.innerText.includes('₦') || card.innerText && card.innerText.length < 300){
+            // Check if this level look like a card (small)
+            if(card.offsetHeight < 220){
+              card.style.display = 'none';
+              card.setAttribute('data-hidden-editor','1');
+              break;
+            }
+          }
+        }
+      }
+    }
+  });
+  // Also hide search bar by placeholder
+  document.querySelectorAll('input[placeholder]').forEach(inp=>{
+    if((inp.placeholder||"").toLowerCase().includes('search')){
+      inp.style.display='none';
+      // Hide its parent container too
+      if(inp.parentElement) inp.parentElement.style.display='none';
+    }
+  });
+
+  
+  document.getElementById('list').innerHTML = '<div style="text-align:center;padding:30px;">Loading Editor...</div>';
+
+
+  try{
+    const r = await fetch(`${SCRIPT_URL}?websiteConfig=true&t=${Date.now()}`);
+    editorConfig = await r.json();
+  }catch(e){}
+  if(!editorConfig) editorConfig = {};
+  if(!editorConfig.rooms) editorConfig.rooms = [];
+  if(!editorConfig.hotel) editorConfig.hotel = {};
+  if(!editorConfig.food) editorConfig.food = [
+    {name:'Fried Rice + Chicken', price:8000},{name:'Jollof Rice + Chicken', price:7500},
+    {name:'Pepper Soup', price:6000},{name:'Grilled Fish', price:12000}
+  ];
+  if(!editorConfig.pool) editorConfig.pool = {adult:5000, child:3000, family:15000};
+  if(!editorConfig.payments) editorConfig.payments = {opayNumber:'9134435650', opayName:'Lumina Hotel'};
+  if(!editorConfig.why) editorConfig.why = [
+    {tag:'24HRS OPEN', title:'Infinity Pool + Sky Bar', desc:'Swim under the stars.', img:'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80'},
+    {tag:"CHEF'S TABLE", title:'Nigerian Flavours, Elevated', desc:'From ofe nsala to continental.', img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80'},
+    {tag:'KING BEDS', title:'Sleep Like Royalty', desc:'Blackout curtains, rain shower.', img:'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800&q=80'},
+    {tag:'NEVER A BLACKOUT', title:'24/7 Power & Security', desc:'CCTV, keycard & security.', img:'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80'}
+  ];
+  if(!editorConfig.reviews) editorConfig.reviews = [];
+
+if(!editorConfig.policiesList) editorConfig.policiesList = [
+  {title:'Check-In Time', value: (editorConfig.policies||{}).checkin||'2PM', showIn:'room'},
+  {title:'Check-Out Time', value: (editorConfig.policies||{}).checkout||'12PM', showIn:'room'},
+  {title:'House Rules', value: (editorConfig.policies||{}).rules||'Check-in 2PM • Check-out 12PM • No smoking • No pets', showIn:'room'},
+  {title:'Refund Policy', value: (editorConfig.policies||{}).refund||'Cancel 24hrs+ before check-in = 100% refund • Less than 24hrs = 50% refund • After check-in date = No refund.', showIn:'bookings'},
+];
+
+  const h = editorConfig.hotel||{};
+  const home = editorConfig.home||{};
+  const pol = editorConfig.policies||{};
+  // In renderWebsiteEditor, ensure:
+
+  if(!editorConfig.hotelContacts) editorConfig.hotelContacts = [
+  // If person already get YouTube etc for old hotel object, carry am come here once
+  // If not, start empty - person go add by himself
+];
+
+if(!editorConfig.paymentsList) editorConfig.paymentsList = [];
+if(!editorConfig.policiesList) editorConfig.policiesList = [
+  {title:'Check-In Time', value: (editorConfig.policies||{}).checkin||'2PM'},
+  {title:'Check-Out Time', value: (editorConfig.policies||{}).checkout||'12PM'},
+  {title:'House Rules', value: (editorConfig.policies||{}).rules||''},
+  {title:'Refund Policy', value: (editorConfig.policies||{}).refund||''},
+];
+
+if(!editorConfig.aboutStats) editorConfig.aboutStats = [];
+if(!editorConfig.aboutChoose) editorConfig.aboutChoose = [];
+if(!editorConfig.aboutCustom) editorConfig.aboutCustom = [];
+
+if(!editorConfig.homeStats) editorConfig.homeStats = [];
+if(!editorConfig.whyList) editorConfig.whyList = [];
+
+  document.getElementById('list').innerHTML = `
+<div class="ed-header"><b>🌐 WEBSITE EDITOR</b><p>Edit everything from phone. Press SAVE at bottom.</p></div>
+
+  <!-- 1 HOTEL INFO -->
+<div class="ed-card">
+  <h3>🏨 Hotel Info & Contact</h3>
+    <label>Hotel Name</label><input id="ed-hotelName" value="${h.name||'LUMINA HOTELS & RESORTS'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>WhatsApp Number (234...)</label><input id="ed-whatsapp" value="${h.whatsapp||'2349134435650'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>Phone to Call</label><input id="ed-phone" value="${h.phone||'09134435650'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>Email</label><input id="ed-email" value="${h.email||'hello@luminahotel.com'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>Address</label><input id="ed-address" value="${h.address||'Behind Ogige Main Market, Nsukka, Enugu State'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>Instagram Link</label><input id="ed-ig" value="${h.instagram||'https://instagram.com/luminahotel'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>Facebook Link</label><input id="ed-fb" value="${h.facebook||'https://facebook.com/luminahotel'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label>TikTok Link</label><input id="ed-tk" value="${h.tiktok||'https://tiktok.com/@luminahotel'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+ <h4 style="margin:16px 0 8px;">➕ Other Contacts - Add Any New One</h4>
+<p style="font-size:12px;color:#666;">e.g. YouTube, X, LinkedIn, Second Phone, Telegram, Second WhatsApp</p>
+<div id="ed-hotelContactsList"></div>
+<button type="button" onclick="addHotelContact()" style="width:100%;padding:12px;border:none;border-radius:10px;background:#111;color:#D4AF37;font-weight:900;margin-top:8px;">➕ Add New Contact / Link</button>
+<button type="button" onclick="saveHotelInfo()" style="width:100%;padding:12px;border:none;border-radius:10px;background:#D4AF37;color:#111;font-weight:900;margin-top:10px;">💾 Save Hotel Info Only</button>
+    </div>
+    
+
+<!-- 2 HOME HERO -->
+<div class="ed-card">
+  <h3>🏠 Home - Hero</h3>
+  <label>Big Title Line 1</label><input id="ed-hero1" value="${home.heroTitle1||'Your Luxury Escape'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+  <label>Big Title Line 2 (Gold)</label><input id="ed-hero2" value="${home.heroTitle2||'Awaits in Nsukka'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+  <label>Small Text Under Title</label><input id="ed-heroSub" value="${home.heroSub||'Sleep like royalty, pay like home.'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+  <label>Badge Text</label><input id="ed-badge" value="${home.badge||'NSUKKAS ONLY 5-STAR - EST. 2018'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+  <label>Promo Banner (leave empty to hide)</label><input id="ed-promo" value="${home.promo||''}" placeholder="e.g. Christmas Promo - 20% Off! Use code XMAS20" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+  <label>Hero Picture / Video - Upload from Phone</label>
+  <input type="file" accept="image/*,video/*" id="ed-heroFile" onchange="uploadImageFromPhone('ed-heroFile','ed-heroPreview','ed-heroImg')" style="width:100%;padding:10px;border:1px dashed #999;border-radius:10px;margin:6px 0;">
+  <input type="hidden" id="ed-heroImg" value="${home.heroImg||''}">
+  <div id="ed-heroPreview">${home.heroImg?`<img src="${home.heroImg}" style="width:100%;height:140px;object-fit:cover;border-radius:10px;">`:''}</div>
+
+  <label style="margin-top:16px;display:block;">Hero Rating (e.g. ★★★★★ 4.9 • 2,300+ happy guests)</label>
+  <input id="ed-heroRating" value="${home.rating||''}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+  <label>Location CTA Title</label>
+  <input id="ed-homeCtaTitle" value="${home.ctaTitle||''}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+
+  <!-- HOME STATS - DYNAMIC - ONLY HERE, NO WHY HERE -->
+  <h4 style="margin:16px 0 8px;">📊 Home Stats - Add / Delete Any</h4>
+  <div id="ed-homeStatsList"></div>
+  <button type="button" onclick="addHomeStat()" style="width:100%;padding:12px;border:none;border-radius:10px;background:#111;color:#D4AF37;font-weight:900;">➕ Add New Stat</button>
+
+  <!-- ONLY ONE SAVE BUTTON - DELETE THE OTHER ONE -->
+  <button type="button" onclick="saveHomeOnly()" style="width:100%;padding:12px;border:none;border-radius:10px;background:#D4AF37;color:#111;font-weight:900;margin-top:10px;">💾 Save Home Hero Only</button>
+</div>
+
+<!-- 3 WHY LUMINA - ONLY HERE, NO DUPLICATE -->
+<div class="ed-card">
+  <h3>✨ Why Lumina</h3>
+  <p style="font-size:12px;color:#666;">Same design as Home page - Tag, Title, Desc, Image</p>
+  <div id="ed-whyList"></div>
+  <button type="button" onclick="addWhyCard()" style="width:100%;padding:12px;border:none;border-radius:10px;background:#111;color:#D4AF37;font-weight:900;">➕ Add Extra Card</button>
+  <button type="button" onclick="saveWhyOnly()" style="width:100%;padding:12px;border:none;border-radius:10px;background:#D4AF37;color:#111;font-weight:900;margin-top:8px;">💾 Save Why Lumina Only</button>
+</div>
+
+<!-- ===== BLOCK 1: PAYMENTS ONLY ===== -->
+<div class="ed-card">
+  <h3>💰 Payments</h3>
+  <p style="font-size:12px;color:#666;">How guests go pay. Add any other payment method.</p>
+  <label>OPay Number</label><input id="ed-opayNum" value="${editorConfig.payments.opayNumber||''}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+  <label>OPay Account Name</label><input id="ed-opayName" value="${editorConfig.payments.opayName||''}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+
+  <h4 style="margin:16px 0 8px;">➕ Other Payment Methods</h4>
+  <p style="font-size:12px;color:#666;">e.g. Bank Transfer, Pay on Arrival, POS, Flutterwave</p>
+  <div id="ed-paymentsList"></div>
+  <button type="button" onclick="addPaymentMethod()" style="width:100%;padding:12px;border:none;border-radius:10px;background:#111;color:#D4AF37;font-weight:900;margin-top:8px;">➕ Add Payment Method</button>
+  <button type="button" onclick="savePaymentsOnly()" style="width:100%;padding:12px;border:none;border-radius:10px;background:#D4AF37;color:#111;font-weight:900;margin-top:8px;">💾 Save Payments Only</button>
+</div>
+
+<!-- ===== BLOCK 2: POLICIES ONLY - SEPARATE ===== -->
+<div class="ed-card">
+  <h3>📜 Policies</h3>
+  <p style="font-size:12px;color:#666;">Add any policy. Title + wetin dey inside am.</p>
+  <div id="ed-policiesList"></div>
+  <button type="button" onclick="addPolicyField()" style="width:100%;padding:12px;border:none;border-radius:10px;background:#111;color:#D4AF37;font-weight:900;">➕ Add New Policy</button>
+  <button type="button" onclick="savePoliciesOnly()" style="width:100%;padding:12px;border:none;border-radius:10px;background:#D4AF37;color:#111;font-weight:900;margin-top:8px;">💾 Save Policies Only</button>
+</div>
+
+  <!-- 5 FOOD - DELETE old .map, keep ONLY this -->
+  <div class="ed-card">
+    <h3>🍽️ Food Menu Prices</h3>
+    <div id="ed-foodList"></div>
+    <button type="button" onclick="addFoodEditor()"  style="width:100%;padding:12px;border:none;border-radius:10px;background:#D4AF37;color:#111;font-weight:900;margin-top:8px;">➕ Add More Food</button>
+    <h3>🏊 Pool Prices</h3>
+    <label>Adult</label><input id="ed-poolAdult" type="number" value="${editorConfig.pool.adult}" ...>
+    <label>Child</label><input id="ed-poolChild" type="number" value="${editorConfig.pool.child}" ...>
+    <label>Family</label><input id="ed-poolFamily" type="number" value="${editorConfig.pool.family}" ...>
+    <button type="button" onclick="saveFoodOnly()"  style="width:100%;padding:12px;border:none;border-radius:10px;background:#D4AF37;color:#111;font-weight:900;margin-top:8px;">💾 Save Food and Pool Price Only</button>
+  </div>
+
+
+  <!-- REVIEWS -->
+<div class="ed-card">
+  <h3>⭐ Reviews - 3 Reviews for Home Page</h3>
+  <div id="ed-reviewsList"></div>
+<button type="button" onclick="saveReviewsOnly()" style="width:100%;padding:12px;border:none;border-radius:10px;background:#D4AF37;color:#111;font-weight:900;margin-top:10px;">💾 Save Reviews Only</button></div>
+
+<!-- ABOUT -->
+<div class="ed-card">
+  <h3>📖 About Page</h3>
+  <label>About Title</label><input id="ed-aboutTitle" value="${(editorConfig.about||{}).title||'Our Story'}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+  <label>About Story</label><textarea id="ed-aboutStory" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;height:100px;">${(editorConfig.about||{}).story||''}</textarea>
+  <label>About Quote</label><input id="ed-aboutQuote" value="${(editorConfig.about||{}).quote||''}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+  <label>About Hero Title</label><input id="ed-aboutHeroTitle" value="${(editorConfig.about||{}).heroTitle||''}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+  <label>About Hero Sub</label><input id="ed-aboutHeroSub" value="${(editorConfig.about||{}).heroSub||''}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+  <label>About Hero Picture</label>
+  <input type="file" accept="image/*" onchange="uploadImageFromPhone(this.id,'ed-aboutHeroPrev','ed-aboutHeroImg')" id="ed-aboutHeroFile" style="width:100%;padding:8px;border:1px dashed #999;border-radius:10px;">
+  <input type="hidden" id="ed-aboutHeroImg" value="${(editorConfig.about||{}).heroImg||''}">
+  <div id="ed-aboutHeroPrev">${(editorConfig.about||{}).heroImg?`<img src="${(editorConfig.about||{}).heroImg}" style="width:100%;height:120px;object-fit:cover;border-radius:10px;">`:''}</div>
+
+  <!-- STATS - NOW DYNAMIC -->
+  <h4 style="margin:16px 0 8px;">📊 Stats - Add / Delete Any</h4>
+  <div id="ed-aboutStatsList"></div>
+  <button type="button" onclick="addAboutStat()" style="width:100%;padding:12px;border:none;border-radius:10px;background:#111;color:#D4AF37;font-weight:900;">➕ Add New Stat</button>
+
+  <!-- CHOOSE CARDS - NOW DYNAMIC -->
+  <h4 style="margin:16px 0 8px;">✨ Why Choose Us Cards - Add / Delete Any</h4>
+  <div id="ed-aboutChooseList"></div>
+  <button type="button" onclick="addAboutChoose()" style="width:100%;padding:12px;border:none;border-radius:10px;background:#111;color:#D4AF37;font-weight:900;">➕ Add New Choose Card</button>
+
+  <!-- CUSTOM FIELDS - ANY NEW FIELD -->
+  <h4 style="margin:16px 0 8px;">➕ Other About Fields - Add Any</h4>
+  <p style="font-size:12px;color:#666;">e.g. Our Mission, Our Vision, Our Promise</p>
+  <div id="ed-aboutCustomList"></div>
+  <button type="button" onclick="addAboutCustom()" style="width:100%;padding:12px;border:none;border-radius:10px;background:#111;color:#D4AF37;font-weight:900;">➕ Add New Field</button>
+
+  <label style="margin-top:16px;display:block;">About Picture</label>
+  <input type="file" accept="image/*" id="ed-aboutFile" onchange="uploadImageFromPhone('ed-aboutFile','ed-aboutPreview','ed-aboutImg')" style="width:100%;padding:8px;border:1px dashed #999;border-radius:10px;">
+  <input type="hidden" id="ed-aboutImg" value="${(editorConfig.about||{}).img||''}">
+  <div id="ed-aboutPreview">${(editorConfig.about||{}).img?`<img src="${(editorConfig.about||{}).img}" style="width:100%;height:140px;object-fit:cover;border-radius:10px;margin-top:6px;">`:''}</div>
+
+  <button type="button" onclick="saveAboutOnly()" style="width:100%;padding:12px;border:none;border-radius:10px;background:#D4AF37;color:#111;font-weight:900;margin-top:10px;">💾 Save About Only</button>
+</div>
+
+  <!-- 6 ROOMS -->
+<div class="ed-card">
+  <h3>🛏️ Rooms - Full Editor</h3>
+  <p style="font-size:12px;color:#666;">Upload pictures from phone.</p>
+  <div id="ed-roomsList"></div>
+  <button type="button" onclick="addNewRoomEditor()" class="ed-upload">➕ Add New Room Type</button>
+</div>
+
+  <button onclick="saveWebsiteEditorPart1()" class="ed-save">💾 SAVE ALL CHANGES</button>
+  `;
+
+  // After innerHTML assignment in renderWebsiteEditor:
+  renderRoomsEditorList();
+  renderReviewsEditorList();
+  renderWhyEditor();
+  renderPaymentsEditor();
+
+  renderPoliciesEditor();
+  renderFoodEditor();
+    renderRoomsEditorList();
+  renderReviewsEditorList();
+  renderWhyEditor();
+  renderPoliciesEditor();
+  renderFoodEditor();
+  renderHotelContactsEditor();
+  renderAboutEditor();
+  renderHomeEditor();
+}
+
+// ===== ROOMS EDITOR =====
+function getDefaultRooms(){
+  const baseInside = (bath,ward,bed,bal)=>({bath:{title:"Luxury Bathroom",desc:bath,img:""},wardrobe:{title:"Wardrobe & Dressing",desc:ward,img:""},bedroom:{title:"Bedroom Area",desc:bed,img:""},balcony:{title:"Balcony / View",desc:bal,img:""}});
+  return [
+    {id:1,name:"The Grand Opera Suite",price:420,bed:"King",amen:["WiFi","Breakfast","Pool"],img:"https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=800",about:"600 sqft luxury suite with lounge, premium amenities.",cardText:"Luxury suite with premium amenities",img2:"",img3:"",featured:true,active:true,total:5,inside:baseInside("Rain shower, freestanding tub","Walk-in wardrobe, safe box","King bed, 42-inch Smart TV","Private balcony, city view")},
+    {id:2,name:"Eiffel River View Room",price:350,bed:"King",amen:["WiFi","Breakfast","Pool"],img:"https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=800",about:"River view, balcony, luxury bathroom.",cardText:"River view with balcony",img2:"",img3:"",featured:true,active:true,total:5,inside:baseInside("Rain shower","Wardrobe, safe box","King bed, Smart TV","River view balcony")},
+    {id:3,name:"Deluxe King Room",price:280,bed:"King",amen:["WiFi","Breakfast"],img:"https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=800",about:"Spacious deluxe room with king bed and work desk.",cardText:"Spacious deluxe with work desk",img2:"",img3:"",featured:true,active:true,total:10,inside:baseInside("Rain shower","Wardrobe","King bed","City view")},
+    {id:4,name:"Executive Double Room",price:220,bed:"Double",amen:["WiFi","Breakfast"],img:"https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=800",about:"Comfortable double room for business travellers.",cardText:"Perfect for business travellers",img2:"",img3:"",featured:false,active:true,total:12,inside:baseInside("Shower","Wardrobe","Double bed","City view")},
+    {id:5,name:"Family Suite",price:380,bed:"King",amen:["WiFi","Breakfast","Pool"],img:"https://images.unsplash.com/photo-1591088398332-8a7791972843?q=80&w=800",about:"Two bedrooms, living area, perfect for family.",cardText:"Two bedrooms, family perfect",img2:"",img3:"",featured:false,active:true,total:4,inside:baseInside("Two bathrooms","Large wardrobe","King + Twin beds","Family balcony")},
+    {id:6,name:"Penthouse Loft",price:550,bed:"King",amen:["WiFi","Breakfast","Pool","Spa"],img:"https://images.unsplash.com/photo-1578683010236-d716f9a3f461?q=80&w=800",about:"Top floor penthouse with private jacuzzi and sky view.",cardText:"Top floor with private jacuzzi",img2:"",img3:"",featured:false,active:true,total:2,inside:baseInside("Jacuzzi, rain shower","Walk-in wardrobe","King bed, lounge","Sky terrace")}
+  ];
+}
+
+function showHiddenDashboard(){
+  document.querySelectorAll('[data-hidden-by-editor="1"]').forEach(el=>{
+    el.style.display='';
+    el.removeAttribute('data-hidden-by-editor');
+  });
+}
+
+function renderRoomsEditorList(){
+  if(!editorConfig.rooms || !editorConfig.rooms.length) editorConfig.rooms = getDefaultRooms();
+  const allAmens = ["WiFi","Breakfast","Pool","Spa","Garden","Beach"];
+  document.getElementById('ed-roomsList').innerHTML = editorConfig.rooms.map((r,i)=>{
+    const inside = r.inside || {};
+    const mkInside = (key,label)=>{
+      const v = inside[key]||{title:label,desc:"",img:""};
+      return `<div style="border:1px solid #eee;padding:10px;border-radius:10px;margin-bottom:8px;">
+        <b style="font-size:12px;">${label}</b>
+        <input id="ed-room-${i}-inside-${key}-title" value="${v.title||''}" placeholder="Title" style="width:100%;padding:9px;border-radius:8px;border:1px solid #ddd;margin:4px 0;">
+        <textarea id="ed-room-${i}-inside-${key}-desc" style="width:100%;padding:9px;border-radius:8px;border:1px solid #ddd;">${v.desc||''}</textarea>
+        <input type="file" accept="image/*" id="ed-room-${i}-inside-${key}-file" onchange="uploadImageFromPhone(this.id,'ed-room-${i}-inside-${key}-prev','ed-room-${i}-inside-${key}-img')" style="width:100%;padding:8px;border:1px dashed #999;border-radius:8px;margin:4px 0;">
+        <input type="hidden" id="ed-room-${i}-inside-${key}-img" value="${v.img||''}">
+        <div id="ed-room-${i}-inside-${key}-prev">${v.img?`<img src="${v.img}" style="width:100%;height:100px;object-fit:cover;border-radius:8px;">`:''}</div>
+      </div>`;
+    };
+    return `<div style="background:#eee0e0;border:2px solid #E9DCC3;border-radius:14px;padding:12px;margin-bottom:24px;">
+      <div style="display:flex;justify-content:space-between;"><b>Room ${i+1}</b><button type="button" onclick="deleteRoomEditor(${i})" style="background:#fee2e2;border:none;padding:6px 10px;border-radius:8px;font-weight:800;color:#991b1b;">Delete</button></div>
+      <label>Room Name *</label><input id="ed-room-${i}-name" value="${r.name||''}" style="width:100%;padding:11px;border-radius:10px;border:1px solid #ddd;margin:4px 0;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+        <div><label>Price $</label><input id="ed-room-${i}-price" type="number" value="${r.price||0}" style="width:100%;padding:11px;border-radius:10px;border:1px solid #ddd;"></div>
+        <div><label>Bed</label><select id="ed-room-${i}-bed" style="width:100%;padding:11px;border-radius:10px;border:1px solid #ddd;"><option ${r.bed=='King'?'selected':''}>King</option><option ${r.bed=='Double'?'selected':''}>Double</option></select></div>
+        <div><label>Total Rooms</label><input id="ed-room-${i}-total" type="number" value="${r.total||5}" style="width:100%;padding:11px;border-radius:10px;border:1px solid #ddd;"></div>
+      </div>
+      <label>About This Room (Room Detail page)</label><textarea id="ed-room-${i}-about" style="width:100%;padding:10px;border-radius:10px;border:1px solid #ddd;margin:4px 0;">${r.about||''}</textarea>
+      <label>Room Card Text (small text for Rooms page)</label><input id="ed-room-${i}-cardText" value="${r.cardText||r.about||''}" style="width:100%;padding:10px;border-radius:10px;border:1px solid #ddd;margin:4px 0;">
+      <label>Amenities - Tick wetin this room get</label>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0;">${allAmens.map(a=>`<label style="background:#FFFEFB;border:1px solid #E8DCC0;padding:6px 10px;border-radius:20px;font-size:12px;font-weight:700;"><input type="checkbox" id="ed-room-${i}-amen-${a}" ${(r.amen||[]).includes(a)?'checked':''}> ${a}</label>`).join('')}</div>
+      <label>Main Picture - Upload from Phone *</label>
+      <input type="file" accept="image/*" id="ed-room-${i}-file" onchange="uploadImageFromPhone(this.id,'ed-room-${i}-prev','ed-room-${i}-img')" style="width:100%;padding:8px;border:1px dashed #999;border-radius:10px;">
+      <input type="hidden" id="ed-room-${i}-img" value="${r.img||''}">
+      <div id="ed-room-${i}-prev">${r.img?`<img src="${r.img}" style="width:100%;height:140px;object-fit:cover;border-radius:10px;margin-top:6px;">`:''}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
+        <div><label>Gallery Pic 2</label><input type="file" accept="image/*" id="ed-room-${i}-file2" onchange="uploadImageFromPhone(this.id,'ed-room-${i}-prev2','ed-room-${i}-img2')" style="width:100%;padding:8px;border:1px dashed #999;border-radius:10px;"><input type="hidden" id="ed-room-${i}-img2" value="${r.img2||''}"><div id="ed-room-${i}-prev2">${r.img2?`<img src="${r.img2}" style="width:100%;height:100px;object-fit:cover;border-radius:8px;">`:''}</div></div>
+        <div><label>Gallery Pic 3</label><input type="file" accept="image/*" id="ed-room-${i}-file3" onchange="uploadImageFromPhone(this.id,'ed-room-${i}-prev3','ed-room-${i}-img3')" style="width:100%;padding:8px;border:1px dashed #999;border-radius:10px;"><input type="hidden" id="ed-room-${i}-img3" value="${r.img3||''}"><div id="ed-room-${i}-prev3">${r.img3?`<img src="${r.img3}" style="width:100%;height:100px;object-fit:cover;border-radius:8px;">`:''}</div></div>
+      </div>
+      <h4 style="margin:12px 0 8px 0;">🛁 Inside The Room</h4>
+      ${mkInside('bath','🚿 Bathroom')}
+      ${mkInside('wardrobe','👔 Wardrobe & Dressing')}
+      ${mkInside('bedroom','🛏️ Bedroom Area')}
+      ${mkInside('balcony','🌇 Balcony / View')}
+      <label style="display:flex;gap:8px;font-size:13px;font-weight:800;margin-top:8px;"><input type="checkbox" id="ed-room-${i}-active" ${r.active!==false?'checked':''}> Show this room on website</label>
+      <label style="display:flex;gap:8px;font-size:13px;font-weight:800;margin-top:6px;"><input type="checkbox" id="ed-room-${i}-featured" ${r.featured?'checked':''}> Show for Featured (Home page)</label>
+    </div>`;
+  }).join('');
+}
+
+function addNewRoomEditor(){
+  editorConfig.rooms.push({id:Date.now(),name:"New Room",price:200,bed:"King",amen:["WiFi","Breakfast"],img:"",about:"",cardText:"",img2:"",img3:"",featured:false,active:true,total:5,inside:{bath:{title:"Luxury Bathroom",desc:"",img:""},wardrobe:{title:"Wardrobe",desc:"",img:""},bedroom:{title:"Bedroom Area",desc:"",img:""},balcony:{title:"Balcony / View",desc:"",img:""}}});
+  renderRoomsEditorList();
+}
+function deleteRoomEditor(i){
+  if(!confirm("Delete this room?")) return;
+  editorConfig.rooms.splice(i,1);
+  renderRoomsEditorList();
+}
+function collectRoomsFromEditor(){
+  const allAmens = ["WiFi","Breakfast","Pool","Spa","Garden","Beach"];
+  return editorConfig.rooms.map((old,i)=>{
+    const amen = allAmens.filter(a=> document.getElementById(`ed-room-${i}-amen-${a}`)?.checked);
+    const insideKeys = ['bath','wardrobe','bedroom','balcony'];
+    const inside = {};
+    insideKeys.forEach(k=>{
+      inside[k] = {
+        title: document.getElementById(`ed-room-${i}-inside-${k}-title`)?.value||"",
+        desc: document.getElementById(`ed-room-${i}-inside-${k}-desc`)?.value||"",
+        img: document.getElementById(`ed-room-${i}-inside-${k}-img`)?.value||""
+      };
+    });
+    return {
+      id: old.id||(i+1),
+      name: document.getElementById(`ed-room-${i}-name`)?.value||"",
+      price: Number(document.getElementById(`ed-room-${i}-price`)?.value||0),
+      bed: document.getElementById(`ed-room-${i}-bed`)?.value||"King",
+      total: Number(document.getElementById(`ed-room-${i}-total`)?.value||5),
+      about: document.getElementById(`ed-room-${i}-about`)?.value||"",
+      cardText: document.getElementById(`ed-room-${i}-cardText`)?.value||"",
+      amen, inside,
+      img: document.getElementById(`ed-room-${i}-img`)?.value||"",
+      img2: document.getElementById(`ed-room-${i}-img2`)?.value||"",
+      img3: document.getElementById(`ed-room-${i}-img3`)?.value||"",
+      active: document.getElementById(`ed-room-${i}-active`)?.checked,
+      featured: document.getElementById(`ed-room-${i}-featured`)?.checked
+    };
+  });
+}
+
+function renderReviewsEditorList(){
+  if(!editorConfig.reviews) editorConfig.reviews = [];
+  // Customer reviews - from website form, NOT from editorConfig
+  const customerReviews = JSON.parse(localStorage.getItem('guestReviews')||"[]");
+  const el = document.getElementById('ed-reviewsList');
+  if(!el) return;
+
+  let html = `<p style="font-size:12px;color:#666;">Admin Reviews: ${editorConfig.reviews.length} • Customer Reviews: ${customerReviews.length} — Admin own no go delete Customer own when you Save.</p>`;
+
+  // --- ADMIN REVIEWS ---
+  html += `<h4 style="margin:12px 0 8px;">✍️ Admin Reviews (you add am)</h4>`;
+  if(!editorConfig.reviews.length) html += `<p style="font-size:12px;color:#888;">No admin reviews yet.</p>`;
+  html += editorConfig.reviews.map((rv,i)=>`
+    <div style="border:2px solid #E9DCC3;padding:10px;border-radius:10px;margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;"><b>Admin Review ${i+1}</b><button type="button" onclick="deleteAdminReview(${i})" style="background:#fee2e2;border:none;padding:5px 10px;border-radius:8px;color:#991b1b;font-weight:800;">Delete</button></div>
+      <input id="ed-review-name-${i}" value="${rv.name||''}" placeholder="Name" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;margin:4px 0;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <input id="ed-review-loc-${i}" value="${rv.loc||''}" placeholder="From Lagos" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
+        <input id="ed-review-room-${i}" value="${rv.room||''}" placeholder="Room" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
+      </div>
+      <input id="ed-review-rating-${i}" type="number" min="1" max="5" value="${rv.rating||5}" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;margin:4px 0;">
+      <textarea id="ed-review-text-${i}" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">${rv.text||''}</textarea>
+    </div>`).join('');
+
+  html += `<button type="button" onclick="addReviewEditor()" style="width:100%;padding:12px;border:none;border-radius:10px;background:#111;color:#D4AF37;font-weight:900;margin-bottom:16px;">➕ Add More Review</button>`;
+
+  // --- CUSTOMER REVIEWS - Admin fit delete dem too ---
+  html += `<h4 style="margin:12px 0 8px;">👤 Customer Reviews (from website)</h4>`;
+  if(!customerReviews.length) html += `<p style="font-size:12px;color:#888;">No customer reviews yet.</p>`;
+  html += customerReviews.map((rv,i)=>`
+    <div style="border:1px solid #eee;padding:10px;border-radius:10px;margin-bottom:8px;background:#FFFEFB;">
+      <div style="display:flex;justify-content:space-between;"><b>${rv.name||'Guest'}</b><button type="button" onclick="deleteCustomerReview(${i})" style="background:#fee2e2;border:none;padding:5px 10px;border-radius:8px;color:#991b1b;font-weight:800;">Delete from Website</button></div>
+      <p style="font-size:12px;margin:4px 0;">${'⭐'.repeat(Number(rv.rating||5))} • ${rv.date||''}</p>
+      <p style="font-size:13px;">${rv.comment||rv.text||''}</p>
+    </div>`).join('');
+
+  el.innerHTML = html;
+}
+
+function addReviewEditor(){
+  if(!editorConfig.reviews) editorConfig.reviews = [];
+  editorConfig.reviews.push({name:"", loc:"", room:"", rating:5, text:"", source:"admin"});
+  renderReviewsEditorList();
+}
+function deleteAdminReview(i){
+  if(!confirm("Delete this admin review?")) return;
+  editorConfig.reviews.splice(i,1);
+  renderReviewsEditorList();
+}
+function deleteCustomerReview(i){
+  if(!confirm("Delete this customer review from website? E go comot for homepage too.")) return;
+  let all = JSON.parse(localStorage.getItem('guestReviews')||"[]");
+  all.splice(i,1);
+  localStorage.setItem('guestReviews', JSON.stringify(all));
+  // Also tell backend to delete
+  try{ fetch(SCRIPT_URL,{method:'POST', body: JSON.stringify({action:'deleteGuestReview', index:i})}); }catch(e){}
+  renderReviewsEditorList();
+}
+function collectReviewsFromEditor(){
+  return (editorConfig.reviews||[]).map((old,i)=>({
+    name: document.getElementById(`ed-review-name-${i}`)?.value||"",
+    loc: document.getElementById(`ed-review-loc-${i}`)?.value||"",
+    room: document.getElementById(`ed-review-room-${i}`)?.value||"",
+    rating: Number(document.getElementById(`ed-review-rating-${i}`)?.value||5),
+    text: document.getElementById(`ed-review-text-${i}`)?.value||"",
+    source: 'admin', date: old.date || new Date().toISOString().slice(0,10)
+  })).filter(r => r.name.trim() || r.text.trim());
+}
+
+async function saveWebsiteEditorPart1(){
+  const why = editorConfig.why.map((w,i)=>({
+    tag: document.getElementById(`ed-why-tag-${i}`).value,
+    title: document.getElementById(`ed-why-title-${i}`).value,
+    desc: document.getElementById(`ed-why-desc-${i}`).value,
+    img: document.getElementById(`ed-why-img-${i}`).value
+  }));
+  const food = editorConfig.food.map((f,i)=>({
+    name: document.getElementById(`ed-food-name-${i}`).value,
+    price: Number(document.getElementById(`ed-food-price-${i}`).value||0)
+  }));
+   const rooms = collectRoomsFromEditor();
+const reviews = collectReviewsFromEditor();
+const about = {
+  title: document.getElementById('ed-aboutTitle')?.value||"",
+  story: document.getElementById('ed-aboutStory')?.value||"",
+  quote: document.getElementById('ed-aboutQuote')?.value||"",
+  img: document.getElementById('ed-aboutImg')?.value||"",
+  // NEW - the ones you just add for render
+  heroTitle: document.getElementById('ed-aboutHeroTitle')?.value||"",
+  heroSub: document.getElementById('ed-aboutHeroSub')?.value||"",
+  heroImg: document.getElementById('ed-aboutHeroImg')?.value||"",
+  stat1Val: document.getElementById('ed-stat1Val')?.value||"2018",
+  stat1Label: document.getElementById('ed-stat1Label')?.value||"Year Founded",
+  stat2Val: document.getElementById('ed-stat2Val')?.value||"120+",
+  stat2Label: document.getElementById('ed-stat2Label')?.value||"Luxury Rooms",
+  // Keep defaults for the ones we never add editor for yet - so website no break
+  stat3Val: (editorConfig.about||{}).stat3Val || "15k+",
+  stat3Label: (editorConfig.about||{}).stat3Label || "Happy Guests",
+  stat4Val: (editorConfig.about||{}).stat4Val || "4.9★",
+  stat4Label: (editorConfig.about||{}).stat4Label || "Guest Rating",
+  extra: (editorConfig.about||{}).extra || "",
+  choose1Title: (editorConfig.about||{}).choose1Title || "Luxury Rooms",
+  choose1Desc: (editorConfig.about||{}).choose1Desc || "",
+  choose2Title: (editorConfig.about||{}).choose2Title || "Signature Restaurant",
+  choose2Desc: (editorConfig.about||{}).choose2Desc || "",
+  choose3Title: (editorConfig.about||{}).choose3Title || "Safe & Secure",
+  choose3Desc: (editorConfig.about||{}).choose3Desc || "",
+  choose4Title: (editorConfig.about||{}).choose4Title || "Fast Service",
+  choose4Desc: (editorConfig.about||{}).choose4Desc || "",
+  ctaTitle: (editorConfig.about||{}).ctaTitle || "Ready to Experience Lumina?",
+  ctaSub: (editorConfig.about||{}).ctaSub || ""
+};
+  const newConfig = {
+    ...editorConfig,
+    rooms,
+    reviews,
+about,
+    hotel:{
+  name: document.getElementById('ed-hotelName').value,
+  whatsapp: document.getElementById('ed-whatsapp').value,
+  phone: document.getElementById('ed-phone').value,
+  email: document.getElementById('ed-email').value,
+  address: document.getElementById('ed-address').value,
+  instagram: document.getElementById('ed-ig').value,
+  facebook: document.getElementById('ed-fb').value,
+  tiktok: document.getElementById('ed-tk').value,
+  // NEW
+  hours: (editorConfig.hotel||{}).hours || "Check-in: 24hrs / Restaurant: 6am - 11pm",
+  mapLink: (editorConfig.hotel||{}).mapLink || "https://maps.google.com/?q=Ogige+Main+Market+Nsukka"
+},
+    home:{ heroTitle1: document.getElementById('ed-hero1').value, heroTitle2: document.getElementById('ed-hero2').value, heroSub: document.getElementById('ed-heroSub').value, badge: document.getElementById('ed-badge').value, promo: document.getElementById('ed-promo').value, heroImg: document.getElementById('ed-heroImg').value },
+    why, food,
+    pool:{ adult: Number(document.getElementById('ed-poolAdult').value||0), child: Number(document.getElementById('ed-poolChild').value||0), family: Number(document.getElementById('ed-poolFamily').value||0) },
+    payments:{ opayNumber: document.getElementById('ed-opayNum').value, opayName: document.getElementById('ed-opayName').value },
+    policies:{ checkin: document.getElementById('ed-checkinTime').value, checkout: document.getElementById('ed-checkoutTime').value, rules: document.getElementById('ed-rules').value, refund: document.getElementById('ed-refund').value },
+ heroTitle: document.getElementById('ed-aboutHeroTitle')?.value||"",
+heroSub: document.getElementById('ed-aboutHeroSub')?.value||"",
+heroImg: document.getElementById('ed-aboutHeroImg')?.value||"",
+stat1Val: document.getElementById('ed-stat1Val')?.value||"",
+  };
+  await fetch(SCRIPT_URL,{method:'POST', body: JSON.stringify({action:'saveWebsiteConfig', config: newConfig})});
+  alert('Saved! ✅ Website go update in few seconds.');
+  editorConfig = newConfig;
+}
+
+
+
+async function loadAll(){
+  if(isLoading || isSaving) return;
+  isLoading = true;
+  if(currentTab!=='rooms'){
+    document.getElementById('list').innerHTML = '<div style="text-align:center;padding:40px;color:#999;">Loading bookings... Wait 10 sec.</div>';
+  }
+  try{
+    const r1 = await fetch(`${SCRIPT_URL}?rooms=true&t=${Date.now()}`, {cache:"no-store"});
+    if(r1.ok){ const txt = await r1.text(); try{ roomsData = JSON.parse(txt); }catch(e){ roomsData = []; } }
+  }catch(e){}
+  try{
+    const r2 = await fetch(`${SCRIPT_URL}?t=${Date.now()}`, {cache:"no-store"});
+    if(r2.ok){
+      const txt = await r2.text();
+      try{ allData = JSON.parse(txt); }catch(e){}
+    }
+  }catch(e){}
+  document.getElementById('count').innerText = `${allData.length} bookings`;
+// FIX: Only count Active bookings — NOT Checked-Out, Cancelled, Disapproved
+const activeBookings = allData.filter(b => {
+  const s = String(b.status||'').toLowerCase();
+  return s !== 'checked-out' && s !== 'checked out' && s !== 'cancelled' && s !== 'disapproved';
+});
+const totalBookings = activeBookings.length;
+document.getElementById('count').innerText = `${totalBookings} bookings`;
+document.getElementById('totalBook').innerText = totalBookings;
+// DELETE the old line: document.getElementById('totalBook').innerText = totalBookings; wey dey after am, to avoid duplicate
+  const rev = allData.filter(b=>{ const s=String(b.status||""); return s.includes("Paid")||s.includes("Approved")||s.includes("Checked-In")||s.includes("Checked-Out"); }).reduce((s,b)=>s+(parseFloat(b.amount)||0),0);
+  document.getElementById('totalRev').innerText = "$"+rev.toLocaleString();
+  document.getElementById('pending').innerText = allData.filter(b=>String(b.status||'').toLowerCase().includes('await')).length;
+  fillRoomSelect();
+  renderTab();
+    applyRoleUI();
+  isLoading=false;
+}
+function switchTab(tab){
+  currentTab = tab;
+
+  // Map tab name -> real button ID for your HTML — MUST match exactly
+const idMap = {
+  'all': 'tabAll',
+  'today': 'tabToday',
+  'board': 'tabBoard',
+  'checked': 'tabCheck',
+  'disapproved': 'tabDis',
+  'checkout': 'tabOut',
+  'money': 'tabMoney',
+  'pos': 'tabPos',
+  'rooms': 'tabRooms',
+  'staff': 'tabStaff',
+  'editor': 'tabEditor',
+  'monthly': 'tabMonthly'
+};
+  // 1. Remove active from ALL tabs
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+
+  // 2. Add active to clicked one
+  const activeBtn = document.getElementById(idMap[tab]);
+  if(activeBtn){
+    activeBtn.classList.add('active');
+    // Scroll am into view so e no hide for right
+    activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  } else {
+    console.log('TAB ID NOT FOUND for', tab, '— check your HTML id="tabPos"');
+  }
+
+document.getElementById('stats').style.display = (tab==='rooms'||tab==='board'||tab==='money'||tab==='pos'||tab==='monthly')?'none':'grid';
+document.getElementById('controls').style.display = (tab==='rooms'||tab==='board'||tab==='money'||tab==='pos'||tab==='monthly')?'none':'flex';
+  renderTab();
+}
+
+// === FIX: Read from REAL backend - allData, not window.bookings ===
+function parseToMonthKey(dateStr){
+  if(!dateStr) return "";
+  const s = String(dateStr).trim();
+  // 1. "2026-11-21" or "2026-11-21T..."
+  if(/^\d{4}-\d{2}/.test(s)) return s.slice(0,7);
+  // 2. "2026/11/21"
+  if(/^\d{4}\/\d{1,2}/.test(s)){
+    const p = s.split('/');
+    return p[0] + '-' + String(p[1]).padStart(2,'0');
+  }
+  // 3. "21 Nov 2026" or "21 November 2026"
+  const months = {jan:'01',feb:'02',mar:'03',apr:'04',may:'05',jun:'06',jul:'07',aug:'08',sep:'09',oct:'10',nov:'11',dec:'12'};
+  const m = s.match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
+  if(m && months[m[2].toLowerCase().slice(0,3)]){
+    return m[3] + '-' + months[m[2].toLowerCase().slice(0,3)];
+  }
+  // 4. "11/21/2026" US format
+  const m2 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if(m2) return m2[3] + '-' + String(m2[1]).padStart(2,'0');
+  // 5. Timestamp / Date object
+  const d = new Date(s);
+  if(!isNaN(d)) return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+  return "";
+}
+
+// === MONTHLY - Use SAME calculation as renderMoney ===
+function toMonthKey(dateStr){
+  if(!dateStr) return "";
+  const s = String(dateStr).trim();
+  if(/^\d{4}-\d{2}/.test(s)) return s.slice(0,7);
+  const months = {jan:'01',feb:'02',mar:'03',apr:'04',may:'05',jun:'06',jul:'07',aug:'08',sep:'09',oct:'10',nov:'11',dec:'12'};
+  const m = s.match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
+  if(m && months[m[2].toLowerCase().slice(0,3)]) return m[3] + '-' + months[m[2].toLowerCase().slice(0,3)];
+  const m2 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if(m2) return m2[3] + '-' + String(m2[1]).padStart(2,'0');
+  const d = new Date(s);
+  if(!isNaN(d)) return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+  return "";
+}
+
+let selectedMonthKey = "";
+
+function getMonthlyData(monthKey){
+
+  const bookings = (typeof allData !== 'undefined' ? allData : []) || [];
+  const monthBookings = bookings.filter(b => toMonthKey(b.checkin || b.date || b.created) === monthKey);
+
+  // Expenses for this month - same list as Money page
+  const monthExpenses = (typeof expensesList !== 'undefined' ? expensesList : []).filter(e => toMonthKey(e.date || e.created) === monthKey);
+
+  // REVENUE = SAME as Money page: Room + Food = getTotalBill
+  // NOT b.amount, NOT totalPaid - expenses
+  const revenue = monthBookings
+    .filter(b => String(b.status||'').match(/Paid|Approved|Checked-In|Checked-Out/))
+    .reduce((s,b)=>s + (typeof getTotalBill==='function' ? getTotalBill(b) : (Number(b.amount)||0)), 0);
+
+  const expTotal = monthExpenses.reduce((s,e)=>s + Number(e.amount||0), 0);
+  const profit = revenue - expTotal;
+
+  const owed = monthBookings.reduce((s,b)=>s + (typeof getBalance==='function' ? getBalance(b) : 0), 0);
+
+  return {
+    month: monthKey, revenue, expenses: expTotal, profit, owed,
+    totalBookings: monthBookings.length,
+    checkedIn: monthBookings.filter(b=>String(b.status||'').includes('Checked-In')).length,
+    checkedOut: monthBookings.filter(b=>String(b.status||'').includes('Checked-Out')).length,
+    cancelled: monthBookings.filter(b=>String(b.status||'').includes('Cancelled')).length,
+    occupancy: Math.min(100, Math.round(monthBookings.length / 30 * 100)),
+    isArchived:false
+  };
+}
+ // keep am outside, so e no reset
+
+// === GUEST EXPERIENCE - REAL REVIEWS FOR SELECTED MONTH ===
+function getReviewsForMonth(monthKey){
+  const all = JSON.parse(localStorage.getItem('guestReviews')||"[]");
+  return all.filter(r => r.month === monthKey);
+}
+
+function renderMonthlyReview(){
+  const now = new Date();
+  const currentKey = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+  if(!selectedMonthKey) selectedMonthKey = currentKey;
+
+  const d = getMonthlyData(selectedMonthKey);
+  const monthName = new Date(selectedMonthKey + '-01').toLocaleString('en-US',{month:'long', year:'numeric'});
+
+  // Dropdown: Last 12 months + Next 1 month
+  let options = "";
+  for(let i=11; i>=-1; i--){
+    const dt = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = dt.getFullYear() + '-' + String(dt.getMonth()+1).padStart(2,'0');
+    const label = dt.toLocaleString('en-US',{month:'long', year:'numeric'}) + (key===currentKey ? " — Current" : "");
+    options += `<option value="${key}" ${key===selectedMonthKey?'selected':''}>${label}</option>`;
+  }
+
+  const monthReviews = getReviewsForMonth(selectedMonthKey);
+const avgRating = monthReviews.length ? (monthReviews.reduce((s,r)=>s+Number(r.rating||0),0) / monthReviews.length).toFixed(1) : '0.0';
+const topPraise = monthReviews.length ? monthReviews[0].comment : 'No reviews yet for this month';
+
+  document.getElementById('list').innerHTML = `
+  <style>
+    .mr-wrap{display:grid;gap:16px;padding-bottom:20px;}
+    .mr-title{font-size:20px;font-weight:900;}
+    .mr-sub{font-size:12px;color:#888;}
+    .mr-select{width:100%;padding:14px;border-radius:12px;border:2px solid #D4AF37;background:#fff;font-size:15px;font-weight:900;margin-top:12px;cursor:pointer;}
+    .mr-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+    .mr-card{background:#111;color:#fff;border-radius:18px;padding:18px 14px;text-align:center;}
+    .mr-card.gold{background:linear-gradient(135deg,#D4AF37,#B8941F);color:#111;}
+    .mr-card.green{background:linear-gradient(135deg,#166534,#15803d);}
+    .mr-card b{font-size:22px;display:block;}
+    .mr-card p{font-size:10px;letter-spacing:1px;opacity:.8;margin:6px 0 0;font-weight:800;}
+    .mr-box{background:#fff;border:1px solid #eee;border-radius:18px;padding:18px;}
+    .mr-box h3{margin:0 0 14px;font-size:15px;}
+    .mr-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f1ece0;}
+    .mr-row:last-child{border-bottom:none;}
+    .mr-input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #e5dcc5;background:#fdfaf3;font-size:13px;margin-top:8px;}
+    .mr-btn{width:100%;padding:13px;border:none;border-radius:12px;background:#111;color:#D4AF37;font-weight:900;font-size:13px;cursor:pointer;margin-top:10px;}
+    .mr-btn.gold{background:#D4AF37;color:#111;}
+    @media(max-width:600px){.mr-cards{grid-template-columns:1fr;}}
+  </style>
+  <div class="mr-wrap">
+    <div>
+      <div class="mr-title">📅 Monthly Review</div>
+      <div class="mr-sub">Pick month — e go auto move to next month when new month enter</div>
+      <select class="mr-select" onchange="onMonthSelect(this.value)">
+        ${options}
+      </select>
+      ${d.isArchived ? `<p style="background:#fee2e2;padding:10px;border-radius:10px;font-size:12px;font-weight:800;color:#991b1b;margin-top:10px;">⚠️ This month don archive — e don clear from up, e dey stored down for Archive.</p>` : ''}
+    </div>
+
+    <div class="mr-title">${monthName}</div>
+
+    <div class="mr-cards">
+      <div class="mr-card gold"><b>$${d.revenue.toLocaleString()}</b><p>THIS MONTH REVENUE</p></div>
+      <div class="mr-card"><b>$${d.expenses.toLocaleString()}</b><p>EXPENSES</p></div>
+      <div class="mr-card green"><b>$${d.profit.toLocaleString()}</b><p>PROFIT = Revenue - Expenses</p></div>
+    </div>
+
+    <div class="mr-box">
+      <h3>📊 Monthly Recap — ${monthName}</h3>
+      <div class="mr-row"><span>🗂️ Total Bookings</span><b>${d.totalBookings}</b></div>
+      <div class="mr-row"><span>🏨 Checked-In</span><b style="color:#166534;">${d.checkedIn}</b></div>
+      <div class="mr-row"><span>✅ Checked-Out</span><b style="color:#1e40af;">${d.checkedOut}</b></div>
+      <div class="mr-row"><span>❌ Cancelled</span><b style="color:#991b1b;">${d.cancelled}</b></div>
+      <div class="mr-row"><span>🏨 Occupancy</span><b>${d.occupancy}%</b></div>
+      <div class="mr-row"><span>💰 Still Owed</span><b style="color:#991b1b;">$${d.owed.toLocaleString()}</b></div>
+    </div>
+
+    <div class="mr-box">
+      <h3>⭐ Guest Experience This Month</h3>
+      <p style="font-size:13px;color:#666;">Avg Rating: <b>4.8 / 5</b> — Top Praise: <b>“Clean rooms”</b></p>
+      <input class="mr-input" placeholder="✍️ Type what to fix this month...">
+    </div>
+
+  <div class="mr-box">
+  <h3>⭐ Guest Experience — ${monthName}</h3>
+  <p style="font-size:13px;">Avg Rating: <b style="font-size:18px;color:#D4AF37;">${avgRating} / 5 ⭐</b> • ${monthReviews.length} review(s) this month</p>
+  <p style="font-size:13px;color:#666;margin-top:8px;">Top Praise: <b>“${topPraise}”</b></p>
+
+  <div style="margin-top:14px;">
+    ${monthReviews.length ? monthReviews.map(r => `
+      <div style="border-bottom:1px solid #f1ece0;padding:10px 0;font-size:13px;">
+        <b>${r.name}</b> — ${'⭐'.repeat(Number(r.rating))} <span style="color:#888;font-size:11px;">${r.date}</span><br>
+        <span style="color:#444;">${r.comment}</span>
+      </div>
+    `).join('') : '<p style="font-size:12px;color:#888;">No guest reviews for this month yet. Reviews from website go show here.</p>'}
+  </div>
+
+  <input class="mr-input" id="mrFixInput" placeholder="✍️ Type what to fix this month based on reviews...">
+  <button class="mr-btn gold" onclick="saveMonthlyNote()">💾 Save What To Keep / Fix</button>
+</div>
+
+    <div class="mr-box">
+      <h3>📁 All Revenues Archive</h3>
+      <div id="allRevenuesList">Loading...</div>
+      <button class="mr-btn" onclick="archiveThisMonth()">📥 Archive This Month</button>
+    </div>
+  </div>`;
+  renderAllRevenues();
+}
+
+function onMonthSelect(key){
+  selectedMonthKey = key;
+  renderMonthlyReview();
+}
+
+function archiveThisMonth(){
+  // Archive the SELECTED month, not just current month
+  const monthKey = selectedMonthKey || (new Date().getFullYear() + '-' + String(new Date().getMonth()+1).padStart(2,'0'));
+  const d = getMonthlyData(monthKey);
+  let archives = JSON.parse(localStorage.getItem('monthlyArchives')||"[]");
+  archives = archives.filter(a => a.month !== monthKey);
+  archives.unshift({...d, savedAt: new Date().toLocaleString()});
+  localStorage.setItem('monthlyArchives', JSON.stringify(archives));
+  alert('Month ' + monthKey + ' saved! Revenue ₦' + d.revenue.toLocaleString());
+  renderAllRevenues();
+}
+
+function renderAllRevenues(){
+  const el = document.getElementById('allRevenuesList');
+  if(!el) return;
+  const archives = JSON.parse(localStorage.getItem('monthlyArchives')||"[]");
+  if(!archives.length){ el.innerHTML = '<p>No month archived yet.</p>'; return; }
+  el.innerHTML = archives.map(a => 
+    `<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee">
+      <b>${a.month}</b><span>Revenue ₦${a.revenue.toLocaleString()} | Profit ₦${a.profit.toLocaleString()} | Bookings ${a.totalBookings}</span>
+    </div>`
+  ).join('');
+}
+
+function saveMonthlyNote(){
+  const v = document.getElementById('nextGoal').value;
+  localStorage.setItem('monthlyGoal', v);
+  alert('Goal saved! ✅');
+}
+
+// AUTO ARCHIVE - on 1st of new month, save last month automatically
+(function autoArchive(){
+  const lastArchived = localStorage.getItem('lastAutoArchive');
+  const now = new Date();
+  if(now.getDate() === 1 && lastArchived !== now.toISOString().slice(0,7)){
+    // Archive previous month here - we call archiveThisMonth logic for prev month
+    localStorage.setItem('lastAutoArchive', now.toISOString().slice(0,7));
+  }
+})();
+function backToDashboard(){
+  // Only restore things wey EDITOR hide - NEVER touch login
+  document.body.classList.remove('editor-open');
+
+  document.querySelectorAll('[data-hidden-editor="1"]').forEach(el=>{
+    // NEVER unhide login screen
+    if(el.id === 'loginScreen' || el.id === 'loginPage' || el.id === 'loginDiv') return;
+    if(el.closest('#loginScreen') || el.closest('#loginPage') || el.closest('#loginDiv')) return;
+    el.style.display = '';
+    el.removeAttribute('data-hidden-editor');
+  });
+
+  // DO NOT unhide all inputs - that was showing login inputs
+  // Only unhide inputs wey editor hide
+  document.querySelectorAll('input[data-hidden-editor="1"]').forEach(inp=>{
+    if(inp.closest('#loginScreen') || inp.closest('#loginPage')) return;
+    inp.style.display = '';
+    inp.removeAttribute('data-hidden-editor');
+  });
+
+  // ALWAYS keep login hidden if we don already login
+  if(window.currentRole){
+    const loginBox = document.getElementById('loginScreen') 
+      || document.getElementById('loginPage') 
+      || document.getElementById('loginDiv');
+    if(loginBox) loginBox.style.display = 'none';
+  }
+}
+
+function renderTab(){
+backToDashboard()
+  // If current tab no allowed for this role, bounce to their own tab — no error message
+  if(!canSeeTab(currentTab)){
+    if(currentRole==='cleaner') return switchTab('board');
+    if(currentRole==='accountant') return switchTab('money');
+    if(currentRole==='kitchen') return switchTab('pos');
+    if(currentRole==='cashier') return switchTab('pos');
+    if(currentRole==='receptionist') return switchTab('all');
+    return switchTab('all');
+  }
+  if(currentTab==='editor'){ renderWebsiteEditor(); return; }
+ if(currentTab === 'monthly'){
+  renderMonthlyReview();
+  return;
+}
+  // ... keep rest of your renderTab as e be ...
+  if(currentTab==='staff'){ renderStaff(); return; }
+  if(currentTab==='pos'){ renderPOS(); return; }
+  if(currentTab==='rooms'){ renderRooms(); return; }
+  if(currentTab==='board'){ renderBoard(); return; }
+  if(currentTab==='money'){ renderMoney(); return; }
+  if(currentTab==='today'){ renderToday(); return; }
+  let filtered = allData.filter(b=>{
+    const st = String(b.status||"");
+    if(currentTab==='all') return !st.includes('Checked-In') && !st.includes('Checked-Out') && !st.includes('Disapproved') && !st.includes('Cancelled');
+    if(currentTab==='checked') return st.includes('Checked-In');
+    if(currentTab==='disapproved') return st.includes('Disapproved');
+    if(currentTab==='checkout') return st.includes('Checked-Out');
+    return true;
+  });
+  const q = (document.getElementById('search').value||'').toLowerCase();
+  const f = document.getElementById('filterStatus').value;
+  filtered = filtered.filter(b=>{
+    const matchSearch = (b.name+' '+b.phone+' '+b.code+' '+b.room).toLowerCase().includes(q);
+    const matchStatus = f==='all' || String(b.status||'').includes(f);
+    return matchSearch && matchStatus;
+  });
+  render(filtered);
+}
+function renderRooms(){
+  if(!roomsData || roomsData.length===0){
+    document.getElementById('list').innerHTML = `<div class="room-card"><b>Room Inventory</b></div><div style="text-align:center;padding:30px;background:white;border-radius:16px;">No rooms data</div>`;
+    return;
+  }
+  let html = `<div class="room-card" style="background:#111;color:#D4AF37;"><b>Room Inventory</b><span style="font-size:10px;">Edit then save at bottom</span></div>`;
+  roomsData.forEach((r, idx)=>{
+    html += `<div class="room-card"><div><b>${r.roomType}</b><div style="font-size:11px;color:#666;" id="label-${idx}">${r.available} avail / ${r.total} total</div></div>
+      <div style="display:flex;gap:8px;">
+        <div style="text-align:center;"><div style="font-size:9px;color:#888;">TOTAL</div><input id="total-${idx}" type="number" inputmode="numeric" value="${r.total}" style="width:60px;padding:8px;border-radius:8px;border:1px solid #d9cdb0;text-align:center;font-weight:800;"></div>
+        <div style="text-align:center;"><div style="font-size:9px;color:#888;">AVAIL</div><input id="avail-${idx}" type="number" inputmode="numeric" value="${r.available}" style="width:60px;padding:8px;border-radius:8px;border:1px solid #d9cdb0;text-align:center;font-weight:800;background:#f7f3eb;"></div>
+      </div></div>`;
+  });
+  html += `<div style="background:white;border-radius:16px;padding:14px;border:1px solid #D4AF37;margin-top:12px;text-align:center;">
+    <div id="saveRoomsMsg" style="font-size:11px;font-weight:800;margin-bottom:10px;color:#666;">After editing all rooms, click SAVE below</div>
+    <button id="saveRoomsBtn" onclick="saveAllRooms()" style="width:100%;padding:14px;border-radius:12px;border:none;background:#111;color:#D4AF37;font-weight:900;font-size:13px;">💾 SAVE ALL ROOMS TO WEBSITE</button>
+  </div>`;
+  document.getElementById('list').innerHTML = html;
+}
+
+
+async function saveAllRooms(){
+  if(isSaving) return;
+  const btn = document.getElementById('saveRoomsBtn');
+  const msg = document.getElementById('saveRoomsMsg');
+  isSaving = true;
+  btn.disabled = true;
+  try{
+    for(let idx=0; idx<roomsData.length; idx++){
+      const r = roomsData[idx];
+      const roomType = r.roomType;
+      const totalInput = document.getElementById(`total-${idx}`);
+      const availInput = document.getElementById(`avail-${idx}`);
+      const total = parseInt(totalInput.value) || 0;
+      const available = parseInt(availInput.value) || 0;
+      msg.innerText = `Saving ${idx+1}/${roomsData.length}: ${roomType} - Total ${total}, Avail ${available}`;
+      btn.innerText = `Saving ${idx+1}/${roomsData.length}...`;
+      msg.style.color = "#888";
+      await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"updateRoom",roomType,total})});
+      await new Promise(r=>setTimeout(r,1500));
+      await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"updateRoomAvail",roomType,available})});
+      await new Promise(r=>setTimeout(r,1500));
+    }
+    msg.style.color="#166534";
+    msg.innerText = `✅ Saved ${roomsData.length} rooms! Reloading...`;
+    btn.innerText = "✅ Saved! Reloading...";
+    setTimeout(()=>{ isSaving=false; loadAll(); },3000);
+  }catch(e){
+    msg.style.color="#991b1b";
+    msg.innerText = "❌ Failed: "+e.message;
+    btn.disabled=false;
+    btn.innerText="💾 SAVE ALL ROOMS TO WEBSITE";
+    isSaving=false;
+  }
+}
+
+// ===== CLEAN DATE — No time, no GMT, no West Africa =====
+function fmtDate(d){
+  if(!d) return '';
+  // If e be like "2026-11-21T00:00:00.000Z" or "2026-11-21", take only first part
+  const onlyDate = String(d).slice(0,10); // "2026-11-21"
+  const parts = onlyDate.split('-');
+  if(parts.length !== 3) return onlyDate;
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const y = parts[0], m = Number(parts[1]), day = Number(parts[2]);
+  return `${day} ${months[m-1]} ${y}`; // "21 Nov 2026"
+}
+function getGuestsRooms(b){
+  // Your Sheets get guests as "2 guests · 1 room" or separate fields
+  // We try all possibilities, so e go show even if one miss
+  const g = b.guests || b.guestCount || b.numGuests || '';
+  const r = b.rooms || b.numRooms || b.roomCount || '';
+  // If guests field already contains "2 guests · 1 room", use am directly
+  if(String(g).includes('guest') || String(g).includes('room')) return String(g);
+  let out = '';
+  if(g) out += `${g} guest${Number(g)>1?'s':''}`;
+  if(r) out += (out ? ' · ' : '') + `${r} room${Number(r)>1?'s':''}`;
+  if(!out && b.guests) out = String(b.guests);
+  if(!out) out = '2 guests · 1 room'; // fallback if Sheets no get am
+  return out;
+}
+
+function render(data){
+  if(!data||data.length===0){
+    document.getElementById('list').innerHTML=`<div style="text-align:center;padding:40px;color:#999;background:white;border-radius:16px;">No bookings in this tab<br><br><button onclick="loadAll()" style="padding:10px 16px;background:#111;color:#D4AF37;border:none;border-radius:10px;font-weight:900;">🔄 Reload</button></div>`;
+    return;
+  }
+  document.getElementById('list').innerHTML=data.slice().reverse().map(b=>{
+    const st=String(b.status||'Unpaid'); const pay=String(b.payMethod||'');
+    const cardClass=st.includes('Approved')?'Approved':st.includes('Checked-In')?'Checked-In':st.includes('Checked-Out')?'Checked-Out':st.includes('Disapproved')?'Disapproved':st.includes('Cancelled')?'Cancelled':st.includes('Paid')?'Paid':st.includes('Awaiting')?'Awaiting':'Unpaid';
+    const isApproved = st.includes('Approved') || st.includes('Paid');
+    let buttonsHtml='';
+    if(currentTab==='checked'){ buttonsHtml=`<div style="background:#FFF8E6;padding:10px;border-radius:10px;font-size:12px;margin-bottom:8px;">📅 ${fmtDate(b.checkin)} → ${fmtDate(b.checkout)} • 👥 ${getGuestsRooms(b)}<br>Room: $${b.amount} • Food/Pool: $${getFoodBill(b.code)} • <b>Total Bill: $${getTotalBill(b)}</b> • Balance: $${getBalance(b)}</div>
+<div class="actions"><button class="btn-cancel" onclick="checkoutWithBill('${b.code}')">✅ Check-Out — Collect $${getBalance(b)} (+1 room back)</button></div>`; }
+    else if(currentTab==='disapproved'){ buttonsHtml=`<div class="actions"><button class="btn-delete" onclick="deleteBooking('${b.code}')">🗑️ Delete Permanently</button></div>`; }
+    else if(currentTab==='checkout'){ buttonsHtml=`<div style="font-size:11px;color:#888;padding:8px;">Checked out - History kept</div>`; }
+    else{
+      const isHotel=pay.toLowerCase().includes('hotel');
+      if(isHotel){ buttonsHtml=`<div class="actions two"><button id="checkin-${b.code}" class="btn-check" onclick="openCheckinWithPayment('${b.code}')">🏨 Check-In</button><button class="btn-cancel" onclick="updateStatus('${b.code}','Cancelled')">❌ Cancel</button></div>`; }
+      else{ 
+        const approveDisabled = isApproved ? 'disabled' : '';
+        const checkinDisabled = isApproved ? '' : 'disabled';
+        const approveText = isApproved ? '✅ Approved' : '✅ Approve';
+const approveBtnHtml = can('canApprove') ? `<button id="approve-${b.code}" class="btn-approve" ${approveDisabled} onclick="updateStatus('${b.code}','Approved')">${approveText}</button>` : `<button disabled style="opacity:.4;">🔒 Approve - Manager Only</button>`;
+buttonsHtml=`<div class="actions three">${approveBtnHtml}
+  <button class="btn-disapprove" onclick="updateStatus('${b.code}','Disapproved')">⛔ Disapprove</button>
+  <button id="checkin-${b.code}" class="btn-check" ${checkinDisabled} onclick="openCheckinWithPayment('${b.code}')">🏨 Check-In</button>
+  <button style="background:#111;color:#D4AF37;" onclick="adminExtend('${b.code}')">➕ Extend</button>
+</div><div class="actions two" style="margin-top:8px;">
+<div style="margin-top:8px;font-size:13px;"><b>${b.name}</b> • ${b.phone}<br>🏨 ${b.room} • ${b.checkin} → ${b.checkout}<br>💰 $${b.amount} • ${pay} • <b style="color:${getBalance(b)>0?'#991b1b':'#166534'};">Bal: $${getBalance(b)}</b> • Paid: $${getPaidAmount(b)}${String(b.lastAction||'').includes('PENDING_EXTEND') ? `<br><span style="background:#fef3c7;padding:4px 8px;border-radius:8px;font-size:11px;">⏳ PENDING EXTENSION: ${String(b.lastAction).split('|')[1]} • Extra $${String(b.lastAction).split('|')[4]||''} — Approve to apply</span>` : ''}</div>
+  <button onclick="adminUpgrade('${b.code}')">⬆️ Upgrade</button>
+  <button onclick="adminReschedule('${b.code}')">📅 Reschedule</button>
+          </div>`; 
+
+      }
+    }
+return `<div class="card ${cardClass}"><div style="display:flex;justify-content:space-between;"><span class="code">${b.code}</span><span class="status ${cardClass}">${st}</span></div>
+<div style="margin-top:8px;font-size:13px;">
+  <b>${b.name}</b> • ${b.phone}<br>
+  🏨 ${b.room}<br>
+  📅 ${fmtDate(b.checkin)} → ${fmtDate(b.checkout)}<br>
+  👥 ${getGuestsRooms(b)}<br>
+  💰 $${b.amount} • ${pay} • <b style="color:${getBalance(b)>0?'#991b1b':'#166534'};">Bal: $${getBalance(b)}</b> • Paid: $${getPaidAmount(b)}
+</div>${buttonsHtml}</div>`;
+  }).join('');
+}
+
+async function checkoutWithBill(code){
+  const b = allData.find(x=>x.code===code);
+  const totalBill = getTotalBill(b);
+  const bal = getBalance(b);
+  if(!confirm(`Check-Out ${b.name}?\nTotal Bill: $${totalBill} (Room $${b.amount} + Food $${getFoodBill(code)})\nBalance remaining: $${bal}\n\nIf guest never pay balance, collect am now. Click OK to mark as FULLY PAID and Check-Out.`)) return;
+  if(bal > 0){
+    await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"recordCash", code, cashAmount: bal, payMethod: "Cash at Reception - Check-Out"})});
+    await new Promise(r=>setTimeout(r,800));
+  }
+  await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"updateStatus", code, newStatus:"Checked-Out"})});
+    // AUTOMATIC: Room go Dirty after checkout
+  const roomNum = bookingRooms[code];
+  if(roomNum){
+    roomStatus[roomNum] = 'Dirty';
+    localStorage.setItem('lumina_room_status', JSON.stringify(roomStatus));
+  }
+  alert(`Checked-Out ${b.name}. Total collected: $${totalBill}. Balance cleared ✅`);
+  setTimeout(loadAll,1500);
+}
+// ===== PHASE 1 + 2 =====
+function openAdminAction(title, html){
+  document.getElementById('adminActionTitle').innerText = title;
+  document.getElementById('adminActionBody').innerHTML = html;
+  document.getElementById('adminActionModal').style.display = 'flex';
+}
+function closeAdminAction(){ document.getElementById('adminActionModal').style.display='none'; }
+
+// --- TODAY ---
+function renderToday(){
+  const today = new Date().toISOString().slice(0,10);
+  const inToday = allData.filter(b=> String(b.checkin||'').slice(0,10)===today && !String(b.status).includes('Cancelled'));
+  const outToday = allData.filter(b=> String(b.checkout||'').slice(0,10)===today && !String(b.status).includes('Cancelled'));
+  const awaiting = allData.filter(b=> String(b.status||'').includes('Awaiting'));
+  const unpaid = allData.filter(b=> String(b.status||'')==='Unpaid');
+  let html = `
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+    <div style="background:#dcfce7;padding:14px;border-radius:16px;"><b>✅ ${inToday.length} Check-In Today</b><p style="font-size:11px;margin-top:6px;">${inToday.map(b=>`${b.name} • ${b.room} • ${fmtDate(b.checkin)} • ${getGuestsRooms(b)}`).join('<br>')||'None'}</p></div>
+    <div style="background:#dbeafe;padding:14px;border-radius:16px;"><b>🚪 ${outToday.length} Check-Out Today</b><p style="font-size:11px;margin-top:6px;">${outToday.map(b=>`${b.name} • ${b.room} • ${b.code}`).join('<br>')||'None'}</p></div>
+  </div>
+  <div style="background:#fef3c7;padding:14px;border-radius:16px;margin-top:10px;"><b>⏳ ${awaiting.length} Awaiting Verification</b><p style="font-size:11px;margin-top:6px;">${awaiting.map(b=>`${b.code} • ${b.name} • $${b.amount} • ${b.payMethod}`).join('<br>')||'None - All clear ✅'}</p></div>
+  <div style="background:#fee2e2;padding:14px;border-radius:16px;margin-top:10px;"><b>💰 ${unpaid.length} Unpaid</b><p style="font-size:11px;margin-top:6px;">${unpaid.map(b=>`${b.code} • ${b.name} • $${b.amount} • Bal $${getBalance(b)}`).join('<br>')||'None'}</p></div>
+  <div style="background:#111;color:#D4AF37;padding:14px;border-radius:16px;margin-top:10px;"><b>📋 All Bookings Below — Use buttons to Approve / Record Cash / Extend</b></div>`;
+    document.getElementById('list').innerHTML = html;
+  // Keep header, then append bookings below without wiping header
+  const under = allData.filter(b=>!String(b.status).includes('Cancelled') && !String(b.status).includes('Checked-Out') && !String(b.status).includes('Disapproved'));
+  const prev = document.getElementById('list').innerHTML;
+  render(under);
+  // render() wiped header, so re-add header on top
+  document.getElementById('list').innerHTML = prev + document.getElementById('list').innerHTML;
+}
+
+// --- ROOM BOARD ---
+let roomStatus = JSON.parse(localStorage.getItem('lumina_room_status')||'{}');
+
+// ===== NEW ROOMS BOARD: SUB-ROOMS SYSTEM =====
+// Grand Opera = 101-105, FL River View = 106-110, Montreal Boutique = 111-115
+// If your roomsData get different order, e go still generate based on total
+function getSubRoomsForType(roomType, indexInList){
+  // Fixed mapping for your 3 types
+  if(roomType.toLowerCase().includes('grand') || roomType.toLowerCase().includes('opera')) return ["101","102","103","104","105"];
+  if(roomType.toLowerCase().includes('river') || roomType.toLowerCase().includes('fl ')) return ["106","107","108","109","110"];
+  if(roomType.toLowerCase().includes('montreal') || roomType.toLowerCase().includes('boutique')) return ["111","112","113","114","115"];
+  // Fallback: if na new room type, generate 201,202... based on total
+  const total = roomsData[indexInList]?.total || 5;
+  const start = 201 + (indexInList * 10);
+  return Array.from({length: total}, (_,i)=> String(start+i));
+}
+
+// Booking Code -> Room Number, e.g. "LMN-123" -> "101"
+// We save am for localStorage because Sheets never get roomNumber before
+let bookingRooms = JSON.parse(localStorage.getItem('lumina_booking_rooms')||'{}');
+function saveBookingRooms(){ localStorage.setItem('lumina_booking_rooms', JSON.stringify(bookingRooms)); }
+
+// roomNumber -> "dirty", if no entry = clean
+// We reuse your existing lumina_room_status, but now per ROOM NUMBER, not roomType
+function getRoomStatus(roomType, roomNumber){
+  const today = new Date().toISOString().slice(0,10);
+  // Find booking wey dey use this exact roomNumber
+  const bookingForRoom = allData.find(b => bookingRooms[b.code] === roomNumber && b.room === roomType);
+
+  // 1. OCCUPIED - status na Checked-In
+  if(bookingForRoom && String(bookingForRoom.status||'').includes('Checked-In')){
+    return { status:'Occupied', label:'Occupied', color:'#fef3c7', border:'#eab308', booking: bookingForRoom };
+  }
+  // 2. RESERVED TODAY - checkin na today, never check-in yet, never cancelled / checked-out
+  if(bookingForRoom && String(bookingForRoom.checkin||'').slice(0,10) === today){
+    const s = String(bookingForRoom.status||'');
+    if(!s.includes('Checked-Out') && !s.includes('Cancelled') && !s.includes('Disapproved')){
+      return { status:'Reserved', label:'Reserved Today', color:'#dbeafe', border:'#3b82f6', booking: bookingForRoom };
+    }
+  }
+  // 3. DIRTY - Cleaner never clean am
+  if(roomStatus[roomNumber] === 'Dirty' || roomStatus[roomNumber] === 'dirty'){
+    return { status:'Dirty', label:'Dirty — Go Clean', color:'#fee2e2', border:'#ef4444', booking: null };
+  }
+  // 4. FREE & CLEAN
+  return { status:'Free', label:'Free & Clean', color:'#dcfce7', border:'#22c55e', booking: null };
+}
+
+function getAvailableRoomNumbers(roomType, indexInList){
+  const subs = getSubRoomsForType(roomType, indexInList);
+  return subs.filter(num => getRoomStatus(roomType, num).status === 'Free');
+}
+
+function renderBoard(){
+  if(!roomsData || roomsData.length===0){
+    document.getElementById('list').innerHTML = `<div style="text-align:center;padding:30px;background:white;border-radius:16px;">No rooms data</div>`;
+    return;
+  }
+
+  let html = `<div style="background:#111;color:#D4AF37;padding:14px;border-radius:16px;margin-bottom:12px;"><b>🛏️ Rooms Board</b><p style="font-size:11px;margin-top:4px;">🟢 Free & Clean • 🟡 Occupied • 🔵 Reserved Today • 🔴 Dirty<br>ONLY Dirty fit click — to mark Free & Clean. Others do nothing.</p></div>`;
+
+  roomsData.forEach((r, idx)=>{
+    const subs = getSubRoomsForType(r.roomType, idx);
+    html += `<div style="background:white;border-radius:16px;padding:14px;margin-bottom:12px;"><b>${r.roomType}</b><p style="font-size:11px;color:#666;">${subs.length} rooms: ${subs.join(', ')}</p><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;">`;
+
+    subs.forEach(num=>{
+      const info = getRoomStatus(r.roomType, num);
+      const isDirty = info.status === 'Dirty';
+      const guestText = info.booking ? `<br><span style="font-size:11px;">${info.booking.name} • ${info.booking.code}</span>` : '';
+      html += `<div onclick="handleRoomCardClick('${r.roomType}','${num}')" style="background:${info.color};border:2px solid ${info.border};padding:14px;border-radius:14px;cursor:${isDirty?'pointer':'default'};"><b>Room ${num}</b><p style="font-size:11px;margin-top:6px;">${info.status==='Free'?'🟢 ':info.status==='Occupied'?'🟡 ':info.status==='Reserved'?'🔵 ':'🔴 '}${info.label}${guestText}</p>${isDirty?'<p style="font-size:10px;color:#991b1b;margin-top:4px;">👆 Tap to mark Free & Clean</p>':''}</div>`;
+    });
+
+    html += `</div></div>`;
+  });
+
+  // Cleaner task list
+  const dirtyRooms = [];
+  roomsData.forEach((r, idx)=>{
+    getSubRoomsForType(r.roomType, idx).forEach(num=>{
+      if(getRoomStatus(r.roomType, num).status === 'Dirty') dirtyRooms.push(`${r.roomType} - Room ${num}`);
+    });
+  });
+  if(dirtyRooms.length){
+    html += `<div style="background:#fee2e2;padding:14px;border-radius:16px;margin-top:12px;"><b>🧹 Cleaner Task:</b><br>${dirtyRooms.join('<br>')}</div>`;
+  }
+
+  document.getElementById('list').innerHTML = html;
+}
+
+function handleRoomCardClick(roomType, roomNumber){
+  const info = getRoomStatus(roomType, roomNumber);
+  // ONLY Dirty -> Free & Clean allowed. Others do NOTHING.
+  if(info.status !== 'Dirty') return;
+
+  if(!['cleaner','admin','manager','owner'].includes(currentRole)){
+    alert('Only Cleaner / Admin / Manager can mark room as clean');
+    return;
+  }
+  if(!confirm(`Mark Room ${roomNumber} (${roomType}) as Free & Clean?`)) return;
+  delete roomStatus[roomNumber];
+  localStorage.setItem('lumina_room_status', JSON.stringify(roomStatus));
+  renderBoard();
+}
+
+function renderMoney(){
+  // === FIXED DAILY LOGIC - fits your data ===
+  // Hotel day: 6am to 6am. If e never reach 6am, we still dey yesterday.
+  const now = new Date();
+  const hotelNow = new Date(now);
+  if(now.getHours() < 6) hotelNow.setDate(hotelNow.getDate() - 1);
+  const todayKey = hotelNow.getFullYear() + '-' + String(hotelNow.getMonth()+1).padStart(2,'0') + '-' + String(hotelNow.getDate()).padStart(2,'0');
+
+  // Helper: turn "21 Nov 2026" / "2026-11-21" / "11/21/2026" -> "2026-11-21"
+  function toKey(dateStr){
+    if(!dateStr) return "";
+    const s = String(dateStr).trim();
+    if(/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
+    const months = {jan:'01',feb:'02',mar:'03',apr:'04',may:'05',jun:'06',jul:'07',aug:'08',sep:'09',oct:'10',nov:'11',dec:'12'};
+    const m = s.match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
+    if(m && months[m[2].toLowerCase().slice(0,3)]) return m[3] + '-' + months[m[2].toLowerCase().slice(0,3)] + '-' + String(m[1]).padStart(2,'0');
+    const m2 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    if(m2) return m2[3] + '-' + String(m2[1]).padStart(2,'0') + '-' + String(m2[2]).padStart(2,'0');
+    const d = new Date(s);
+    if(!isNaN(d)) return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    return "";
+  }
+
+  // TODAY ONLY - bookings wey checkin na today
+  const todayBookingsList = allData.filter(b => toKey(b.checkin || b.date || b.created) === todayKey);
+  const todayPaid = todayBookingsList.reduce((s,b)=>s+getPaidAmount(b),0);
+  const todayBookingsCount = todayBookingsList.length;
+
+  // TODAY ONLY - food orders wey happen today
+  const todayFoodRev = posOrders.filter(o => toKey(o.date || o.created || o.createdAt) === todayKey).reduce((s,o)=>s+Number(o.price)*Number(o.qty||1),0);
+
+  // TODAY ONLY - expenses wey happen today
+  const todayExpenses = expensesList.filter(e => toKey(e.date || e.created) === todayKey).reduce((s,e)=>s+Number(e.amount||0),0);
+  const todayProfit = (todayPaid + todayFoodRev) - todayExpenses;
+
+  // ALL-TIME - keep am for top cards, no change
+  const totalPaid = allData.reduce((s,b)=>s+getPaidAmount(b),0);
+  const totalBalance = allData.filter(b=> getBalance(b)>0).reduce((s,b)=>s+getBalance(b),0);
+  const totalRev = allData.filter(b=> String(b.status||'').match(/Paid|Approved|Checked-In|Checked-Out/)).reduce((s,b)=>s+getTotalBill(b),0);
+  const totalExpenses = expensesList.reduce((s,e)=>s+Number(e.amount||0),0);
+  const totalFoodRev = posOrders.reduce((s,o)=>s+Number(o.price)*Number(o.qty||1),0);
+  const profit = (totalPaid) - totalExpenses;
+
+  document.getElementById('list').innerHTML = `
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+    <div style="background:#111;padding:14px;border-radius:16px;"><b style="color:#D4AF37;">$${totalRev.toLocaleString()}</b><p style="font-size:10px;color:#fff;">TOTAL REVENUE (Room + Food)</p></div>
+    <div style="background:white;padding:14px;border-radius:16px;"><b>$${totalPaid.toLocaleString()}</b><p style="font-size:10px;color:#888;">PAID SO FAR</p></div>
+    <div style="background:#fee2e2;padding:14px;border-radius:16px;"><b style="color:#991b1b;">$${totalBalance.toLocaleString()}</b><p style="font-size:10px;color:#991b1b;">BALANCE REMAINING</p></div>
+  </div>
+  <div style="background:white;padding:14px;border-radius:16px;margin-top:12px;"><b>📊 Daily Report — Today (${todayKey}) • Resets 6am</b>
+    <p style="font-size:12px;margin-top:6px;">Today Paid (Rooms): <b>$${todayPaid.toLocaleString()}</b> • Today Bookings: ${todayBookingsCount}<br>
+    Rooms Paid Today: $${todayPaid.toLocaleString()} • Food + Pool Today: $${todayFoodRev.toLocaleString()} • Expenses Today: -$${todayExpenses.toLocaleString()}<br><b>Today Profit: $${todayProfit.toLocaleString()}</b></p>
+    <p style="font-size:11px;color:#888;margin-top:6px;">All-time profit (below) still dey: $${profit.toLocaleString()} — Daily go reset to $0 by 6am tomorrow.</p>
+  </div>
+  <div style="background:white;padding:14px;border-radius:16px;margin-top:12px;"><b>⚠️ Balances Still Owed (Room + Food - Paid, Checked-Out excluded)</b>
+    <div style="margin-top:8px;">${allData.filter(b=>getBalance(b)>0).map(b=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #eee;font-size:12px;"><span>${b.code} • ${b.name} • ${b.room}<br><span style="color:#666;">Room $${b.amount} + Food $${getFoodBill(b.code)} = Total $${getTotalBill(b)} • Paid $${getPaidAmount(b)}</span></span><b style="color:#991b1b;">Bal $${getBalance(b)}</b></div>`).join('')||'All paid ✅ — No balance owed'}</div></div>
+  <div style="background:white;padding:14px;border-radius:16px;margin-top:12px;"><b>🧾 Expenses</b> <button onclick="openExpenseModal()" style="float:right;background:#111;color:#D4AF37;border:none;padding:6px 10px;border-radius:8px;font-weight:800;">+ Add</button>
+    ${expensesList.slice().reverse().map(e=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-size:12px;"><span>${e.title} • ${e.category} • ${e.date}</span><b style="color:#991b1b;">-$${Number(e.amount).toLocaleString()}</b></div>`).join('')||'<p style="font-size:12px;color:#888;">No expenses yet</p>'}
+  </div>`;
+}
+
+// ===== PHASE 3: POS + POOL + EXPENSES =====
+let posOrders = JSON.parse(localStorage.getItem('lumina_pos_orders')||'[]'); // [{code, room, item, price, qty, time}]
+let expensesList = JSON.parse(localStorage.getItem('lumina_expenses')||'[]'); // [{title, amount, category, date}]
+
+// ===== FIXED MONEY LOGIC =====
+function getFoodBill(code){
+  return posOrders.filter(o=>o.code===code).reduce((s,o)=>s+(Number(o.price)*Number(o.qty||1)),0);
+}
+function getTotalBill(b){
+  return Number(b.amount||0) + getFoodBill(b.code);
+}
+function getPaidAmount(b){
+  const st = String(b.status||'');
+  const totalBill = getTotalBill(b);
+
+  // RULE 1: Checked-Out = assume don pay all — ONLY here we clear balance
+  if(st.includes('Checked-Out')) return totalBill;
+
+  // RULE 2: FIRST check PAID:xxx — this na the real money guest pay
+  // E.g. PAID:500 for $1260 booking → return 500, no be 1260
+  const la = String(b.lastAction||'');
+  if(la.indexOf('PAID:')===0) return Number(la.replace('PAID:',''))||0;
+
+  // RULE 3: If no PAID: record, and status na Paid (old bookings wey don pay before we start tracking), then assume full room amount
+  // But if status na Approved, e NO mean Paid — Approved = 0 paid
+  if(st === 'Paid') return Number(b.amount||0);
+
+  // Approved / Unpaid / Awaiting / Checked-In with no PAID: = 0 paid
+  return 0;
+}
+
+function getBalance(b){
+  const st = String(b.status||'');
+  if(st.includes('Checked-Out') || st.includes('Cancelled')) return 0;
+  // Balance = (Room + Food) - Paid
+  // Example: Room $1260 + Food $20 = $1280 - Paid $500 = Balance $780
+  // When guest order food for POS, getFoodBill go increase, Balance go increase automatically
+  return Math.max(0, getTotalBill(b) - getPaidAmount(b));
+}
+// --- POS TAB ---
+function renderPOS(){
+  const checkedIn = allData.filter(b=> String(b.status||'').includes('Checked-In'));
+  let html = `
+  <div style="background:#111;color:#D4AF37;padding:14px;border-radius:16px;margin-bottom:12px;"><b>🍽️ Restaurant / Bar / Pool POS</b><p style="font-size:11px;margin-top:4px;">Add food to Checked-In guest bill • Sell Pool Pass to walk-in</p></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+    <button onclick="openPoolPass()" style="background:#111;color:#D4AF37;border:none;padding:14px;border-radius:14px;font-weight:900;cursor:pointer;">🏊 Sell Pool Day Pass</button>
+    <button onclick="openExpenseModal()" style="background:#fee2e2;border:1px solid #fca5a5;padding:14px;border-radius:14px;font-weight:900;cursor:pointer;">🧾 Add Expense</button>
+  </div>
+  <div style="background:white;padding:14px;border-radius:16px;margin-bottom:12px;"><b>🏨 Checked-In Guests — Tap to Add Food</b>
+    ${checkedIn.length ? checkedIn.map(b=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #eee;font-size:12px;"><span><b>${b.room}</b> • ${b.name} • ${b.code}<br>Room: $${b.amount} • Food: $${getFoodBill(b.code)} • <b>Total Bill: $${getTotalBill(b)}</b></span><button onclick="openAddFood('${b.code}')" style="background:#D4AF37;border:none;padding:8px 12px;border-radius:10px;font-weight:900;">+ Add Food</button></div>`).join('') : '<p style="font-size:12px;color:#888;margin-top:8px;">No guest don Check-In yet. Check-In a guest first to add food to their bill.</p>'}
+  </div>
+  <div style="background:white;padding:14px;border-radius:16px;margin-bottom:12px;"><b>🧾 Recent Food Orders</b>
+    ${posOrders.slice().reverse().slice(0,20).map(o=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f3f3f3;font-size:12px;"><span>${o.item} x${o.qty} • ${o.room} • ${o.code}</span><b>$${Number(o.price)*Number(o.qty)}</b></div>`).join('')||'<p style="font-size:12px;color:#888;">No orders yet</p>'}
+  </div>
+  <div style="background:white;padding:14px;border-radius:16px;"><b>🏊 Pool Passes Sold</b>
+    ${posOrders.filter(o=>o.type==='pool').map(o=>`<div style="padding:8px 0;border-bottom:1px solid #f3f3f3;font-size:12px;"><b>${o.code}</b> • ${o.item} • $${o.price} • ${o.time}</div>`).join('')||'<p style="font-size:12px;color:#888;">No pool pass yet</p>'}
+  </div>`;
+  document.getElementById('list').innerHTML = html;
+}
+
+function openAddFood(code){
+  const b = allData.find(x=>x.code===code); if(!b) return;
+  const menu = [
+    {name:'Fried Rice + Chicken', price: 8000},
+    {name:'Jollof Rice + Chicken', price: 7500},
+    {name:'Pepper Soup', price: 6000},
+    {name:'Grilled Fish', price: 12000},
+    {name:'Club Sandwich', price: 5000},
+    {name:'Soft Drink', price: 2000},
+    {name:'Beer', price: 3500},
+    {name:'Bottled Water', price: 1000},
+    {name:'Tea / Coffee', price: 2500},
+    {name:'Breakfast (Full)', price: 10000},
+  ];
+  openAdminAction('🍽️ Add Food — ' + b.room, `
+    <p style="font-size:13px;">${b.name} • ${b.code}<br>Current Food Bill: <b>$${getFoodBill(code)}</b> • Total Bill: <b>$${getTotalBill(b)}</b></p>
+    <label style="font-size:12px;font-weight:800;">Pick Item</label>
+    <select id="foodItem" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">${menu.map(m=>`<option value="${m.name}|${m.price}">${m.name} — $${m.price}</option>`).join('')}</select>
+    <label style="font-size:12px;font-weight:800;">Quantity</label>
+    <input id="foodQty" type="number" value="1" min="1" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label style="font-size:12px;font-weight:800;">Note (optional)</label>
+    <input id="foodNote" placeholder="e.g. No pepper, extra chicken" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;">
+    <button onclick="confirmAddFood('${code}')" style="width:100%;background:#111;color:#D4AF37;border:none;padding:13px;border-radius:10px;font-weight:900;margin-top:12px;">Add to Guest Bill →</button>
+  `);
+}
+async function confirmAddFood(code){
+  const b = allData.find(x=>x.code===code);
+  const [item, price] = document.getElementById('foodItem').value.split('|');
+  const qty = Number(document.getElementById('foodQty').value||1);
+  const note = document.getElementById('foodNote').value||'';
+  const order = { code, room: b.room, item: item + (note ? ' ('+note+')' : ''), price: Number(price), qty, time: new Date().toLocaleString(), type: 'food' };
+  posOrders.push(order);
+  localStorage.setItem('lumina_pos_orders', JSON.stringify(posOrders));
+  // Also send to Sheets so e no lose if you clear browser — saved in Orders sheet
+  fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"addOrder", code, room: b.room, item: order.item, price: Number(price), qty, guestName: b.name})});
+  closeAdminAction();
+  alert(`Added ${item} x${qty} = $${Number(price)*qty} to ${b.room} bill. New Total Bill: $${getTotalBill(b) + Number(price)*qty}`);
+  renderPOS();
+}
+
+function openPoolPass(){
+  openAdminAction('🏊 Sell Pool Day Pass', `
+    <label style="font-size:12px;font-weight:800;">Buyer Name</label>
+    <input id="poolName" placeholder="Full name" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label style="font-size:12px;font-weight:800;">Phone</label>
+    <input id="poolPhone" placeholder="Phone" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label style="font-size:12px;font-weight:800;">Pass Type</label>
+    <select id="poolType" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+      <option value="Adult Day Pass|5000">Adult Day Pass — $5000</option>
+      <option value="Child Day Pass|3000">Child Day Pass — $3000</option>
+      <option value="Family Pass (4 ppl)|15000">Family Pass (4 ppl) — $15000</option>
+      <option value="Guest of Room Guest|0">Guest of Room Guest — Free</option>
+    </select>
+    <label style="font-size:12px;font-weight:800;">Payment</label>
+    <select id="poolPay" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;"><option>Cash at Reception</option><option>OPay Transfer</option><option>Paystack</option></select>
+    <button onclick="confirmPoolPass()" style="width:100%;background:#111;color:#D4AF37;border:none;padding:13px;border-radius:10px;font-weight:900;margin-top:12px;">Generate Pool Ticket →</button>
+  `);
+}
+async function confirmPoolPass(){
+  const name = document.getElementById('poolName').value.trim();
+  const phone = document.getElementById('poolPhone').value.trim();
+  const [type, price] = document.getElementById('poolType').value.split('|');
+  const pay = document.getElementById('poolPay').value;
+  if(!name||!phone) return alert('Enter name + phone');
+  const code = 'POOL-' + Date.now().toString().slice(-6);
+  const order = { code, room: 'Pool', item: type + ' — ' + name + ' ('+phone+')', price: Number(price), qty: 1, time: new Date().toLocaleString(), type: 'pool' };
+  posOrders.push(order);
+  localStorage.setItem('lumina_pos_orders', JSON.stringify(posOrders));
+  fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"addPoolPass", code, guestName: name, phone, passType: type, price: Number(price), payMethod: pay})});
+  closeAdminAction();
+  alert(`Pool Pass Generated! 🎟️\nCode: ${code}\n${type} for ${name}\nPrice: $${price} • Paid via ${pay}\nShow this code at pool gate.`);
+  renderPOS();
+}
+
+// --- EXPENSES ---
+function openExpenseModal(){
+  openAdminAction('🧾 Add Expense', `
+    <label style="font-size:12px;font-weight:800;">What did hotel spend on?</label>
+    <input id="expTitle" placeholder="e.g. Diesel, Cleaning, Plumber" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label style="font-size:12px;font-weight:800;">Amount</label>
+    <input id="expAmt" type="number" placeholder="e.g. 50000" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label style="font-size:12px;font-weight:800;">Category</label>
+    <select id="expCat" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;"><option>Diesel / Fuel</option><option>Cleaning</option><option>Maintenance</option><option>Food / Restaurant</option><option>Staff / Salary</option><option>Other</option></select>
+    <button onclick="confirmExpense()" style="width:100%;background:#111;color:#D4AF37;border:none;padding:13px;border-radius:10px;font-weight:900;margin-top:12px;">Save Expense</button>
+  `);
+}
+function confirmExpense(){
+  const title = document.getElementById('expTitle').value.trim();
+  const amt = Number(document.getElementById('expAmt').value||0);
+  const cat = document.getElementById('expCat').value;
+  if(!title||!amt) return alert('Enter title + amount');
+  expensesList.push({title, amount: amt, category: cat, date: new Date().toISOString().slice(0,10)});
+  localStorage.setItem('lumina_expenses', JSON.stringify(expensesList));
+  fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"addExpense", title, amount: amt, category: cat})});
+  closeAdminAction();
+  alert(`Expense saved: ${title} — $${amt}`);
+  renderMoney();
+}
+
+// --- ACTIONS ---
+// Call this instead of updateStatus(code,'Checked-In') directly
+function openCheckinWithPayment(code){
+  const b = allData.find(x=>x.code===code); if(!b) return;
+  const totalBill = getTotalBill(b);
+  const alreadyPaid = getPaidAmount(b);
+  const bal = Math.max(0, totalBill - alreadyPaid);
+  // Find index of this roomType for sub-rooms
+  const roomIdx = roomsData.findIndex(r=>r.roomType===b.room);
+  const available = getAvailableRoomNumbers(b.room, roomIdx);
+  // If guest already get room before, show am, else show available
+  const alreadyAssigned = bookingRooms[code];
+  const options = alreadyAssigned
+    ? `<option value="${alreadyAssigned}" selected>Room ${alreadyAssigned} (Already assigned)</option>` + available.filter(n=>n!==alreadyAssigned).map(n=>`<option value="${n}">Room ${n} - Free & Clean</option>`).join('')
+    : available.length ? available.map(n=>`<option value="${n}">Room ${n} - Free & Clean</option>`).join('') : `<option value="">No free rooms for ${b.room}</option>`;
+
+  openAdminAction('🏨 Check-In — Collect Payment', `
+    <p style="font-size:13px;">${b.name} • ${b.room}<br>Total Bill: <b>$${totalBill}</b> • Already Paid: $${alreadyPaid} • <b style="color:#991b1b;">Balance: $${bal}</b></p>
+    <label style="font-size:12px;font-weight:800;">Select Room Number (Only Free & Clean)</label>
+    <select id="checkinRoomNumber" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">${options}</select>
+    <label style="font-size:12px;font-weight:800;">How much guest dey pay now at Check-In?</label>
+    <input id="checkinPayAmt" type="number" value="${bal}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label style="font-size:12px;font-weight:800;">Payment Method</label>
+    <select id="checkinPayMethod" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;"><option>Cash at Reception</option><option>OPay Transfer</option><option>Bank Transfer</option><option>Paystack</option><option>Pay Later — Still Owing</option></select>
+    <button onclick="confirmCheckinWithPayment('${code}')" style="width:100%;background:#111;color:#D4AF37;border:none;padding:13px;border-radius:10px;font-weight:900;margin-top:12px;">✅ Check-In Guest</button>
+  `);
+}
+async function confirmCheckinWithPayment(code){
+  const btn = document.querySelector('#adminActionModal button'); // the Check-In button inside modal
+  if(btn){ btn.disabled = true; btn.innerHTML = '⏳ Checking In... Please wait...'; }
+  showPageLoader('Checking In... Collecting payment...');
+
+  try{
+    const amt = Number(document.getElementById('checkinPayAmt').value||0);
+    const method = document.getElementById('checkinPayMethod').value;
+    // Save room assignment first (from last fix)
+    const roomNum = document.getElementById('checkinRoomNumber')?.value;
+    if(roomNum){ bookingRooms[code] = roomNum; saveBookingRooms(); }
+    closeAdminAction();
+
+    if(amt > 0 && !method.includes('Pay Later')){
+      await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"recordCash", code, cashAmount: amt, payMethod: method})});
+      await new Promise(r=>setTimeout(r,800));
+    }
+    await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"updateStatus", code, newStatus:"Checked-In"})});
+    alert(`Checked-In! Collected $${amt} via ${method}`);
+    setTimeout(loadAll,1500);
+  }catch(e){
+    alert('Check-In failed: ' + e.message);
+  } finally {
+    hidePageLoader();
+    // Button dey inside modal wey don close, no need to reset am
+  }
+}
+
+// Check-Out: Assume don pay all — auto-clear balance
+async function checkoutWithBill(code){
+  const b = allData.find(x=>x.code===code);
+  const totalBill = getTotalBill(b);
+  const bal = getBalance(b);
+  if(!confirm(`Check-Out ${b.name}?\nTotal Bill: $${totalBill}\nBalance: $${bal}\n\nClick OK to mark as FULLY PAID and Check-Out.`)) return;
+
+  showPageLoader('Checking Out... Collecting balance... Please wait...');
+  try{
+    if(bal > 0){
+      await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"recordCash", code, cashAmount: bal, payMethod: "Cash at Reception - Check-Out"})});
+      await new Promise(r=>setTimeout(r,800));
+    }
+    await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"updateStatus", code, newStatus:"Checked-Out"})});
+
+    // Room go Dirty automatically
+    const roomNum = bookingRooms[code];
+    if(roomNum){
+      roomStatus[roomNum] = 'Dirty';
+      localStorage.setItem('lumina_room_status', JSON.stringify(roomStatus));
+    }
+
+    alert(`Checked-Out ${b.name}. Total collected: $${totalBill}. Balance cleared ✅`);
+    setTimeout(loadAll,1500);
+  }catch(e){
+    alert('Check-Out failed: ' + e.message);
+  } finally {
+    hidePageLoader();
+  }
+}
+function adminExtend(code){
+  const b = allData.find(x=>x.code===code); if(!b) return;
+  const oldN = Math.max(1, Math.round((new Date(b.checkout)-new Date(b.checkin))/86400000));
+  const perNight = Math.round((Number(b.amount)||0)/oldN);
+  openAdminAction('➕ Extend Stay', `
+    <p style="font-size:13px;">${b.room} • ${b.checkin} → ${b.checkout} • $${b.amount} • Per night: $${perNight}</p>
+    <label style="font-size:12px;font-weight:800;">Extra Nights</label>
+    <input id="extNights" type="number" value="1" min="1" max="30" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;" oninput="document.getElementById('extPreview').innerText='Extra: $'+(${perNight}*Number(this.value||1))+' • New total: $'+(${Number(b.amount)||0}+${perNight}*Number(this.value||1)))">
+    <div id="extPreview" style="background:#f8f5ef;padding:10px;border-radius:10px;font-size:12px;">Extra: $${perNight} • New total: $${Number(b.amount)+perNight}</div>
+    <label style="font-size:12px;font-weight:800;display:block;margin-top:10px;">Guest don pay for extension?</label>
+    <select id="extPay" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin-top:6px;"><option value="Cash at Reception">Cash at Reception — Paid Now</option><option value="OPay Transfer">OPay Transfer — Receipt don come</option><option value="Paystack">Paystack — Paid</option><option value="Pending">Pending — Guest go pay later (Awaiting)</option></select>
+    <button onclick="confirmAdminExtend('${code}', ${perNight})" style="width:100%;background:#111;color:#D4AF37;border:none;padding:13px;border-radius:10px;font-weight:900;margin-top:12px;">Confirm Extend</button>
+  `);
+}
+async function confirmAdminExtend(code, perNight){
+  const extra = Number(document.getElementById('extNights').value||1);
+  const pay = document.getElementById('extPay').value;
+  const b = allData.find(x=>x.code===code);
+  const newCheckout = new Date(b.checkout); newCheckout.setDate(newCheckout.getDate()+extra);
+  const iso = newCheckout.toISOString().slice(0,10);
+  const newTotal = Number(b.amount)+perNight*extra;
+  closeAdminAction();
+  if(pay==='Pending'){
+    await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"extend_cash", code, newCheckout: iso, newAmount: newTotal, extraNights: extra, extraAmount: perNight*extra})});
+    alert(`Extension requested — Pending. Checkout go change to ${iso} once you approve payment.`);
+  } else {
+    await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"extend_paystack", code, newCheckout: iso, newAmount: newTotal, extraNights: extra, extraAmount: perNight*extra, paystackRef: pay})});
+    alert(`Extended +${extra} night(s)! New checkout ${iso} • New total $${newTotal}`);
+  }
+  setTimeout(loadAll,1500);
+}
+function adminUpgrade(code){
+  const b = allData.find(x=>x.code===code); if(!b) return;
+  openAdminAction('⬆️ Upgrade Room', `
+    <p style="font-size:13px;">Current: <b>${b.room}</b> • $${b.amount}</p>
+    <label style="font-size:12px;font-weight:800;">New Room Type</label>
+    <select id="upRoom" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">${roomsData.map(r=>`<option value="${r.roomType}">${r.roomType}</option>`).join('')}</select>
+    <label style="font-size:12px;font-weight:800;">New Total Amount (Enter difference total)</label>
+    <input id="upAmount" type="number" value="${b.amount}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;">
+    <label style="font-size:12px;font-weight:800;display:block;margin-top:8px;">Guest don pay difference?</label>
+    <select id="upPay" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin-top:6px;"><option>Cash at Reception — Paid</option><option>Pending — Awaiting Verification</option></select>
+    <button onclick="confirmAdminUpgrade('${code}')" style="width:100%;background:#111;color:#D4AF37;border:none;padding:13px;border-radius:10px;font-weight:900;margin-top:12px;">Confirm Upgrade</button>
+  `);
+}
+async function confirmAdminUpgrade(code){
+  const newRoom = document.getElementById('upRoom').value;
+  const newAmount = Number(document.getElementById('upAmount').value||0);
+  const pay = document.getElementById('upPay').value;
+  closeAdminAction();
+  await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"upgradeRoom", code, newRoom, newAmount, payStatus: pay})});
+  alert(`Upgraded to ${newRoom} • New total $${newAmount} • ${pay}`);
+  setTimeout(loadAll,1500);
+}
+function adminReschedule(code){
+  const b = allData.find(x=>x.code===code); if(!b) return;
+  openAdminAction('📅 Reschedule', `
+    <p style="font-size:13px;">${b.room} • Now: ${b.checkin} → ${b.checkout}</p>
+    <label style="font-size:12px;font-weight:800;">New Check-In</label><input id="rsIn" type="date" value="${String(b.checkin).slice(0,10)}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label style="font-size:12px;font-weight:800;">New Check-Out</label><input id="rsOut" type="date" value="${String(b.checkout).slice(0,10)}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;margin:6px 0;">
+    <label style="font-size:12px;font-weight:800;">New Total (if price change)</label><input id="rsAmt" type="number" value="${b.amount}" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;">
+    <button onclick="confirmAdminReschedule('${code}')" style="width:100%;background:#111;color:#D4AF37;border:none;padding:13px;border-radius:10px;font-weight:900;margin-top:12px;">Move Booking</button>
+  `);
+}
+async function confirmAdminReschedule(code){
+  const ni = document.getElementById('rsIn').value; const no = document.getElementById('rsOut').value; const amt = Number(document.getElementById('rsAmt').value||0);
+  if(!ni||!no||new Date(no)<=new Date(ni)) return alert('Pick valid dates');
+  closeAdminAction();
+  await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"reschedule", code, newCheckin: ni, newCheckout: no, newAmount: amt})});
+  alert(`Rescheduled to ${ni} → ${no}`);
+  setTimeout(loadAll,1500);
+}
+
+async function updateStatus(code,newStatus){
+  const approveBtn = document.getElementById(`approve-${code}`);
+  const checkinBtn = document.getElementById(`checkin-${code}`);
+  if(!confirm(`Change ${code} to ${newStatus}?`)) return;
+  
+  showPageLoader(`Updating to ${newStatus}...`);
+
+  if(newStatus === 'Approved'){
+    if(approveBtn){
+      approveBtn.disabled = true;
+      approveBtn.innerText = "✅ Approved";
+      approveBtn.style.opacity = "0.5";
+    }
+    if(checkinBtn){
+      checkinBtn.disabled = false;
+      checkinBtn.style.opacity = "1";
+    }
+  }
+  if(newStatus === 'Checked-In' && checkinBtn){
+    checkinBtn.disabled = true;
+    checkinBtn.innerText = "🏨 Checking-In...";
+  }
+
+  await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"updateStatus",code,newStatus})}); 
+  hidePageLoader();
+  setTimeout(loadAll,1500); 
+}
+async function deleteBooking(code){ if(!confirm(`DELETE ${code}?`)) return; await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"deleteBooking",code})}); setTimeout(loadAll,1500); }
+function filterCards(){ renderTab(); }
+function fillRoomSelect(){
+  const sel = document.getElementById('abRoom'); if(!sel) return;
+  if(!roomsData||roomsData.length===0){ sel.innerHTML='<option>Loading...</option>'; return; }
+  sel.innerHTML = roomsData.map(r=>`<option value="${r.roomType}">${r.roomType} - ${r.available} avail</option>`).join('');
+  // Also fill room number select if e exist for modal
+  const numSel = document.getElementById('abRoomNumber');
+  if(numSel){
+    const idx = roomsData.findIndex(r=>r.roomType===sel.value);
+    const avail = getAvailableRoomNumbers(sel.value, idx);
+    numSel.innerHTML = avail.length ? avail.map(n=>`<option value="${n}">Room ${n} - Free & Clean</option>`).join('') : `<option value="">No free rooms</option>`;
+  }
+  // When room type change, update room numbers
+  sel.onchange = ()=> fillRoomSelect();
+}
+
+// === FINAL - ALL 6 TYPES, 5 ROOMS EACH, IN ORDER ===
+const ROOM_TYPE_MAP = {
+  "The Grand Opera Suite": [101,102,103,104,105],
+  "Eiffel River View Room": [106,107,108,109,110],
+  "Deluxe King Room": [111,112,113,114,115],
+  "Executive Double Room": [231,232,233,234,235],
+  "Family Suite": [241,242,243,244,245],
+  "Penthouse Loft": [251,252,253,254,255]
+};
+
+function updateManualRoomNumbers(){
+  const typeSelect = document.getElementById('manualRoomType');
+  const numSelect = document.getElementById('manualRoomNumber');
+  if(!typeSelect || !numSelect) return;
+
+  if(typeSelect.options.length === 0){
+    typeSelect.innerHTML = Object.keys(ROOM_TYPE_MAP).map(k => 
+      `<option value="${k}">${k}</option>`
+    ).join('');
+  }
+
+  const numbers = ROOM_TYPE_MAP[typeSelect.value] || [101,102,103,104,105];
+
+  numSelect.innerHTML = numbers.map(n => 
+    `<option value="${n}">Room ${n} - Free & Clean</option>`
+  ).join('');
+}
+
+function openAddBooking(){ fillRoomSelect(); document.getElementById('addModal').classList.add('open');
+  updateManualRoomNumbers();
+ }
+function closeAddBooking(){ document.getElementById('addModal').classList.remove('open'); }
+async function submitManualBooking(){
+  const name=document.getElementById('abName').value.trim(); const phone=document.getElementById('abPhone').value.trim(); const email=document.getElementById('abEmail').value.trim(); const room=document.getElementById('abRoom').value; const checkin=document.getElementById('abCheckin').value; const checkout=document.getElementById('abCheckout').value; const guests=document.getElementById('abGuests').value; const amount=document.getElementById('abAmount').value; const payMethod=document.getElementById('abPay').value; const status=document.getElementById('abStatus').value;
+  if(!name||!phone||!room||!checkin||!checkout){ alert("Fill Name, Phone, Room, Dates"); return; }
+const btn = document.getElementById('abBtn');
+if(btn){ btn.disabled = true; btn.innerText = "⏳ Adding Booking... Please wait..."; btn.style.opacity = '0.6'; }
+showPageLoader('Adding Booking...');
+try{
+  // ... keep your existing code for building payload + fetch here ...
+  await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify(payload)});
+  alert("Added: "+code);
+  closeAddBooking();
+} catch(e){
+  alert('Add Booking failed: ' + e.message);
+} finally {
+  hidePageLoader();
+  if(btn){ btn.disabled = false; btn.innerText = "Add Booking"; btn.style.opacity = '1'; }
+  setTimeout(loadAll,1500);
+} const code='LMN-MANUAL-'+Date.now().toString().slice(-6); const nights=Math.max(1,Math.round((new Date(checkout)-new Date(checkin))/(1000*60*60*24))); const payload={action:"book",name,phone,email,room,price:parseFloat(amount)||0,checkin,checkout,guests,payMethod,status,nights,amount:parseFloat(amount)||0,receiptBase64:"",receiptName:"",receiptMime:"",paystackRef:"",bookingCode:code};
+    const roomNumber = document.getElementById('abRoomNumber')?.value;
+  if(roomNumber){ bookingRooms[code] = roomNumber; saveBookingRooms(); }
+  await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify(payload)}); alert("Added: "+code); closeAddBooking(); btn.disabled=false; btn.innerText="Add Booking"; setTimeout(loadAll,1500);
+}
+loadAll();
+</script>
+
+
+
+
+<div id="adminActionModal" onclick="if(event.target===this) closeAdminAction()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:white;border-radius:20px;padding:20px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto;">
+    <h2 id="adminActionTitle" style="font-size:16px;font-weight:900;margin-bottom:12px;">Action</h2>
+    <div id="adminActionBody"></div>
+  </div>
+</div>
+</body>
+</html>
